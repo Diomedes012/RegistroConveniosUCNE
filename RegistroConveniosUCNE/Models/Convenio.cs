@@ -28,9 +28,7 @@ public class Convenio
 
     [MaxLength(50)]
     public string Estado { get; set; } = "Activo";
-
-    [MaxLength(255)]
-    public string? ArchivoPrincipal { get; set; }
+    public byte[] ArchivoPrincipal { get; set; }
 
     [ForeignKey("Usuario")]
     public int? CreadoPor { get; set; }
