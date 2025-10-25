@@ -11,7 +11,7 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        var connectionString = builder.Configuration.GetConnectionString("ConnectionStrings");
+        var connectionString = builder.Configuration.GetConnectionString("ConStr");
 
         builder.Services.AddDbContextFactory<Contexto>(options => options.UseSqlite(connectionString));
 

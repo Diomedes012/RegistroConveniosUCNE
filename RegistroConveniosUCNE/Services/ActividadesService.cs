@@ -9,13 +9,13 @@ public class ActividadesService(IDbContextFactory<Contexto> DbFactory)
     private async Task<bool> Existe(int actividadId)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
-        return await contexto.Actividades.AnyAsync(a => a.IdActividad == actividadId);
+        return await contexto.Actividad.AnyAsync(a => a.IdActividad == actividadId);
     }
 
     private async Task<bool> Insertar(Actividad actividad)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
-        contexto.Actividades.Add(actividad);
+        contexto.Actividad.Add(actividad);
         return await contexto.SaveChangesAsync() > 0;
     }
 
@@ -37,7 +37,7 @@ public class ActividadesService(IDbContextFactory<Contexto> DbFactory)
     public async Task<Actividad?> Buscar(int actividadId)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
-        return await contexto.Actividades
+        return await contexto.Actividad
             .Include(a => a.Convenio)
             .FirstOrDefaultAsync(a => a.IdActividad == actividadId);
     }
@@ -45,19 +45,19 @@ public class ActividadesService(IDbContextFactory<Contexto> DbFactory)
     public async Task<bool> Eliminar(int actividadId)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
-        var actividad = await contexto.Actividades.FindAsync(actividadId);
+        var actividad = await contexto.Actividad.FindAsync(actividadId);
 
         if (actividad == null)
             return false;
 
-        contexto.Actividades.Remove(actividad);
+        contexto.Actividad.Remove(actividad);
         return await contexto.SaveChangesAsync() > 0;
     }
 
     public async Task<List<Actividad>> Listar(Expression<Func<Actividad, bool>> criterio)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
-        return await contexto.Actividades
+        return await contexto.Actividad
             .Include(a => a.Convenio)
             .Where(criterio)
             .AsNoTracking()

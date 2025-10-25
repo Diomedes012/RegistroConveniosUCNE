@@ -9,13 +9,13 @@ public class ConveniosService(IDbContextFactory<Contexto> DbFactory)
     private async Task<bool> Existe(int convenioId)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
-        return await contexto.Convenios.AnyAsync(c => c.IdConvenio == convenioId);
+        return await contexto.Convenio.AnyAsync(c => c.IdConvenio == convenioId);
     }
 
     private async Task<bool> Insertar(Convenio convenio)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
-        contexto.Convenios.Add(convenio);
+        contexto.Convenio.Add(convenio);
         return await contexto.SaveChangesAsync() > 0;
     }
 
@@ -38,7 +38,7 @@ public class ConveniosService(IDbContextFactory<Contexto> DbFactory)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
 
-        return await contexto.Convenios
+        return await contexto.Convenio
             .Include(c => c.ConvenioInstituciones)
                 .ThenInclude(ci => ci.Institucion)
             .Include(c => c.ConvenioResponsables)
@@ -50,7 +50,7 @@ public class ConveniosService(IDbContextFactory<Contexto> DbFactory)
     public async Task<bool> Eliminar(int convenioId)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
-        var convenio = await contexto.Convenios
+        var convenio = await contexto.Convenio
             .Include(c => c.ConvenioInstituciones)
             .Include(c => c.ConvenioResponsables)
             .FirstOrDefaultAsync(c => c.IdConvenio == convenioId);
@@ -58,9 +58,9 @@ public class ConveniosService(IDbContextFactory<Contexto> DbFactory)
         if (convenio == null)
             return false;
 
-        contexto.ConvenioInstituciones.RemoveRange(convenio.ConvenioInstituciones);
-        contexto.ConvenioResponsables.RemoveRange(convenio.ConvenioResponsables);
-        contexto.Convenios.Remove(convenio);
+        contexto.ConvenioInstitucion.RemoveRange(convenio.ConvenioInstituciones);
+        contexto.ConvenioResponsable.RemoveRange(convenio.ConvenioResponsables);
+        contexto.Convenio.Remove(convenio);
 
         return await contexto.SaveChangesAsync() > 0;
     }
@@ -68,7 +68,7 @@ public class ConveniosService(IDbContextFactory<Contexto> DbFactory)
     public async Task<List<Convenio>> Listar(Expression<Func<Convenio, bool>> criterio)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
-        return await contexto.Convenios
+        return await contexto.Convenio
             .Include(c => c.ConvenioInstituciones)
                 .ThenInclude(ci => ci.Institucion)
             .Include(c => c.ConvenioResponsables)

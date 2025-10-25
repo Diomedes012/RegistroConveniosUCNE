@@ -3,6 +3,7 @@ using System;
 using GestionConveniosUCNE.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace RegistroConveniosUCNE.Migrations
 {
     [DbContext(typeof(Contexto))]
-    partial class ContextoModelSnapshot : ModelSnapshot
+    [Migration("20251025033704_RutaArchivo")]
+    partial class RutaArchivo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.10");
@@ -52,7 +55,7 @@ namespace RegistroConveniosUCNE.Migrations
 
                     b.HasIndex("IdConvenio");
 
-                    b.ToTable("Actividad");
+                    b.ToTable("Actividades");
                 });
 
             modelBuilder.Entity("GestionConveniosUCNE.Models.Alerta", b =>
@@ -87,7 +90,7 @@ namespace RegistroConveniosUCNE.Migrations
 
                     b.HasIndex("IdConvenio");
 
-                    b.ToTable("Alerta");
+                    b.ToTable("Alertas");
                 });
 
             modelBuilder.Entity("GestionConveniosUCNE.Models.Convenio", b =>
@@ -140,7 +143,7 @@ namespace RegistroConveniosUCNE.Migrations
 
                     b.HasIndex("CreadoPor");
 
-                    b.ToTable("Convenio");
+                    b.ToTable("Convenios");
                 });
 
             modelBuilder.Entity("GestionConveniosUCNE.Models.ConvenioInstitucion", b =>
@@ -165,7 +168,7 @@ namespace RegistroConveniosUCNE.Migrations
 
                     b.HasIndex("IdInstitucion");
 
-                    b.ToTable("ConvenioInstitucion");
+                    b.ToTable("ConvenioInstituciones");
                 });
 
             modelBuilder.Entity("GestionConveniosUCNE.Models.ConvenioResponsable", b =>
@@ -190,7 +193,7 @@ namespace RegistroConveniosUCNE.Migrations
 
                     b.HasIndex("IdResponsable");
 
-                    b.ToTable("ConvenioResponsable");
+                    b.ToTable("ConvenioResponsables");
                 });
 
             modelBuilder.Entity("GestionConveniosUCNE.Models.Institucion", b =>
@@ -222,7 +225,7 @@ namespace RegistroConveniosUCNE.Migrations
 
                     b.HasKey("IdInstitucion");
 
-                    b.ToTable("Institucion");
+                    b.ToTable("Instituciones");
                 });
 
             modelBuilder.Entity("GestionConveniosUCNE.Models.Responsable", b =>
@@ -254,7 +257,7 @@ namespace RegistroConveniosUCNE.Migrations
 
                     b.HasKey("IdResponsable");
 
-                    b.ToTable("Responsable");
+                    b.ToTable("Responsables");
                 });
 
             modelBuilder.Entity("GestionConveniosUCNE.Models.Rol", b =>
@@ -275,7 +278,7 @@ namespace RegistroConveniosUCNE.Migrations
 
                     b.HasKey("IdRol");
 
-                    b.ToTable("Rol");
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("GestionConveniosUCNE.Models.Usuario", b =>
@@ -314,7 +317,7 @@ namespace RegistroConveniosUCNE.Migrations
 
                     b.HasIndex("IdRol");
 
-                    b.ToTable("Usuario");
+                    b.ToTable("Usuarios");
                 });
 
             modelBuilder.Entity("GestionConveniosUCNE.Models.Actividad", b =>

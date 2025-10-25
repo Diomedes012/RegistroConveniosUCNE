@@ -8,15 +8,15 @@ public class Contexto : DbContext
     { 
     }
 
-    public DbSet<Rol> Roles { get; set; }
-    public DbSet<Usuario> Usuarios { get; set; }
-    public DbSet<Institucion> Instituciones { get; set; }
-    public DbSet<Convenio> Convenios { get; set; }
-    public DbSet<ConvenioInstitucion> ConvenioInstituciones { get; set; }
-    public DbSet<Responsable> Responsables { get; set; }
-    public DbSet<ConvenioResponsable> ConvenioResponsables { get; set; }
-    public DbSet<Actividad> Actividades { get; set; }
-    public DbSet<Alerta> Alertas { get; set; }
+    public DbSet<Rol> Rol { get; set; }
+    public DbSet<Usuario> Usuario { get; set; }
+    public DbSet<Institucion> Institucion { get; set; }
+    public DbSet<Convenio> Convenio { get; set; }
+    public DbSet<ConvenioInstitucion> ConvenioInstitucion { get; set; }
+    public DbSet<Responsable> Responsable { get; set; }
+    public DbSet<ConvenioResponsable> ConvenioResponsable { get; set; }
+    public DbSet<Actividad> Actividad { get; set; }
+    public DbSet<Alerta> Alerta { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
