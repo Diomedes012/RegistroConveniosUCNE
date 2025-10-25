@@ -1,0 +1,113 @@
+﻿@page "/Registro-Convenio"
+@using System.ComponentModel.DataAnnotations
+
+<EditForm Model="@ConvenioModel" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="rectangle-6">
+        <img src="images/logoUcnePeq.png" class="logo-1" alt="Logo" />
+    </div>
+    
+    <div class="form-container">
+        <h3>Guardar Nuevo Convenio</h3>
+        <div class="form-group">
+            <label for="fechaEmision">Fecha Emisión:</label>
+            <InputDate id="fechaEmision" @bind-Value="ConvenioModel.FechaEmision" class="form-control" />
+            <ValidationMessage For="@(() => ConvenioModel.FechaEmision)" />
+        </div>
+
+        <div class="form-group">
+            <label for="institucionAfiliada">Institución Afiliada:</label>
+            <InputText id="institucionAfiliada" @bind-Value="ConvenioModel.InstitucionAfiliada" class="form-control" placeholder="Universidad Catolica..." />
+            <ValidationMessage For="@(() => ConvenioModel.InstitucionAfiliada)" />
+        </div>
+
+        <div class="form-group">
+            <label for="numeroConvenio">Número del Convenio:</label>
+            <InputText id="numeroConvenio" @bind-Value="ConvenioModel.NumeroConvenio" class="form-control" placeholder="220077624" />
+            <ValidationMessage For="@(() => ConvenioModel.NumeroConvenio)" />
+        </div>
+
+        <div class="form-group">
+            <label for="facultad">Facultad:</label>
+            <InputText id="facultad" @bind-Value="ConvenioModel.Facultad" class="form-control" placeholder="Facultad de ciencias..." />
+            <ValidationMessage For="@(() => ConvenioModel.Facultad)" />
+        </div>
+
+        <div class="form-group">
+            <label for="tipoConvenio">Tipo de Convenio:</label>
+            <InputText id="tipoConvenio" @bind-Value="ConvenioModel.TipoConvenio" class="form-control" placeholder="Convenio de Colaboración" />
+            <ValidationMessage For="@(() => ConvenioModel.TipoConvenio)" />
+        </div>
+
+        <div class="form-group">
+            <label for="estadoConvenio">Estado del Convenio:</label>
+            <InputSelect id="estadoConvenio" @bind-Value="ConvenioModel.EstadoConvenio" class="form-control">
+                <option value="Iniciado">Iniciado</option>
+                <option value="EnProceso">En Proceso</option>
+                <option value="Finalizado">Finalizado</option>
+            </InputSelect>
+            <ValidationMessage For="@(() => ConvenioModel.EstadoConvenio)" />
+        </div>
+
+        <div class="form-group full-width">
+            <label for="detallesObjetivos">Detalles y objetivos:</label>
+            <InputTextArea id="detallesObjetivos" @bind-Value="ConvenioModel.DetallesObjetivos" class="form-control textarea-large" />
+            <ValidationMessage For="@(() => ConvenioModel.DetallesObjetivos)" />
+        </div>
+
+        @* Simplified file input for example, actual file handling is more complex *@
+        <div class="form-group">
+            <label for="adjuntarArchivo">Adjuntar Archivo:</label>
+            <InputFile id="adjuntarArchivo" OnChange="LoadFiles" class="form-control-file" />
+        </div>
+
+        <div class="form-actions full-width">
+            <button type="submit" class="btn-primary">Guardar Convenio</button>
+        </div>
+    </div>
+
+</EditForm>
+
+@code {
+    private ConvenioData ConvenioModel = new ConvenioData();
+
+    private void HandleValidSubmit()
+    {
+        // Lógica para guardar el convenio (e.g., llamar a un servicio, actualizar la base de datos)
+        Console.WriteLine("Convenio guardado con éxito.");
+        Console.WriteLine($"Institución: {ConvenioModel.InstitucionAfiliada}");
+        // Mostrar un mensaje de éxito o redirigir
+    }
+
+    // Método para manejar la carga de archivos
+    private void LoadFiles(InputFileChangeEventArgs e)
+    {
+        // Lógica para manejar el archivo adjunto, e.g., subir al servidor
+        var file = e.File;
+        Console.WriteLine($"Archivo adjunto: {file.Name}");
+    }
+
+    // Clase para el modelo de datos
+    private class ConvenioData
+    {
+        [Required]
+        public DateTime FechaEmision { get; set; } = DateTime.Now;
+
+        [Required(ErrorMessage = "La institución afiliada es obligatoria.")]
+        public string InstitucionAfiliada { get; set; }
+
+        [Required(ErrorMessage = "El número de convenio es obligatorio.")]
+        public string NumeroConvenio { get; set; }
+
+        public string Facultad { get; set; }
+
+        [Required(ErrorMessage = "El tipo de convenio es obligatorio.")]
+        public string TipoConvenio { get; set; } = "Convenio de Colaboracion";
+
+        public string EstadoConvenio { get; set; } = "Iniciado";
+
+        [Required(ErrorMessage = "Los detalles y objetivos son obligatorios.")]
+        [StringLength(500, MinimumLength = 10, ErrorMessage = "Debe tener entre 10 y 500 caracteres.")]
+        public string DetallesObjetivos { get; set; }
+    }
+}
