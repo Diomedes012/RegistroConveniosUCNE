@@ -1,0 +1,305 @@
+﻿.pagina-principal,
+.pagina-principal * {
+    box-sizing: border-box;
+}
+
+.pagina-principal {
+    height: 1080px;
+    position: relative;
+    overflow: hidden;
+}
+
+.rectangle-1 {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    right: 0%;
+    left: 0%;
+    bottom: 0%;
+    top: 0%;
+    overflow: visible;
+}
+
+.image-5 {
+    width: 1618px;
+    height: 1080px;
+    position: absolute;
+    left: 314px;
+    top: 0px;
+    object-fit: cover;
+    aspect-ratio: 1618/1080;
+}
+
+.group-19 {
+    position: absolute;
+    inset: 0;
+}
+
+.rectangle-26 {
+    background: #19355c;
+    width: 577px;
+    height: 1158px;
+    position: absolute;
+    left: -78px;
+    top: -39px;
+}
+
+.rectangle-27 {
+    background: #ffcb00;
+    width: 499px;
+    height: 170px;
+    position: absolute;
+    left: 0px;
+    top: 1px;
+}
+
+.logo-1 {
+    width: 78px;
+    height: 104px;
+    position: absolute;
+    left: 45px;
+    top: 38px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    object-fit: cover;
+    aspect-ratio: 78/104;
+}
+
+.rectangle-23 {
+    width: 62.4%;
+    height: 7.5%;
+    position: absolute;
+    right: 1.25%;
+    left: 36.35%;
+    bottom: 88.99%;
+    top: 3.52%;
+    overflow: visible;
+}
+
+.inicio {
+    width: 3.44%;
+    height: 2.01%;
+    position: absolute;
+    right: 55.26%;
+    left: 41.3%;
+    bottom: 91.79%;
+    top: 6.2%;
+    overflow: visible;
+}
+
+.crear-convenio {
+    width: 9.81%;
+    height: 2.01%;
+    position: absolute;
+    right: 39.05%;
+    left: 51.14%;
+    bottom: 91.71%;
+    top: 6.27%;
+    overflow: visible;
+}
+
+.listar-convenio {
+    width: 9.75%;
+    height: 2.01%;
+    position: absolute;
+    right: 22.53%;
+    left: 67.72%;
+    bottom: 91.71%;
+    top: 6.27%;
+    overflow: visible;
+}
+
+.buscar-convenio {
+    width: 10.55%;
+    height: 2.01%;
+    position: absolute;
+    right: 5.18%;
+    left: 84.27%;
+    bottom: 91.71%;
+    top: 6.27%;
+    overflow: visible;
+}
+
+.image-2 {
+    border-radius: 10px;
+    width: 629px;
+    height: 838px;
+    position: absolute;
+    left: 974px;
+    top: 162px;
+    box-shadow: 10px 12px 5.2px 0px rgba(0, 0, 0, 0.25);
+    object-fit: cover;
+    aspect-ratio: 629/838;
+}
+
+.bienvenido {
+    color: #ffffff;
+    text-align: left;
+    font-family: 'Jaldi-Bold', sans-serif;
+    font-size: 45.60533905029297px;
+    font-weight: 700;
+    position: absolute;
+    left: 170px;
+    top: 13px;
+}
+
+.rectangle-29 {
+    border-radius: 0px;
+    width: 225px;
+    height: 59px;
+    position: absolute;
+    left: 130px;
+    top: 972px;
+    overflow: visible;
+}
+
+.cerrar-sesi-n {
+    color: #ffffff;
+    text-align: center;
+    font-family: 'Jaldi-Bold', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    position: absolute;
+    left: 166px;
+    top: 981px;
+    width: 153.75px;
+    height: 36px;
+}
+
+.person {
+    width: 66px;
+    height: 66px;
+    position: absolute;
+    left: 67px;
+    top: 246px;
+    overflow: hidden;
+}
+
+.perfil {
+    position: absolute;
+    inset: 0;
+}
+
+.vector {
+    width: 2.08%;
+    height: 3.7%;
+    position: absolute;
+    right: 94%;
+    left: 3.92%;
+    bottom: 68.84%;
+    top: 27.45%;
+    overflow: visible;
+}
+
+.perfil2 {
+    color: #ffffff;
+    text-align: left;
+    font-family: 'Jaldi-Bold', sans-serif;
+    font-size: 38.12765884399414px;
+    font-weight: 700;
+    position: absolute;
+    left: 138px;
+    top: 288px;
+}
+
+.jrafael {
+    color: #ffffff;
+    text-align: left;
+    font-family: 'Jaldi-Bold', sans-serif;
+    font-size: 38.12765884399414px;
+    font-weight: 700;
+    position: absolute;
+    left: 205px;
+    top: 90px;
+}
+
+.notificaciones {
+    position: absolute;
+    inset: 0;
+}
+
+.notificaciones2 {
+    color: #ffffff;
+    text-align: left;
+    font-family: 'Jaldi-Bold', sans-serif;
+    font-size: 38.12765884399414px;
+    font-weight: 700;
+    position: absolute;
+    left: 138px;
+    top: 416px;
+}
+
+.frame {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    left: 75px;
+    top: 428px;
+    overflow: hidden;
+    aspect-ratio: 1;
+}
+
+.group {
+    width: 93.75%;
+    height: 93.75%;
+    position: absolute;
+    right: 0%;
+    left: 6.25%;
+    bottom: 6.25%;
+    top: 0%;
+    overflow: visible;
+}
+
+.alerta {
+    position: absolute;
+    inset: 0;
+}
+
+.alertas {
+    color: #ffffff;
+    text-align: left;
+    font-family: 'Jaldi-Bold', sans-serif;
+    font-size: 38.12765884399414px;
+    font-weight: 700;
+    position: absolute;
+    left: 138px;
+    top: 480px;
+}
+
+.vector2 {
+    width: 1.82%;
+    height: 3.7%;
+    position: absolute;
+    right: 94.11%;
+    left: 4.06%;
+    bottom: 50.74%;
+    top: 45.56%;
+    overflow: visible;
+}
+
+.solicitudes {
+    position: absolute;
+    inset: 0;
+}
+
+.solicitudes2 {
+    color: #ffffff;
+    text-align: left;
+    font-family: 'Jaldi-Bold', sans-serif;
+    font-size: 38.12765884399414px;
+    font-weight: 700;
+    position: absolute;
+    left: 138px;
+    top: 352px;
+}
+
+.group2 {
+    width: 1.56%;
+    height: 3.7%;
+    position: absolute;
+    right: 94.27%;
+    left: 4.17%;
+    bottom: 62.59%;
+    top: 33.7%;
+    overflow: visible;
+    aspect-ratio: 30/40;
+}

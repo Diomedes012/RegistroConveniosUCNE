@@ -1,0 +1,42 @@
+﻿@page "/pagina-principal"
+
+<div class="pagina-principal">
+    <!-- Fondo principal -->
+    <img src="images/image5.png" class="image-5" alt="Fondo" />
+
+    <!-- Panel lateral -->
+    <div class="rectangle-26"></div>
+    <div class="rectangle-27"></div>
+    <img src="images/logoUcnePeq.png" class="logo-1" alt="Logo" />
+
+    <!-- Encabezado -->
+    <div class="bienvenido">BIENVENIDO</div>
+
+    <!-- Botón de cierre de sesión -->
+    <button class="rectangle-29" @onclick="CerrarSesion">
+        <span class="cerrar-sesi-n">CERRAR SESIÓN</span>
+    </button>
+
+    <!-- Secciones del menú lateral -->
+    <div class="perfil2">PERFIL</div>
+    <div class="jrafael">@Usuario</div>
+    <div class="notificaciones2">NOTIFICACIONES</div>
+    <div class="alertas">ALERTAS</div>
+    <div class="solicitudes2">SOLICITUDES</div>
+
+    <!-- Imagen central -->
+    <img src="images/image2.png" class="image-2" alt="Imagen central" />
+</div>
+
+@code {
+    private string Usuario = "JRAFAEL";
+
+    private void CerrarSesion()
+    {
+        // Aquí va la lógica de logout
+        Console.WriteLine("Sesión cerrada");
+    }
+}
+@code {
+
+}
