@@ -1,30 +1,45 @@
 ﻿@page "/pagina-principal"
+@inject NavigationManager NavManager 
 
 <div class="pagina-principal">
-    <!-- Fondo principal -->
     <img src="images/image5.png" class="image-5" alt="Fondo" />
 
-    <!-- Panel lateral -->
+    <div class="top-nav-background"></div>
+
     <div class="rectangle-26"></div>
     <div class="rectangle-27"></div>
     <img src="images/logoUcnePeq.png" class="logo-1" alt="Logo" />
 
-    <!-- Encabezado -->
     <div class="bienvenido">BIENVENIDO</div>
 
-    <!-- Botón de cierre de sesión -->
+    <div class="jrafael">@Usuario</div>
+
+    <div class="barra-navegacion-superior">
+        <NavLink href="/" class="nav-button">Inicio</NavLink>
+        <NavLink href="/crear-convenio" class="nav-button">Crear convenio</NavLink>
+        <NavLink href="/listar-convenio" class="nav-button">Listar convenio</NavLink>
+        <NavLink href="/buscar-convenio" class="nav-button">Buscar convenio</NavLink>
+    </div>
+
+    <div class="menu-lateral">
+        <div class="menu-item">
+            <i class="fas fa-user icon"></i> <div class="perfil2">PERFIL</div>
+        </div>
+        <div class="menu-item">
+            <i class="fas fa-file-alt icon"></i> <div class="solicitudes2">SOLICITUDES</div>
+        </div>
+        <div class="menu-item">
+            <i class="fas fa-bell icon"></i> <div class="notificaciones2">NOTIFICACIONES</div>
+        </div>
+        <div class="menu-item">
+            <i class="fas fa-exclamation-triangle icon"></i> <div class="alertas">ALERTAS</div>
+        </div>
+    </div>
+
     <button class="rectangle-29" @onclick="CerrarSesion">
         <span class="cerrar-sesi-n">CERRAR SESIÓN</span>
     </button>
 
-    <!-- Secciones del menú lateral -->
-    <div class="perfil2">PERFIL</div>
-    <div class="jrafael">@Usuario</div>
-    <div class="notificaciones2">NOTIFICACIONES</div>
-    <div class="alertas">ALERTAS</div>
-    <div class="solicitudes2">SOLICITUDES</div>
-
-    <!-- Imagen central -->
     <img src="images/image2.png" class="image-2" alt="Imagen central" />
 </div>
 
@@ -33,10 +48,8 @@
 
     private void CerrarSesion()
     {
-        // Aquí va la lógica de logout
+        // Aquí va la lógica de logout, por ejemplo:
         Console.WriteLine("Sesión cerrada");
+        // NavManager.NavigateTo("/login"); // Puedes redirigir a la página de login
     }
-}
-@code {
-
 }

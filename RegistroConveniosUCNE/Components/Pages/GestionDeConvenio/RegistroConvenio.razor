@@ -1,84 +1,131 @@
-﻿@page "/Registro-Convenio"
-@inject GestionConveniosUCNE.Services.ConveniosService ConveniosService
+﻿@page "/crear-convenio"
+@inject ConveniosService conveniosService
+@inject NavigationManager NavManager 
 @using GestionConveniosUCNE.Models
 @using Microsoft.AspNetCore.Components.Forms
+@using GestionConveniosUCNE.Services
 @rendermode InteractiveServer
 
-<EditForm Model="@ConvenioModel" OnValidSubmit="@GuardarConvenio">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<div class="pagina-principal">
+    <img src="images/image20.png" class="image-5" alt="Fondo" />
+    <div class="top-nav-background"></div>
+    <div class="rectangle-26"></div>
+    <div class="rectangle-27"></div>
+    <img src="images/logoUcnePeq.png" class="logo-1" alt="Logo" />
 
-    <div class="rectangle-6">
-        <img src="images/logoUcnePeq.png" class="logo-1" alt="Logo" />
+    <div class="bienvenido">BIENVENIDO</div>
+    <div class="jrafael">@Usuario</div>
+
+    <div class="barra-navegacion-superior">
+        <NavLink href="/pagina-principal" class="nav-button">Inicio</NavLink>
+        <NavLink href="/crear-convenio" class="nav-button">Crear convenio</NavLink>
+        <NavLink href="/listar-convenio" class="nav-button">Listar convenio</NavLink>
+        <NavLink href="/buscar-convenio" class="nav-button">Buscar convenio</NavLink>
     </div>
 
-    <div class="form-container">
-        <h3>Registrar Nuevo Convenio</h3>
-
-        <div class="form-group">
-            <label for="titulo">Título del Convenio:</label>
-            <InputText id="titulo" @bind-Value="ConvenioModel.Titulo" class="form-control" placeholder="Ej. Acuerdo de cooperación académica" />
-            <ValidationMessage For="@(() => ConvenioModel.Titulo)" />
+    <div class="menu-lateral">
+        <div class="menu-item">
+            <i class="fas fa-user icon"></i> <div class="perfil2">PERFIL</div>
         </div>
-
-        <div class="form-group">
-            <label for="tipoConvenio">Tipo de Convenio:</label>
-            <InputText id="tipoConvenio" @bind-Value="ConvenioModel.TipoConvenio" class="form-control" placeholder="Académico, de movilidad, etc." />
-            <ValidationMessage For="@(() => ConvenioModel.TipoConvenio)" />
+        <div class="menu-item">
+            <i class="fas fa-file-alt icon"></i> <div class="solicitudes2">SOLICITUDES</div>
         </div>
-
-        <div class="form-group">
-            <label for="categoria">Categoría:</label>
-            <InputText id="categoria" @bind-Value="ConvenioModel.Categoria" class="form-control" placeholder="Convenio, Contrato, MOU..." />
-            <ValidationMessage For="@(() => ConvenioModel.Categoria)" />
+        <div class="menu-item">
+            <i class="fas fa-bell icon"></i> <div class="notificaciones2">NOTIFICACIONES</div>
         </div>
-
-        <div class="form-group">
-            <label for="fechaFirma">Fecha de Firma:</label>
-            <InputDate id="fechaFirma" @bind-Value="ConvenioModel.FechaFirma" class="form-control" />
-            <ValidationMessage For="@(() => ConvenioModel.FechaFirma)" />
+        <div class="menu-item">
+            <i class="fas fa-exclamation-triangle icon"></i> <div class="alertas">ALERTAS</div>
         </div>
-
-        <div class="form-group">
-            <label for="fechaVencimiento">Fecha de Vencimiento:</label>
-            <InputDate id="fechaVencimiento" @bind-Value="ConvenioModel.FechaVencimiento" class="form-control" />
-        </div>
-
-        <div class="form-group">
-            <label for="duracionMeses">Duración (meses):</label>
-            <InputNumber id="duracionMeses" @bind-Value="ConvenioModel.DuracionMeses" class="form-control" />
-        </div>
-
-        <div class="form-group">
-            <label for="estado">Estado:</label>
-            <InputSelect id="estado" @bind-Value="ConvenioModel.Estado" class="form-control">
-                <option value="Activo">Activo</option>
-                <option value="Vencido">Vencido</option>
-                <option value="En Renovación">En Renovación</option>
-            </InputSelect>
-            <ValidationMessage For="@(() => ConvenioModel.Estado)" />
-        </div>
-
-        <div class="form-group full-width">
-            <label for="descripcionObjetivos">Descripción y Objetivos:</label>
-            <InputTextArea id="descripcionObjetivos" @bind-Value="ConvenioModel.DescripcionObjetivos" class="form-control textarea-large" />
-            <ValidationMessage For="@(() => ConvenioModel.DescripcionObjetivos)" />
-        </div>
-
-        <div class="form-group">
-            <label for="archivo">Archivo del Convenio (PDF, opcional):</label>
-            <InputFile id="archivo" OnChange="OnFileSelected" class="form-control-file" />
-        </div>
-
-        <div class="form-actions full-width">
-            <button type="submit" class="btn btn-primary">Guardar Convenio</button>
-        </div>
-
     </div>
-</EditForm>
 
+    <button class="rectangle-29" @onclick="CerrarSesion">
+        <span class="cerrar-sesi-n">CERRAR SESIÓN</span>
+    </button>
+
+    <EditForm Model="@ConvenioModel" OnValidSubmit="@GuardarConvenio" class="form-container-wrapper">
+        <DataAnnotationsValidator />
+
+        <div class="form-container">
+            <h3>Registrar Nuevo Convenio</h3>
+            <ValidationSummary class="full-width" />
+
+            <div class="form-group">
+                <label for="titulo">Título del Convenio:</label>
+                <InputText id="titulo" @bind-Value="ConvenioModel.Titulo" class="form-control" placeholder="Ej. Acuerdo de cooperación académica" />
+                <ValidationMessage For="@(() => ConvenioModel.Titulo)" />
+            </div>
+
+            <div class="form-group">
+                <label for="tipoConvenio">Tipo de Convenio:</label>
+                <InputText id="tipoConvenio" @bind-Value="ConvenioModel.TipoConvenio" class="form-control" placeholder="Académico, de movilidad, etc." />
+                <ValidationMessage For="@(() => ConvenioModel.TipoConvenio)" />
+            </div>
+
+            <div class="form-group">
+                <label for="categoria">Categoría:</label>
+                <InputText id="categoria" @bind-Value="ConvenioModel.Categoria" class="form-control" placeholder="Convenio, Contrato, MOU..." />
+                <ValidationMessage For="@(() => ConvenioModel.Categoria)" />
+            </div>
+
+            <div class="form-group">
+                <label for="fechaFirma">Fecha de Firma:</label>
+                <InputDate id="fechaFirma" @bind-Value="ConvenioModel.FechaFirma" class="form-control" />
+                <ValidationMessage For="@(() => ConvenioModel.FechaFirma)" />
+            </div>
+
+            <div class="form-group">
+                <label for="fechaVencimiento">Fecha de Vencimiento:</label>
+                <InputDate id="fechaVencimiento" @bind-Value="ConvenioModel.FechaVencimiento" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label for="duracionMeses">Duración (meses):</label>
+                <InputNumber id="duracionMeses" @bind-Value="ConvenioModel.DuracionMeses" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label for="estado">Estado:</label>
+                <InputSelect id="estado" @bind-Value="ConvenioModel.Estado" class="form-control">
+                    <option value="Activo">Activo</option>
+                    <option value="Vencido">Vencido</option>
+                    <option value="En Renovación">En Renovación</option>
+                </InputSelect>
+                <ValidationMessage For="@(() => ConvenioModel.Estado)" />
+            </div>
+
+            <div class="form-group">
+                <label for="archivo">Archivo del Convenio (PDF, opcional):</label>
+                <InputFile id="archivo" OnChange="OnFileSelected" class="form-control" />
+            </div>
+
+            <div class="form-group full-width">
+                <label for="descripcionObjetivos">Descripción y Objetivos:</label>
+                <InputTextArea id="descripcionObjetivos" @bind-Value="ConvenioModel.DescripcionObjetivos" class="form-control textarea-large" />
+                <ValidationMessage For="@(() => ConvenioModel.DescripcionObjetivos)" />
+            </div>
+
+            <div class="form-actions full-width">
+                <button type="submit" class="btn btn-primary">Guardar Convenio</button>
+            </div>
+
+        </div>
+    </EditForm>
+</div>
 @code {
-    private Convenio ConvenioModel = new();
+    // --- Lógica del Layout ---
+    private string Usuario = "JRAFAEL";
+    private void CerrarSesion()
+    {
+        Console.WriteLine("Sesión cerrada");
+        // NavManager.NavigateTo("/login"); 
+    }
+
+    // --- Lógica del Formulario ---
+    private Convenio ConvenioModel = new()
+    {
+        FechaFirma = DateTime.Now, // Pre-rellena la fecha de firma
+        Estado = "Activo" // Pre-selecciona "Activo"
+    };
     private IBrowserFile? archivo;
 
     private async Task GuardarConvenio()
@@ -87,9 +134,17 @@
         {
             if (archivo != null)
             {
-                // Guardar archivo localmente o en wwwroot/uploads
+                // ¡IMPORTANTE! Asegúrate de que la carpeta "wwwroot/uploads" exista en tu proyecto.
                 var filePath = Path.Combine("wwwroot", "uploads", archivo.Name);
-                using var stream = File.Create(filePath);
+                
+                // Crea el directorio si no existe
+                var directoryPath = Path.GetDirectoryName(filePath);
+                if (directoryPath != null && !Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
+                await using var stream = File.Create(filePath);
                 await archivo.OpenReadStream(10 * 1024 * 1024).CopyToAsync(stream);
 
                 ConvenioModel.ArchivoPrincipal = $"/uploads/{archivo.Name}";
@@ -97,22 +152,25 @@
 
             ConvenioModel.UltimaModificacion = DateTime.Now;
 
-            var resultado = await ConveniosService.Guardar(ConvenioModel);
+            var resultado = await conveniosService.Guardar(ConvenioModel);
 
             if (resultado)
             {
-                ConvenioModel = new Convenio();
+                ConvenioModel = new Convenio() { FechaFirma = DateTime.Now, Estado = "Activo" };
+                archivo = null;
+                // Aquí podrías añadir una notificación de "Éxito"
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
+            // Aquí deberías mostrar un mensaje de error al usuario
         }
     }
 
     private void OnFileSelected(InputFileChangeEventArgs e)
     {
         archivo = e.File;
-        Console.WriteLine($"Archivo seleccionado: {archivo.Name}");
+        Console.WriteLine($"Archivo seleccionado: {archivo?.Name ?? "ninguno"}");
     }
 }
