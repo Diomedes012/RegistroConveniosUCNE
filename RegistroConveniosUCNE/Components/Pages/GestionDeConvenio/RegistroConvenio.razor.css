@@ -2,18 +2,13 @@
 /* 1. FONDO COMPLETO DE LA PÁGINA (Solo para este componente) */
 /* El selector ::deep body rompe el aislamiento y aplica estilos al body */
 /* ======================================================= */
-::deep body {
-    /* **Asegúrate de que la ruta sea correcta (asume wwwroot/images)** */
-    background-image: url('/images/image20.png');
-    /* Configuración para que la imagen cubra toda la pantalla de manera fija */
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    /* Elimina cualquier color sólido de fondo por defecto */
-    background-color: transparent !important;
-    /* Opcional: Asegúrate de que el texto fuera del formulario sea legible */
-    color: #fff;
+.body  {
+    /* 1. Establecer la imagen de fondo */
+    background-image: url('images/image20.png'); 
+    background-size: cover; /* Asegura que la imagen cubra todo el fondo */
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
+    background-attachment: fixed; /* Fija la imagen para un efecto de scroll sutil */
+    background-color: #f0f0f0; /* Color de respaldo si la imagen no carga */
 }
 
 /* ======================================================= */
