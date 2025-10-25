@@ -1,0 +1,226 @@
+﻿.iniciar-sesion,
+.iniciar-sesion * {
+    box-sizing: border-box;
+}
+
+.iniciar-sesion {
+    height: 1080px;
+    position: relative;
+}
+
+.rectangle-4 {
+    width: 100%;
+    height: 1080px;
+    position: absolute;
+    right: 0%;
+    left: 0%;
+    top: 0px;
+    overflow: visible;
+    aspect-ratio: 16/9;
+}
+
+.group-12 {
+    position: absolute;
+    inset: 0;
+}
+
+.rectangle-42 {
+    background: #05084d;
+    border-radius: 50px;
+    width: 41.67%;
+    height: 74.07%;
+    position: absolute;
+    right: 29.17%;
+    left: 29.17%;
+    bottom: 12.96%;
+    top: 12.96%;
+}
+
+.username-fill {
+    background: #ffffff;
+    border-radius: 20px;
+    width: 18.59%;
+    height: 3.61%;
+    position: absolute;
+    right: 40.73%;
+    left: 40.68%;
+    bottom: 44.26%;
+    top: 52.13%;
+}
+
+.password-fill {
+    background: #ffffff;
+    border-radius: 20px;
+    width: 18.59%;
+    height: 3.61%;
+    position: absolute;
+    right: 40.73%;
+    left: 40.68%;
+    bottom: 34.72%;
+    top: 61.67%;
+}
+
+.olvide-mi-contrase-a {
+    color: #ffffff;
+    text-align: left;
+    font-family: 'Jaldi-Bold', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    position: absolute;
+    right: 46.93%;
+    left: 37.97%;
+    width: 15.1%;
+    bottom: 18.8%;
+    top: 76.2%;
+    height: 5%;
+}
+
+.crear-cuenta {
+    color: #ffffff;
+    text-align: left;
+    font-family: 'Jaldi-Bold', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    position: absolute;
+    right: 36.56%;
+    left: 55.94%;
+    width: 7.5%;
+    bottom: 20%;
+    top: 76.2%;
+    height: 3.8%;
+}
+
+.contrase-a {
+    color: #ffffff;
+    text-align: left;
+    font-family: 'Jaldi-Bold', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    position: absolute;
+    right: 45.83%;
+    left: 45.99%;
+    width: 8.18%;
+    bottom: 38.33%;
+    top: 56.67%;
+    height: 5%;
+}
+
+.usuario {
+    color: #ffffff;
+    text-align: left;
+    font-family: 'Jaldi-Bold', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    position: absolute;
+    right: 46.98%;
+    left: 47.97%;
+    width: 5.05%;
+    bottom: 47.87%;
+    top: 47.87%;
+    height: 4.26%;
+}
+
+.inicio-de-sesi-n-administrador {
+    color: #ffffff;
+    text-align: left;
+    font-family: 'Jaldi-Bold', sans-serif;
+    font-size: 36px;
+    line-height: 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+    position: absolute;
+    right: 43.28%;
+    left: 43.54%;
+    width: 13.18%;
+    bottom: 56.57%;
+    top: 38.89%;
+    height: 4.54%;
+}
+
+.union {
+    width: 0.94%;
+    height: 23px;
+    position: absolute;
+    right: 53.7%;
+    left: 45.36%;
+    top: calc(50% - -87px);
+    overflow: visible;
+    aspect-ratio: 18/23;
+}
+
+.heroicons-solid-user {
+    width: 1.25%;
+    height: 2.22%;
+    position: absolute;
+    right: 52.19%;
+    left: 46.56%;
+    bottom: 48.61%;
+    top: 49.17%;
+    overflow: visible;
+}
+
+.heroicons-solid-key {
+    width: 1.25%;
+    height: 2.22%;
+    position: absolute;
+    right: 62.4%;
+    left: 36.35%;
+    bottom: 20.65%;
+    top: 77.13%;
+    overflow: visible;
+}
+
+.button-inicio-de-sesion {
+    width: 245px;
+    height: 44px;
+    position: static;
+}
+
+.rectangle-5 {
+    background: #f8e700;
+    border-radius: 20px;
+    width: 12.76%;
+    height: 3.89%;
+    position: absolute;
+    right: 43.49%;
+    left: 43.75%;
+    bottom: 27.31%;
+    top: 68.8%;
+}
+
+.iniciar-sesion2 {
+    color: #ffffff;
+    text-align: left;
+    font-family: 'Jaldi-Bold', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    position: absolute;
+    right: 45.89%;
+    left: 46.2%;
+    width: 7.92%;
+    bottom: 27.31%;
+    top: 68.61%;
+    height: 4.07%;
+}
+
+.heroicons-solid-user-plus {
+    width: 1.56%;
+    height: 30px;
+    position: absolute;
+    right: 44.17%;
+    left: 54.27%;
+    top: 832px;
+    overflow: visible;
+    aspect-ratio: 1;
+}
+
+.logo-1 {
+    width: 7.66%;
+    height: 196px;
+    position: absolute;
+    right: 46.82%;
+    left: 45.52%;
+    top: 186px;
+    object-fit: cover;
+    aspect-ratio: 147/196;
+}
