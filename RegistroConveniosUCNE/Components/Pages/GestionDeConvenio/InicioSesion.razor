@@ -24,12 +24,15 @@
     <input type="password" class="password-fill" placeholder="Ingrese su contraseña" />
 
     <div class="button-inicio-de-sesion">
-        <button class="rectangle-5">INICIAR SESIÓN</button>
+        <button class="rectangle-5" @onclick="IniciarSesion">INICIAR SESIÓN</button>
     </div>
 
     <a href="/recuperar" class="olvide-mi-contrase-a">Olvidé mi contraseña</a>
     <a href="/crear-cuenta" class="crear-cuenta">Crear cuenta</a>
 </div>
 @code {
-
+    private void IniciarSesion()
+    {
+        navigationManager.NavigateTo("/pagina-principal");
+    }
 }
