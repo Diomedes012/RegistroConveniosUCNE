@@ -1,0 +1,209 @@
+﻿@page "/app"
+@inject IJSRuntime JSRuntime
+@using System.Text.Json
+
+<div class="relative size-full">
+    <div class="absolute bg-white inset-0"></div>
+
+    <div class="absolute aspect-[4096/2679] left-[-2.13%] right-[0.05%] top-[-140px]">
+        <img alt="" class="absolute inset-0 max-w-none object-50%-50% object-cover opacity-[0.26] pointer-events-none size-full" src="/images/image1.png" />
+    </div>
+    <div class="absolute aspect-[4096/2679] left-[-2.13%] right-[0.05%] top-[-140px]">
+        <img alt="" class="absolute inset-0 max-w-none object-50%-50% object-cover opacity-[0.26] pointer-events-none size-full" src="/images/image1.png" />
+    </div>
+
+    <div class="absolute h-[976px] left-[1919px] top-[107px] w-px">
+        <svg class="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 1 976">
+            <path d="M0 0H1V976H0V0Z" fill="var(--fill-0, white)" />
+        </svg>
+    </div>
+
+    <div class="absolute bg-[#05084d] bottom-[90.09%] left-[-4.43%] right-[-4.01%] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] top-0"></div>
+
+    <div class="absolute inset-[58.43%_72.14%_-1.3%_-0.31%]">
+        <div class="absolute inset-[-0.14%_-0.09%_-0.11%_-0.09%]">
+            <svg class="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 542 465">
+                </svg>
+        </div>
+    </div>
+
+    <div class="absolute h-[88px] left-[43px] top-[10px] w-[66px]">
+        <img alt="" class="absolute inset-0 max-w-none object-50%-50% object-cover pointer-events-none size-full" src="/images/logo1.png" />
+    </div>
+
+    <div class="absolute h-[41px] left-[-14px] top-[183px] w-[71px]">
+        <div class="absolute bottom-[-19.51%] left-[-5.63%] right-[-5.63%] top-0">
+            <svg class="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 79 49">
+                </svg>
+        </div>
+    </div>
+
+    <div class="absolute flex inset-[75.98%_-2.97%_-18.85%_74.79%] items-center justify-center">
+        <div class="flex-none h-[463px] rotate-[180deg] scale-y-[-100%] w-[541px]">
+            <div class="relative size-full">
+                <div class="absolute inset-[-0.14%_-0.09%_-0.11%_-0.09%]">
+                    <svg class="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 542 465">
+                        </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p class="absolute font-['Teachers:Regular',sans-serif] h-[71px] leading-[normal] left-[188px] not-italic text-[50.471px] text-white top-[27px] w-[869.317px]">UNIVERSIDAD CATOLICA NORDESTANA</p>
+
+    <div class="absolute inset-[2.59%_4.69%_92.59%_93.13%]">
+        <svg class="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 42 52">
+            </svg>
+    </div>
+
+    <div class="absolute content-stretch flex gap-[10px] h-[903px] items-start justify-center left-[700px] overflow-x-clip overflow-y-auto top-[158px]">
+        <div class="h-[1289px] overflow-x-clip overflow-y-auto relative shrink-0 w-[589px]">
+            <div class="absolute h-[1138px] left-0 top-0 w-[589px]">
+                <div class="absolute bottom-[-0.7%] left-[-0.68%] right-[-0.68%] top-0">
+                    <svg class="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 597 1146">
+                        </svg>
+                </div>
+            </div>
+
+            <div class="absolute h-[62.02px] left-[98.5px] overflow-clip rounded-[1503.24px] top-[1171px] w-[392px] cursor-pointer"
+                 @onclick="HandleSubmit">
+                <div class="absolute h-[71px] left-0 top-0 w-[476px]">
+                    <div class="absolute inset-0 rounded-[1825.37px] shadow-[0px_0px_3.651px_0px_rgba(0,0,0,0.1),0px_1.825px_14.603px_0px_rgba(0,0,0,0.12)]">
+                        <div aria-hidden="true" class="absolute inset-0 pointer-events-none rounded-[1825.37px]">
+                            <div class="absolute bg-[rgba(255,255,255,0.5)] inset-0 rounded-[1825.37px]"></div>
+                            <div class="absolute bg-white inset-0 mix-blend-saturation rounded-[1825.37px]"></div>
+                            <div class="absolute bg-[#999999] inset-0 mix-blend-overlay rounded-[1825.37px]"></div>
+                            <div class="absolute bg-[#0091ff] inset-0 rounded-[1825.37px]"></div>
+                        </div>
+                    </div>
+                    <div class="absolute bg-[rgba(0,0,0,0)] inset-0 rounded-[296px]"></div>
+                </div>
+                <div class="absolute contents left-[35.62px] top-[4px]">
+                    <div class="absolute h-[49px] left-[76.86px] rounded-[150.324px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] top-[4px] w-[303px]">
+                        <div class="absolute flex flex-col font-['Teachers:Bold',sans-serif] justify-center leading-[0] left-[151.5px] not-italic text-[25.555px] text-center text-nowrap text-white top-[24.5px] translate-x-[-50%] translate-y-[-50%]">
+                            <p class="leading-[normal] whitespace-pre">Guardar Nuevo Convenio</p>
+                        </div>
+                    </div>
+                    <div class="absolute left-[35.62px] overflow-clip size-[34.588px] top-[14px]">
+                        <div class="absolute bottom-[-23.13%] left-[-11.56%] right-[-11.56%] top-0">
+                            <svg class="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 43 43">
+                                </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="absolute font-['Teachers:Bold',sans-serif] leading-[normal] left-[298.48px] not-italic text-[32.782px] text-black text-center text-nowrap top-[30.5px] translate-x-[-50%] whitespace-pre">INGRESAR DATOS</p>
+
+            <p class="absolute font-['Karma:Bold',sans-serif] leading-[normal] left-[118.8px] not-italic text-[25.218px] text-black text-center text-nowrap top-[116.85px] translate-x-[-50%] whitespace-pre">Fecha Emisión:</p>
+            <div class="absolute left-[23.3px] top-[162.71px]">
+                <input type="date"
+                       @bind="formData.FechaEmision"
+                       class="absolute bg-[rgba(217,217,217,0.31)] h-[52.801px] left-0 rounded-[15.761px] top-0 w-[197.807px] font-['Teachers:Regular',sans-serif] text-[25.218px] text-[rgba(0,0,0,0.79)] px-4 border-0 outline-none" />
+            </div>
+
+            <p class="absolute font-['Karma:Bold',sans-serif] leading-[normal] left-[139.5px] not-italic text-[25.218px] text-black text-center text-nowrap top-[220.71px] translate-x-[-50%] whitespace-pre">Institucion Afiliada</p>
+            <div class="absolute left-[23.3px] top-[261.36px]">
+                <div class="absolute bg-[rgba(217,217,217,0.31)] h-[52.801px] left-0 rounded-[15.761px] top-0 w-[504.454px]">
+                    <div class="absolute inset-0 pointer-events-none shadow-[0px_3.461px_3.461px_0px_inset_rgba(0,0,0,0.25)]"></div>
+                </div>
+                <input type="text"
+                       @bind="formData.InstitucionAfiliada"
+                       class="absolute bg-transparent h-[52.801px] left-0 rounded-[15.761px] top-0 w-[504.454px] font-['Karma:Regular',sans-serif] text-[25.218px] text-[rgba(0,0,0,0.6)] px-[20.77px] border-0 outline-none" />
+            </div>
+
+            <p class="absolute font-['Karma:Bold',sans-serif] leading-[normal] left-[75px] not-italic text-[25.218px] text-black text-center text-nowrap top-[319.35px] translate-x-[-50%] whitespace-pre">Facultad</p>
+            <div class="absolute left-[23.3px] top-[365.21px]">
+                <input type="text"
+                       @bind="formData.Facultad"
+                       class="absolute bg-[rgba(217,217,217,0.31)] h-[57.973px] left-0 rounded-[17.305px] top-0 w-[504.454px] font-['Karma:Regular',sans-serif] text-[25.218px] text-[rgba(0,0,0,0.79)] px-[19.04px] border-0 outline-none" />
+            </div>
+
+            <p class="absolute font-['Karma:Bold',sans-serif] leading-[normal] left-[151.5px] not-italic text-[25.218px] text-black text-center text-nowrap top-[428.38px] translate-x-[-50%] whitespace-pre">Numero del Convenio</p>
+            <div class="absolute left-[23.3px] top-[469.03px]">
+                <input type="text"
+                       @bind="formData.NumeroConvenio"
+                       class="absolute bg-[rgba(217,217,217,0.31)] h-[52.801px] left-0 rounded-[15.761px] top-0 w-[504.454px] font-['Karma:Regular',sans-serif] text-[25.218px] text-[rgba(0,0,0,0.79)] px-[20.77px] border-0 outline-none" />
+            </div>
+
+            <p class="absolute font-['Karma:Bold',sans-serif] leading-[normal] left-[126.5px] not-italic text-[25.218px] text-black text-center text-nowrap top-[527.02px] translate-x-[-50%] whitespace-pre">Tipo de Convenio</p>
+            <div class="absolute left-[23.3px] top-[567.68px]">
+                <input type="text"
+                       @bind="formData.TipoConvenio"
+                       class="absolute bg-[rgba(217,217,217,0.31)] h-[57.973px] left-0 rounded-[17.305px] top-0 w-[504.454px] font-['Karma:Regular',sans-serif] text-[25.218px] text-[rgba(0,0,0,0.79)] px-[18.92px] border-0 outline-none" />
+            </div>
+
+            <p class="absolute font-['Karma:Bold',sans-serif] leading-[normal] left-[142.5px] not-italic text-[25.218px] text-black text-center text-nowrap top-[630.85px] translate-x-[-50%] whitespace-pre">Estado del Convenio </p>
+            <div class="absolute left-[23.3px] top-[671.5px]">
+                <select @bind="formData.EstadoConvenio"
+                        class="absolute bg-[rgba(217,217,217,0.31)] h-[57.973px] left-0 rounded-[17.305px] top-0 w-[504.454px] font-['Karma:Regular',sans-serif] text-[25.218px] text-[rgba(0,0,0,0.79)] px-[18.92px] border-0 outline-none cursor-pointer">
+                    <option value="Iniciado">Iniciado</option>
+                    <option value="En Progreso">En Progreso</option>
+                    <option value="Completado">Completado</option>
+                    <option value="Suspendido">Suspendido</option>
+                </select>
+            </div>
+
+            <p class="absolute font-['Karma:Bold',sans-serif] leading-[normal] left-[130px] not-italic text-[25.218px] text-black text-center text-nowrap top-[736px] translate-x-[-50%] whitespace-pre">Adjuntar Archivo:</p>
+            <div class="absolute left-[23.3px] top-[785.53px]">
+                <div class="absolute h-[57.973px] left-0 top-0 w-[504.454px]">
+                    <svg class="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 505 58">
+                        <path d="M0.5 17.8052C0.5 8.24151 8.24151 0.5 17.8052 0.5H486.695C496.258 0.5 504 8.24151 504 17.8052V40.1678C504 49.7315 496.258 57.473 486.695 57.473H17.8052C8.24151 57.473 0.5 49.7315 0.5 40.1678V17.8052Z" fill="#D9D9D9" fill-opacity="0.31" stroke="#9A9292" />
+                    </svg>
+                </div>
+                <p class="absolute font-['Karma:Regular',sans-serif] leading-[normal] left-[18.92px] not-italic text-[25.218px] text-[rgba(0,0,0,0.79)] text-nowrap top-[12.98px] whitespace-pre">@formData.Archivo</p>
+            </div>
+            <div class="absolute inset-[62.22%_15.31%_35.48%_78.44%] cursor-pointer"
+                 @onclick="HandleFileUpload">
+                <svg class="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 37 30">
+                    </svg>
+            </div>
+
+            <p class="absolute font-['Karma:Bold',sans-serif] leading-[normal] left-[141px] not-italic text-[25.218px] text-black text-center text-nowrap top-[849px] translate-x-[-50%] whitespace-pre">Detalles y objetivos:</p>
+            <div class="absolute left-[22.81px] top-[890px]">
+                <textarea @bind="formData.Detalles"
+                          @bind:event="oninput"
+                          placeholder="Escribe los detalles y objetivos del convenio..."
+                          class="absolute bg-[rgba(217,217,217,0.31)] h-[214px] left-0 rounded-[17.305px] top-0 w-[505px] font-['Karma:Regular',sans-serif] text-[25.218px] text-[rgba(0,0,0,0.79)] p-[13px] border-0 outline-none resize-none"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="absolute inset-0 pointer-events-none shadow-[0px_-0.5px_1px_0px_inset_rgba(94,94,94,0.3),0px_-0.5px_1px_0px_inset_rgba(255,255,255,0.2)]"></div>
+</div>
+
+@code {
+    private FormData formData = new FormData();
+
+    private class FormData
+    {
+        public DateTime FechaEmision { get; set; } 
+        public string InstitucionAfiliada { get; set; } = "Universidad Catolica...";
+        public string Facultad { get; set; } = "Faculdad de ciencias...";
+        public string NumeroConvenio { get; set; } = "220077624";
+        public string TipoConvenio { get; set; } = "Convenio de Colaboracion";
+        public string EstadoConvenio { get; set; } = "Iniciado";
+        public string Archivo { get; set; } = "ConvenioDeTrabajo.pdf";
+        public string Detalles { get; set; } = "";
+    }
+
+    private async Task HandleFileUpload()
+    {
+        // Esta función de JSInterop replica exactamente tu lógica de React
+        var fileName = await JSRuntime.InvokeAsync<string>("triggerFileUpload");
+        if (!string.IsNullOrEmpty(fileName))
+        {
+            formData.Archivo = fileName;
+            StateHasChanged(); // Notificar a Blazor que el estado ha cambiado
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        string formDataJson = JsonSerializer.Serialize(formData);
+        Console.WriteLine($"Form submitted: {formDataJson}");
+        
+        // JSRuntime se usa para llamar a funciones de JavaScript como 'alert'
+        await JSRuntime.InvokeVoidAsync("alert", "Convenio guardado exitosamente");
+    }
+}

@@ -42,7 +42,7 @@
         <span class="cerrar-sesi-n">CERRAR SESIÓN</span>
     </button>
 
-    <EditForm Model="@ConvenioModel" OnValidSubmit="@GuardarConvenio" class="form-container-wrapper">
+    <EditForm Model="@ConvenioEditar" OnValidSubmit="@GuardarConvenio" class="form-container-wrapper">
         <DataAnnotationsValidator />
 
         <div class="form-container">
@@ -51,46 +51,46 @@
 
             <div class="form-group">
                 <label for="titulo">Título del Convenio:</label>
-                <InputText id="titulo" @bind-Value="ConvenioModel.Titulo" class="form-control" placeholder="Ej. Acuerdo de cooperación académica" />
-                <ValidationMessage For="@(() => ConvenioModel.Titulo)" />
+                <InputText id="titulo" @bind-Value="ConvenioEditar.Titulo" class="form-control" placeholder="Ej. Acuerdo de cooperación académica" />
+                <ValidationMessage For="@(() => ConvenioEditar.Titulo)" />
             </div>
 
             <div class="form-group">
                 <label for="tipoConvenio">Tipo de Convenio:</label>
-                <InputText id="tipoConvenio" @bind-Value="ConvenioModel.TipoConvenio" class="form-control" placeholder="Académico, de movilidad, etc." />
-                <ValidationMessage For="@(() => ConvenioModel.TipoConvenio)" />
+                <InputText id="tipoConvenio" @bind-Value="ConvenioEditar.TipoConvenio" class="form-control" placeholder="Académico, de movilidad, etc." />
+                <ValidationMessage For="@(() => ConvenioEditar.TipoConvenio)" />
             </div>
 
             <div class="form-group">
                 <label for="categoria">Categoría:</label>
-                <InputText id="categoria" @bind-Value="ConvenioModel.Categoria" class="form-control" placeholder="Convenio, Contrato, MOU..." />
-                <ValidationMessage For="@(() => ConvenioModel.Categoria)" />
+                <InputText id="categoria" @bind-Value="ConvenioEditar.Categoria" class="form-control" placeholder="Convenio, Contrato, MOU..." />
+                <ValidationMessage For="@(() => ConvenioEditar.Categoria)" />
             </div>
 
             <div class="form-group">
                 <label for="fechaFirma">Fecha de Firma:</label>
-                <InputDate id="fechaFirma" @bind-Value="ConvenioModel.FechaFirma" class="form-control" />
-                <ValidationMessage For="@(() => ConvenioModel.FechaFirma)" />
+                <InputDate id="fechaFirma" @bind-Value="ConvenioEditar.FechaFirma" class="form-control" />
+                <ValidationMessage For="@(() => ConvenioEditar.FechaFirma)" />
             </div>
 
             <div class="form-group">
                 <label for="fechaVencimiento">Fecha de Vencimiento:</label>
-                <InputDate id="fechaVencimiento" @bind-Value="ConvenioModel.FechaVencimiento" class="form-control" />
+                <InputDate id="fechaVencimiento" @bind-Value="ConvenioEditar.FechaVencimiento" class="form-control" />
             </div>
 
             <div class="form-group">
                 <label for="duracionMeses">Duración (meses):</label>
-                <InputNumber id="duracionMeses" @bind-Value="ConvenioModel.DuracionMeses" class="form-control" />
+                <InputNumber id="duracionMeses" @bind-Value="ConvenioEditar.DuracionMeses" class="form-control" />
             </div>
 
             <div class="form-group">
                 <label for="estado">Estado:</label>
-                <InputSelect id="estado" @bind-Value="ConvenioModel.Estado" class="form-control">
+                <InputSelect id="estado" @bind-Value="ConvenioEditar.Estado" class="form-control">
                     <option value="Activo">Activo</option>
                     <option value="Vencido">Vencido</option>
                     <option value="En Renovación">En Renovación</option>
                 </InputSelect>
-                <ValidationMessage For="@(() => ConvenioModel.Estado)" />
+                <ValidationMessage For="@(() => ConvenioEditar.Estado)" />
             </div>
 
             <div class="form-group">
@@ -100,8 +100,8 @@
 
             <div class="form-group full-width">
                 <label for="descripcionObjetivos">Descripción y Objetivos:</label>
-                <InputTextArea id="descripcionObjetivos" @bind-Value="ConvenioModel.DescripcionObjetivos" class="form-control textarea-large" />
-                <ValidationMessage For="@(() => ConvenioModel.DescripcionObjetivos)" />
+                <InputTextArea id="descripcionObjetivos" @bind-Value="ConvenioEditar.DescripcionObjetivos" class="form-control textarea-large" />
+                <ValidationMessage For="@(() => ConvenioEditar.DescripcionObjetivos)" />
             </div>
 
             <div class="form-actions full-width">
@@ -121,7 +121,7 @@
     }
 
     // --- Lógica del Formulario ---
-    private Convenio ConvenioModel = new()
+    private Convenio ConvenioEditar = new()
     {
         FechaFirma = DateTime.Now, // Pre-rellena la fecha de firma
         Estado = "Activo" // Pre-selecciona "Activo"
@@ -147,16 +147,16 @@
                 await using var stream = File.Create(filePath);
                 await archivo.OpenReadStream(10 * 1024 * 1024).CopyToAsync(stream);
 
-                ConvenioModel.ArchivoPrincipal = $"/uploads/{archivo.Name}";
+                ConvenioEditar.ArchivoPrincipal = $"/uploads/{archivo.Name}";
             }
 
-            ConvenioModel.UltimaModificacion = DateTime.Now;
+            ConvenioEditar.UltimaModificacion = DateTime.Now;
 
-            var resultado = await conveniosService.Guardar(ConvenioModel);
+            var resultado = await conveniosService.Guardar(ConvenioEditar);
 
             if (resultado)
             {
-                ConvenioModel = new Convenio() { FechaFirma = DateTime.Now, Estado = "Activo" };
+                ConvenioEditar = new Convenio() { FechaFirma = DateTime.Now, Estado = "Activo" };
                 archivo = null;
                 // Aquí podrías añadir una notificación de "Éxito"
             }

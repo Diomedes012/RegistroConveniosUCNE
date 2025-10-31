@@ -18,7 +18,32 @@
 
 <body>
     <Routes />
-    <script src="_framework/blazor.web.js"></script>
+    <script>
+        // 1. Crea una URL temporal (Blob URL) a partir del stream de .NET
+        window.createBlobUrlFromStream = async (stream) => {
+            try {
+                // Convertir el stream de .NET en un ArrayBuffer de JavaScript
+                const arrayBuffer = await stream.arrayBuffer();
+
+                // Crear un Blob (un objeto tipo archivo)
+                const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
+
+                // Crear una URL temporal para ese Blob
+                const url = URL.createObjectURL(blob);
+                return url;
+            } catch (error) {
+                console.error("Error al crear Blob URL:", error);
+                return null;
+            }
+        };
+
+        // 2. Libera la memoria de la Blob URL cuando ya no se usa
+        window.revokeBlobUrl = (url) => {
+            if (url && url.startsWith("blob:")) {
+                URL.revokeObjectURL(url);
+            }
+        };
+    </script>
 </body>
 
 </html>
