@@ -6,6 +6,8 @@
 @using GestionConveniosUCNE.Models
 @using GestionConveniosUCNE.Services
 
+@rendermode InteractiveServer
+
 <div class="pagina-principal">
     <img src="images/image4.png" class="image-5" alt="Fondo" />
     <div class="top-nav-background"></div>
@@ -82,7 +84,7 @@
                     <tbody>
                         @foreach (var convenio in conveniosMostrados)
                         {
-                            <tr>
+                            <tr @onclick="() => IrAEditar(convenio.IdConvenio)">
                                 <td>@convenio.IdConvenio</td>
                                 <td>@convenio.FechaFirma.ToString("dd/MM/yyyy")</td>
                                 
@@ -173,6 +175,11 @@
 
         // Actualizamos la lista que se muestra en la tabla
         conveniosMostrados = query.ToList();
+    }
+
+    private void IrAEditar(int convenioId)
+    {
+        NavManager.NavigateTo($"/Convenio/Edit/{convenioId}");
     }
 
     private void CerrarSesion()

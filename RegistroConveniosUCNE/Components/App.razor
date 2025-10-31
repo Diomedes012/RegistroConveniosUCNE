@@ -17,7 +17,10 @@
 </head>
 
 <body>
-    <Routes />
+    <Routes @rendermode="InteractiveServer" />
+
+    <script src="_framework/blazor.web.js"></script>
+
     <script>
         // 1. Crea una URL temporal (Blob URL) a partir del stream de .NET
         window.createBlobUrlFromStream = async (stream) => {

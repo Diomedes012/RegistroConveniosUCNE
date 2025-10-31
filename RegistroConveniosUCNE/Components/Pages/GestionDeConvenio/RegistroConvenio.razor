@@ -112,8 +112,11 @@
     </EditForm>
 </div>
 @code {
+    private IBrowserFile? archivo;
+
     // --- Lógica del Layout ---
     private string Usuario = "JRAFAEL";
+
     private void CerrarSesion()
     {
         Console.WriteLine("Sesión cerrada");
@@ -126,7 +129,7 @@
         FechaFirma = DateTime.Now, // Pre-rellena la fecha de firma
         Estado = "Activo" // Pre-selecciona "Activo"
     };
-    private IBrowserFile? archivo;
+
 
     private async Task GuardarConvenio()
     {
@@ -134,7 +137,6 @@
         {
             if (archivo != null)
             {
-                // ¡IMPORTANTE! Asegúrate de que la carpeta "wwwroot/uploads" exista en tu proyecto.
                 var filePath = Path.Combine("wwwroot", "uploads", archivo.Name);
                 
                 // Crea el directorio si no existe
@@ -158,7 +160,7 @@
             {
                 ConvenioEditar = new Convenio() { FechaFirma = DateTime.Now, Estado = "Activo" };
                 archivo = null;
-                // Aquí podrías añadir una notificación de "Éxito"
+                // Aquí se podria añadir una notificación de "Éxito"
             }
         }
         catch (Exception ex)
