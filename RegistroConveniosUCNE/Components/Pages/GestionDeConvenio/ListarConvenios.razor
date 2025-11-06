@@ -130,15 +130,15 @@
     private DateTime? fechaDesde;
     private DateTime? fechaHasta;
 
-    // 3. Usamos tu modelo 'Convenio'
+    // 3. El modelo 'Convenio'
     private List<Convenio> listaCompletaConvenios = new();
     private List<Convenio> conveniosMostrados = new();
 
     // 4. Cargamos los datos reales al iniciar
     protected override async Task OnInitializedAsync()
     {
-        // Cargamos la lista completa una vez. Tu servicio ya incluye las relaciones.
-        listaCompletaConvenios = await ConveniosService.Listar(c => true);
+        // Cargamos la lista completa una vez. Con los convenios visibles
+        listaCompletaConvenios = await ConveniosService.Listar(c => c.EsVisible == true);
         Filtrar(); // Aplicamos filtros (inicialmente vacíos)
     }
 
@@ -184,7 +184,6 @@
 
     private void CerrarSesion()
     {
-        Console.WriteLine("Sesión cerrada");
-        // NavManager.NavigateTo("/login"); 
+        NavManager.NavigateTo("/");
     }
 }

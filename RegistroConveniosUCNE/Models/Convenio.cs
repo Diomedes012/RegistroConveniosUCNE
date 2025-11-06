@@ -13,6 +13,8 @@ public class Convenio
     [Required, MaxLength(200)]
     public string Titulo { get; set; }
 
+    public bool EsVisible { get; set; } = true;
+
     public string? DescripcionObjetivos { get; set; }
 
     [MaxLength(100)]

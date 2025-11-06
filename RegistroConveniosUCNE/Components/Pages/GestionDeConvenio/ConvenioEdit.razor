@@ -177,17 +177,25 @@
 
     public async Task Eliminar()
     {
-        var eliminado = await conveniosService.Eliminar(ConvenioId);
+        var ocultado = await conveniosService.Buscar(ConvenioId);
 
-        if (eliminado)
+        if (ocultado != null)
         {
-            navigationManager.NavigateTo("/listar-convenio");
+            ocultado.EsVisible = false;
+
+            ConvenioEditar = ocultado;
+
+            var guardado = await conveniosService.Guardar(ConvenioEditar);
+
+            if (guardado)
+            {
+                navigationManager.NavigateTo("/listar-convenio");
+            }
+            else
+            {
+                //Notificacion de error
+            }
         }
-        else
-        {
-            //Notificacion de error
-        }
+        
     }
-
-
 }
