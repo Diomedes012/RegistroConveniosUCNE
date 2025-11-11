@@ -4,223 +4,207 @@
 }
 
 .iniciar-sesion {
-    height: 1080px;
     position: relative;
+    width: 100%;
+    height: 1080px;
+    margin: 0 auto;
+    max-width: 1920px;
+    overflow: hidden;
 }
 
 .rectangle-4 {
-    width: 100%;
+    position: absolute;
     height: 1080px;
-    position: absolute;
-    right: 0%;
     left: 0%;
+    right: 0%;
     top: 0px;
-    overflow: visible;
-    aspect-ratio: 16/9;
-}
-
-.group-12 {
-    position: absolute;
-    inset: 0;
+    background: rgba(255, 255, 255, 0.03);
+    box-shadow: inset 0px -0.5px 1px rgba(94, 94, 94, 0.3), inset 0px -0.5px 1px rgba(255, 255, 255, 0.2);
 }
 
 .rectangle-42 {
-    background: #05084d;
-    border-radius: 50px;
-    width: 41.67%;
-    height: 74.07%;
     position: absolute;
-    right: 29.17%;
     left: 29.17%;
-    bottom: 12.96%;
+    right: 29.17%;
     top: 12.96%;
-}
-
-.username-fill {
-    background: #ffffff;
-    border-radius: 20px;
-    width: 18.59%;
-    height: 3.61%;
-    position: absolute;
-    right: 40.73%;
-    left: 40.68%;
-    bottom: 44.26%;
-    top: 52.13%;
-}
-
-.password-fill {
-    background: #ffffff;
-    border-radius: 20px;
-    width: 18.59%;
-    height: 3.61%;
-    position: absolute;
-    right: 40.73%;
-    left: 40.68%;
-    bottom: 34.72%;
-    top: 61.67%;
-}
-
-.olvide-mi-contrase-a {
-    color: #ffffff;
-    text-align: left;
-    font-family: 'Jaldi-Bold', sans-serif;
-    font-size: 28px;
-    font-weight: 700;
-    position: absolute;
-    right: 46.93%;
-    left: 37.97%;
-    width: 15.1%;
-    bottom: 18.8%;
-    top: 76.2%;
-    height: 5%;
-}
-
-.crear-cuenta {
-    color: #ffffff;
-    text-align: left;
-    font-family: 'Jaldi-Bold', sans-serif;
-    font-size: 28px;
-    font-weight: 700;
-    position: absolute;
-    right: 36.56%;
-    left: 55.94%;
-    width: 7.5%;
-    bottom: 20%;
-    top: 76.2%;
-    height: 3.8%;
-}
-
-.contrase-a {
-    color: #ffffff;
-    text-align: left;
-    font-family: 'Jaldi-Bold', sans-serif;
-    font-size: 32px;
-    font-weight: 700;
-    position: absolute;
-    right: 45.83%;
-    left: 45.99%;
-    width: 8.18%;
-    bottom: 38.33%;
-    top: 56.67%;
-    height: 5%;
-}
-
-.usuario {
-    color: #ffffff;
-    text-align: left;
-    font-family: 'Jaldi-Bold', sans-serif;
-    font-size: 32px;
-    font-weight: 700;
-    position: absolute;
-    right: 46.98%;
-    left: 47.97%;
-    width: 5.05%;
-    bottom: 47.87%;
-    top: 47.87%;
-    height: 4.26%;
-}
-
-.inicio-de-sesi-n-administrador {
-    color: #ffffff;
-    text-align: left;
-    font-family: 'Jaldi-Bold', sans-serif;
-    font-size: 30px;
-    line-height: 24px;
-    font-weight: 700;
-    text-transform: uppercase;
-    position: absolute;
-    right: 43.28%;
-    left: 43.54%;
-    width: 13.18%;
-    bottom: 56.57%;
-    top: 38.89%;
-    height: 4.54%;
-}
-
-.union {
-    width: 0.94%;
-    height: 23px;
-    position: absolute;
-    right: 53.7%;
-    left: 45.36%;
-    top: calc(50% - -87px);
-    overflow: visible;
-    aspect-ratio: 18/23;
-}
-
-.heroicons-solid-user {
-    width: 1.25%;
-    height: 2.22%;
-    position: absolute;
-    right: 52.19%;
-    left: 46.56%;
-    bottom: 48.61%;
-    top: 49.17%;
-    overflow: visible;
-}
-
-.heroicons-solid-key {
-    width: 1.25%;
-    height: 2.22%;
-    position: absolute;
-    right: 62.4%;
-    left: 36.35%;
-    bottom: 20.65%;
-    top: 77.13%;
-    overflow: visible;
-}
-
-.button-inicio-de-sesion {
-    width: 245px;
-    height: 44px;
-    position: static;
-}
-
-.rectangle-5 {
-    background: #f8e700;
-    border-radius: 20px;
-    width: 12.76%;
-    height: 3.89%;
-    position: absolute;
-    right: 43.49%;
-    left: 43.75%;
-    bottom: 27.31%;
-    top: 68.8%;
-}
-
-.iniciar-sesion2 {
-    color: #ffffff;
-    text-align: left;
-    font-family: 'Jaldi-Bold', sans-serif;
-    font-size: 26px;
-    font-weight: 700;
-    position: absolute;
-    right: 45.89%;
-    left: 46.2%;
-    width: 7.92%;
-    bottom: 27.31%;
-    top: 68.61%;
-    height: 4.07%;
-}
-
-.heroicons-solid-user-plus {
-    width: 1.56%;
-    height: 30px;
-    position: absolute;
-    right: 44.17%;
-    left: 54.27%;
-    top: 832px;
-    overflow: visible;
-    aspect-ratio: 1;
+    bottom: 12.96%;
+    background: #05084D;
+    border-radius: 50px;
+    backdrop-filter: blur(2px);
 }
 
 .logo-1 {
-    width: 147px;
-    height: 196px;
     position: absolute;
-    right: auto;
-    left: 47.52%;
+    height: 196px;
+    width: 147px;
+    left: 50%;
+    transform: translateX(-50%);
     top: 186px;
     object-fit: cover;
-    aspect-ratio: 147/196;
+}
+
+.inicio-de-sesi-n-administrador {
+    position: absolute;
+    width: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 38.89%;
+    font-family: 'Jaldi', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 30px;
+    line-height: normal;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    text-align: center;
+}
+
+.usuario {
+    position: absolute;
+    width: 19%;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 47.87%;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    padding-left: 20px;
+    font-family: 'Jaldi', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 26px;
+    line-height: 54px;
+    color: #FFFFFF;
+}
+
+.contrase-a {
+    position: absolute;
+    width: 19%;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 56.67%;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    padding-left: 20px;
+    font-family: 'Jaldi', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 26px;
+    line-height: 54px;
+    color: #FFFFFF;
+}
+
+    .usuario i,
+    .contrase-a i {
+        font-size: 26px;
+        margin-right: 8px;
+    }
+
+
+.username-fill {
+    position: absolute;
+    width: 19%;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 52.13%;
+    bottom: 44.26%;
+    background: #FFFFFF;
+    border-radius: 20px;
+    border: none;
+    padding-left: 20px;
+    font-size: 18px;
+}
+
+.password-fill {
+    position: absolute;
+    width: 19%;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 61.67%;
+    bottom: 34.72%;
+    background: #FFFFFF;
+    border-radius: 20px;
+    border: none;
+    padding-left: 20px;
+    font-size: 18px;
+}
+
+.button-inicio-de-sesion {
+    position: absolute;
+    width: 13%;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 68.61%;
+    bottom: 27.31%;
+}
+
+.rectangle-5 {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background: #F8E700;
+    border-radius: 20px;
+    border: none;
+    font-family: 'Jaldi', sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 20px;
+    color: #05084D;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.olvide-mi-contrase-a {
+    position: absolute;
+    left: 37.97%;
+    right: 46.93%;
+    top: 76.2%;
+    bottom: 18.8%;
+    font-family: 'Jaldi', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 22px;
+    line-height: normal;
+    color: #FFFFFF;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.crear-cuenta {
+    position: absolute;
+    left: 55.94%;
+    right: 36.56%;
+    top: 76.2%;
+    bottom: 20%;
+    font-family: 'Jaldi', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: normal;
+    color: #FFFFFF;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.icon-olvide {
+    position: absolute;
+    left: 35.8%;
+    top: 75.80%;
+    font-size: 24px;
+    color: white;
+}
+
+.icon-crear {
+    position: absolute;
+    left: 53.47%;
+    top: 75.10%;
+    font-size: 30px;
+    color: white;
 }
