@@ -1,4 +1,4 @@
-﻿@page "/listar-convenio"
+﻿@page "/reporte-convenio"
 @inject NavigationManager NavManager
 @inject ConveniosService ConveniosService
 
@@ -44,8 +44,8 @@
         <span class="cerrar-sesi-n">CERRAR SESIÓN</span>
     </button>
 
-<div class="lista-card-container">
-        
+    <div class="lista-card-container">
+
         <div class="lista-card">
             <h1 class="lista-titulo">Registros Convenios</h1>
 
@@ -61,6 +61,16 @@
                 <div class="filter-group">
                     <label for="search-box">Filtrar Por</label>
                     <div class="search-wrapper">
+
+                        <InputSelect @bind-Value="Filtro" @bind-Value:after="Filtrar">
+                            <option value="" disabled>Seleccione una opcion</option>
+                            <option value="Id">Id</option>
+                            <option value="Titulo">Titulo</option>
+                            <option value="Estado">Estado</option>
+                            <option value="Tipo">Tipo</option>
+                            <option value="30dias">Últimos 30 días</option>
+                        </InputSelect>
+
                         <input type="text" id="search-box" placeholder="Buscar..." @bind="filtroTexto" @bind:event="oninput" @bind:after="Filtrar" />
                         <button class="search-button" @onclick="Filtrar">
                             <i class="fas fa-search"></i>
@@ -73,10 +83,10 @@
                 <table class="convenios-table">
                     <thead>
                         <tr>
-                            <th>N&uacute;mero Convenio</th>
+                            <th>Numero Convenio</th>
                             <th>Fecha Firma</th>
                             <th>Institucion(es) Afiliada(s)</th>
-                            <th>Categor&iacute;a</th>
+                            <th>Categoria</th>
                             <th>Tipo Convenio</th>
                             <th>Estado Convenio</th>
                         </tr>
@@ -87,7 +97,7 @@
                             <tr @onclick="() => IrAEditar(convenio.IdConvenio)">
                                 <td>@convenio.IdConvenio</td>
                                 <td>@convenio.FechaFirma.ToString("dd/MM/yyyy")</td>
-                                
+
                                 <td>
                                     @if (convenio.ConvenioInstituciones != null && convenio.ConvenioInstituciones.Any())
                                     {
@@ -98,7 +108,7 @@
                                         <span>N/A</span>
                                     }
                                 </td>
-                                
+
                                 <td>@convenio.Categoria</td>
                                 <td>@convenio.TipoConvenio</td>
                                 <td>@convenio.Estado</td>
@@ -121,7 +131,8 @@
             </button>
         </div>
 
-    </div> </div>
+    </div>
+</div>
 
 @code {
     // --- Lógica de la página ---
@@ -130,47 +141,75 @@
     private DateTime? fechaDesde;
     private DateTime? fechaHasta;
 
-    // 3. El modelo 'Convenio'
+    private string Filtro { get; set; } = string.Empty;
+
     private List<Convenio> listaCompletaConvenios = new();
     private List<Convenio> conveniosMostrados = new();
 
-    // 4. Cargamos los datos reales al iniciar
     protected override async Task OnInitializedAsync()
     {
-        // Cargamos la lista completa una vez. Con los convenios visibles
         listaCompletaConvenios = await ConveniosService.Listar(c => c.EsVisible == true);
-        Filtrar(); // Aplicamos filtros (inicialmente vacíos)
+        Filtrar();
     }
 
-    // 5. El método 'Filtrar' ahora trabaja sobre la lista cargada
+    // --- CAMBIO: Método 'Filtrar' completamente reescrito ---
     private void Filtrar()
     {
         // Empezamos con la lista completa
         var query = listaCompletaConvenios.AsQueryable();
+        string textoBusqueda = filtroTexto.ToLower().Trim();
 
-        // Aplicamos filtro de texto
-        if (!string.IsNullOrWhiteSpace(filtroTexto))
+        // 1. Aplicar filtro de texto (si no es "30dias")
+        if (!string.IsNullOrWhiteSpace(textoBusqueda) && Filtro != "30dias")
         {
-            string textoBusqueda = filtroTexto.ToLower().Trim();
-            query = query.Where(c => 
-                (c.Titulo != null && c.Titulo.ToLower().Contains(textoBusqueda))
-             || (c.TipoConvenio != null && c.TipoConvenio.ToLower().Contains(textoBusqueda))
-             || (c.Categoria != null && c.Categoria.ToLower().Contains(textoBusqueda))
-             || (c.Estado != null && c.Estado.ToLower().Contains(textoBusqueda))
-             || c.ConvenioInstituciones.Any(ci => ci.Institucion.Nombre.ToLower().Contains(textoBusqueda))
-            );
+            switch (Filtro)
+            {
+                case "Id":
+                    if (int.TryParse(textoBusqueda, out int idBusqueda))
+                    {
+                        query = query.Where(c => c.IdConvenio == idBusqueda);
+                    }
+                    else
+                    {
+                        // Si el texto no es un número válido, no mostrar resultados
+                        query = query.Where(c => false);
+                    }
+                    break;
+
+                case "Titulo":
+                    query = query.Where(c => c.Titulo != null && c.Titulo.ToLower().Contains(textoBusqueda));
+                    break;
+
+                case "Estado":
+                    query = query.Where(c => c.Estado != null && c.Estado.ToLower().Contains(textoBusqueda));
+                    break;
+
+                case "Tipo":
+                    query = query.Where(c => c.TipoConvenio != null && c.TipoConvenio.ToLower().Contains(textoBusqueda));
+                    break;
+            }
         }
 
-        // Aplicamos filtro de fecha "Desde"
-        if (fechaDesde.HasValue)
+        // 2. Aplicar filtros de fecha
+        if (Filtro == "30dias")
         {
-            query = query.Where(c => c.FechaFirma.Date >= fechaDesde.Value.Date);
+            // La opción "30dias" anula los selectores de fecha manuales
+            var today = DateTime.Now.Date;
+            var thirtyDaysAgo = today.AddDays(-30);
+            query = query.Where(c => c.FechaFirma.Date >= thirtyDaysAgo && c.FechaFirma.Date <= today);
         }
-
-        // Aplicamos filtro de fecha "Hasta"
-        if (fechaHasta.HasValue)
+        else
         {
-            query = query.Where(c => c.FechaFirma.Date <= fechaHasta.Value.Date);
+            // Aplicar filtros de fecha manuales
+            if (fechaDesde.HasValue)
+            {
+                query = query.Where(c => c.FechaFirma.Date >= fechaDesde.Value.Date);
+            }
+
+            if (fechaHasta.HasValue)
+            {
+                query = query.Where(c => c.FechaFirma.Date <= fechaHasta.Value.Date);
+            }
         }
 
         // Actualizamos la lista que se muestra en la tabla
