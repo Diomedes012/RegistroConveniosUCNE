@@ -1,0 +1,234 @@
+﻿
+
+/* Contenedor principal de toda la página */
+.profile-page-container {
+    display: flex;
+    font-family: 'Jaldi', sans-serif;
+    min-height: 100vh;
+    background: white;
+}
+
+/* ===== Barra Lateral (Sidebar) - NUEVOS ESTILOS PARA ICONOS ===== */
+.sidebar {
+    width: 199px;
+    background: #19355C;
+    flex-shrink: 0;
+    padding-top: 247px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 70px;
+}
+
+.sidebar-icon {
+    width: 46px;
+    height: 46px;
+    background: white;
+    /* CENTRA EL ICONO DE BOOTSTRAP DENTRO DEL DIV */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+    /* Color y tamaño de los iconos dentro del sidebar */
+    .sidebar-icon i {
+        font-size: 24px;
+        color: #19355C;
+    }
+
+/* ===== Contenido Principal (Se mantiene igual) ===== */
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* == Cabeceras == */
+.header-yellow {
+    height: 170px;
+    background: #FFCB00;
+    display: flex;
+    align-items: center;
+    padding-left: 28px;
+    gap: 51px;
+    box-sizing: border-box;
+}
+
+/* == Estilo del LOGO == */
+.logo-header {
+    width: 78px;
+    height: 104px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    object-fit: contain;
+}
+
+.header-gray {
+    height: 86px;
+    background: #E5E5E5;
+}
+
+.page-title {
+    color: black;
+    font-size: 45.60px;
+    font-weight: 400;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.profile-body {
+    flex-grow: 1;
+    display: flex;
+    padding: 30px 40px;
+    gap: 40px;
+}
+
+.profile-picture-container {
+    flex-shrink: 0;
+    padding-top: 13px;
+    padding-left: 42px;
+}
+
+.profile-picture {
+    width: 180px;
+    height: 180px;
+    background: #C4C4EB;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.profile-icon-inner {
+    width: 90px;
+    height: 90px;
+    position: relative;
+}
+
+.profile-icon-head {
+    width: 40px;
+    height: 40px;
+    left: 25px;
+    top: 5px;
+    position: absolute;
+    background: #19355C;
+    border-radius: 50%;
+}
+
+.profile-icon-body {
+    width: 66px;
+    height: 33px;
+    left: 12px;
+    top: 52.50px;
+    position: absolute;
+    background: #19355C;
+    border-radius: 15px 15px 0 0;
+}
+
+.profile-details {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    max-width: 468px;
+}
+
+.profile-field {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.field-label {
+    color: #19355C;
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 54px;
+}
+
+/* ===== ESTILOS PARA LOS BOTONES Y EL ICONO DE EDICIÓN (Lápiz) ===== */
+.profile-button-override {
+    /* Mantenemos tus estilos de fuente y caja */
+    font-family: 'Jaldi', sans-serif;
+    color: black;
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 48px;
+    word-wrap: break-word;
+    background-color: white;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    padding: 20px 32px;
+    min-height: 88px;
+    border-color: #ced4da;
+    /* NUEVO: Contenedor Flexbox para alinear texto a la izquierda e icono a la derecha */
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Centra el texto y el icono verticalmente */
+    text-align: left;
+    width: 100%;
+}
+
+/* Estilo para el ícono de edición (Lápiz) */
+.edit-icon {
+    font-size: 24px;
+    color: #19355C;
+    flex-shrink: 0; /* Evita que el icono se encoja */
+    margin-left: 20px;
+}
+
+/* El primer campo ('Nombre') necesita alineación superior ya que es más alto */
+.profile-field:first-child .profile-button-override {
+    min-height: 136px;
+    align-items: flex-start; /* Alinea el contenido y el icono arriba */
+}
+
+/* Si el icono está alineado arriba en el campo 'Nombre', ajustamos el espacio */
+.profile-field:first-child .edit-icon {
+    margin-top: 10px; /* Pequeño ajuste visual */
+}
+
+
+/* Resto de estilos de Hover/Focus/Modal (Se mantienen igual) */
+.profile-button-override:not(:disabled):hover,
+.profile-button-override:not(:disabled):focus {
+    background-color: #f8f9fa;
+    color: black;
+    border-color: #adb5bd;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
+}
+
+.profile-button-override:disabled {
+    background-color: #e9ecef;
+    opacity: 0.7;
+    color: #495057;
+}
+
+.modal.fade.show {
+    display: block;
+    background-color: transparent;
+}
+
+.modal-backdrop.fade.show {
+    opacity: 0.5;
+}
+
+.modal-content-custom {
+    border-radius: 12px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    border: none;
+}
+
+    .modal-content-custom .modal-title {
+        font-family: 'Jaldi', sans-serif;
+        color: #19355C;
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .modal-content-custom .modal-body {
+        font-family: 'Jaldi', sans-serif;
+        font-size: 18px;
+    }
