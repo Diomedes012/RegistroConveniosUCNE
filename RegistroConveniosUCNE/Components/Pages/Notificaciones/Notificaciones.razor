@@ -1,0 +1,76 @@
+﻿@page "/notificaciones"
+@rendermode InteractiveServer
+
+<div class="notificaciones-page">
+
+    <div class="sidebar">
+        <i class="bi bi-house-door-fill sidebar-icon"></i>
+
+        <i class="bi bi-file-earmark-text-fill sidebar-icon"></i>
+
+        <i class="bi bi-people-fill sidebar-icon"></i>
+
+        <i class="bi bi-bell-fill sidebar-icon active"></i>
+
+        <i class="bi bi-gear-fill sidebar-icon"></i>
+
+        <i class="bi bi-box-arrow-left sidebar-icon logout"></i>
+    </div>
+
+    <div class="main-content">
+
+        <div class="header-bar">
+            <img src="images/logoUcnePeq.png" alt="Logo" class="header-logo" />
+            <h1 class="header-title">Notificaciones</h1>
+
+            <div class="search-container">
+                <i class="bi bi-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Buscar Notificaciones" />
+            </div>
+
+            <div class="menu-icon-container">
+                <i class="bi bi-list menu-icon"></i>
+            </div>
+        </div>
+
+        <div class="content-area">
+
+            <div class="content-subheader">
+            </div>
+
+            <div class="notification-list">
+
+                <div class="notification-item">
+                    <div class="notification-type">Alerta</div>
+                    <div class="notification-message">El recibo de la luz esta carro ( porque sube rapido)</div>
+                    <div class="notification-date">9 NOV</div>
+                </div>
+
+                <div class="notification-item">
+                    <div class="notification-type">Caducidad</div>
+                    <div class="notification-message">Como tu salud mental, caducada</div>
+                    <div class="notification-date">9 NOV</div>
+                </div>
+
+                <div class="notification-item">
+                    <div class="notification-type">TOTO</div>
+                    <div class="notification-message">Estaba como sacar yuca lloviendo</div>
+                    <div class="notification-date">9 NOV</div>
+                </div>
+
+                <div class="notification-item">
+                    <div class="notification-type">JUMO</div>
+                    <div class="notification-message">Por la ex de mi ex que fue mi ex de su ex</div>
+                    <div class="notification-date">9 NOV</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code
+{
+
+}

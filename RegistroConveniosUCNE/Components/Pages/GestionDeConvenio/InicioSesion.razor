@@ -5,6 +5,7 @@
 <link rel="stylesheet" href="css/iniciar-sesion.css" />
 
 <div class="iniciar-sesion">
+
     <div class="rectangle-4">
         <img src="images/fondoInicioSesion.png" alt="Fondo de inicio de sesión" style="width:100%; height:100%; object-fit:cover;" />
     </div>
@@ -17,19 +18,29 @@
         INICIO DE SESIÓN ADMINISTRADOR
     </div>
 
-    <label class="usuario">Usuario</label>
+    <label class="usuario">
+        <i class="bi bi-person-fill"></i>
+        Usuario
+    </label>
     <input type="text" class="username-fill" placeholder="Ingrese su usuario" />
 
-    <label class="contrase-a">Contraseña</label>
+    <label class="contrase-a">
+        <i class="bi bi-key-fill"></i>
+        Contraseña
+    </label>
     <input type="password" class="password-fill" placeholder="Ingrese su contraseña" />
 
     <div class="button-inicio-de-sesion">
         <button class="rectangle-5" @onclick="IniciarSesion">INICIAR SESIÓN</button>
     </div>
 
+    <i class="bi bi-key icon-olvide"></i>
     <a href="/recuperar" class="olvide-mi-contrase-a">Olvidé mi contraseña</a>
+
+    <i class="bi bi-person-plus-fill icon-crear"></i>
     <a href="/crear-cuenta" class="crear-cuenta">Crear cuenta</a>
 </div>
+
 @code {
     private void IniciarSesion()
     {
