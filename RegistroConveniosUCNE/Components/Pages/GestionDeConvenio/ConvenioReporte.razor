@@ -1,133 +1,228 @@
-﻿@page "/perfil"
+﻿@page "/reporte-convenio"
+@inject NavigationManager NavManager
+@inject ConveniosService ConveniosService
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+@using System.Globalization
+@using GestionConveniosUCNE.Models
+@using GestionConveniosUCNE.Services
 
-<div class="profile-page">
+@rendermode InteractiveServer
 
-    <!-- ======= ENCABEZADO ======= -->
-    <header class="profile-header">
-        <img src="images/logoUcnePeq.png" alt="Logo UCNE" class="profile-logo" />
-        <h1 class="profile-title">PERFIL</h1>
-    </header>
+<div class="pagina-principal">
+    <img src="images/image4.png" class="image-5" alt="Fondo" />
+    <div class="top-nav-background"></div>
+    <div class="rectangle-26"></div>
+    <div class="rectangle-27"></div>
+    <img src="images/logoUcnePeq.png" class="logo-1" alt="Logo" />
 
-    <!-- ======= CONTENEDOR PRINCIPAL ======= -->
-    <div class="profile-container">
+    <div class="bienvenido">BIENVENIDO</div>
+    <div class="jrafael">@Usuario</div>
 
-        <!-- ======= SIDEBAR ======= -->
-        <nav class="profile-sidebar">
-            <i class="bi bi-person"></i>
-            <i class="bi bi-file-text"></i>
-            <i class="bi bi-toggle2-on"></i>
-            <i class="bi bi-bell"></i>
-            <i class="bi bi-box-arrow-right"></i>
-        </nav>
+    <div class="barra-navegacion-superior">
+        <NavLink href="/pagina-principal" class="nav-button">Inicio</NavLink>
+        <NavLink href="/crear-convenio" class="nav-button">Crear convenio</NavLink>
+        <NavLink href="/listar-convenio" class="nav-button">Listar convenio</NavLink>
+        <NavLink href="/reporte-convenio" class="nav-button">Reportes</NavLink>
+    </div>
 
-        <!-- ======= CONTENIDO ======= -->
-        <main class="profile-content">
-            <div class="profile-picture">
-                <i class="bi bi-person-fill"></i>
+    <div class="menu-lateral">
+        <div class="menu-item">
+            <i class="fas fa-user icon"></i> <div class="perfil2">PERFIL</div>
+        </div>
+        <div class="menu-item">
+            <i class="fas fa-file-alt icon"></i> <div class="solicitudes2">SOLICITUDES</div>
+        </div>
+        <div class="menu-item">
+            <i class="fas fa-bell icon"></i> <div class="notificaciones2">NOTIFICACIONES</div>
+        </div>
+        <div class="menu-item">
+            <i class="fas fa-exclamation-triangle icon"></i> <div class="alertas">ALERTAS</div>
+        </div>
+    </div>
+
+    <button class="rectangle-29" @onclick="CerrarSesion">
+        <span class="cerrar-sesi-n">CERRAR SESIÓN</span>
+    </button>
+
+    <div class="lista-card-container">
+
+        <div class="lista-card">
+            <h1 class="lista-titulo">Registros Convenios</h1>
+
+            <div class="filter-section">
+                <div class="filter-group">
+                    <label for="fecha-desde">Desde</label>
+                    <input type="date" id="fecha-desde" @bind="fechaDesde" @bind:after="Filtrar" />
+                </div>
+                <div class="filter-group">
+                    <label for="fecha-hasta">Hasta</label>
+                    <input type="date" id="fecha-hasta" @bind="fechaHasta" @bind:after="Filtrar" />
+                </div>
+                <div class="filter-group">
+                    <label for="search-box">Filtrar Por</label>
+                    <div class="search-wrapper">
+
+                        <InputSelect @bind-Value="Filtro" @bind-Value:after="Filtrar">
+                            <option value="" disabled>Seleccione una opcion</option>
+                            <option value="Id">Id</option>
+                            <option value="Titulo">Titulo</option>
+                            <option value="Estado">Estado</option>
+                            <option value="Tipo">Tipo</option>
+                            <option value="30dias">Últimos 30 días</option>
+                        </InputSelect>
+
+                        <input type="text" id="search-box" placeholder="Buscar..." @bind="filtroTexto" @bind:event="oninput" @bind:after="Filtrar" />
+                        <button class="search-button" @onclick="Filtrar">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <div class="profile-info">
-                <div class="profile-section">
-                    <div class="profile-section-header">
-                        <label>Nombre</label>
-                        <i class="bi bi-pencil-square edit-btn" @onclick='() => OpenEditModal(" Nombre")'></i>
-                    </div>
-                    <div class="profile-section-body">@user.Nombre</div>
-                </div>
+            <div class="table-responsive-wrapper">
+                <table class="convenios-table">
+                    <thead>
+                        <tr>
+                            <th>Numero Convenio</th>
+                            <th>Fecha Firma</th>
+                            <th>Institucion(es) Afiliada(s)</th>
+                            <th>Categoria</th>
+                            <th>Tipo Convenio</th>
+                            <th>Estado Convenio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var convenio in conveniosMostrados)
+                        {
+                            <tr @onclick="() => IrAEditar(convenio.IdConvenio)">
+                                <td>@convenio.IdConvenio</td>
+                                <td>@convenio.FechaFirma.ToString("dd/MM/yyyy")</td>
 
-                <div class="profile-section">
-                    <div class="profile-section-header">
-                        <label>Correo electrónico</label>
-                        <i class="bi bi-pencil-square edit-btn" @onclick='() => OpenEditModal(" Correo")'></i>
-                    </div>
-                    <div class="profile-section-body">@user.Correo</div>
-                </div>
+                                <td>
+                                    @if (convenio.ConvenioInstituciones != null && convenio.ConvenioInstituciones.Any())
+                                    {
+                                        @string.Join(", ", convenio.ConvenioInstituciones.Select(ci => ci.Institucion?.Nombre ?? "N/A"))
+                                    }
+                                    else
+                                    {
+                                        <span>N/A</span>
+                                    }
+                                </td>
 
-                <div class="profile-section">
-                    <div class="profile-section-header">
-                        <label>Rol</label>
-                    </div>
-                    <div class="profile-section-body">@user.Rol</div>
-                </div>
-
-                <div class="profile-section">
-                    <div class="profile-section-header">
-                        <label>Número de teléfono</label>
-                        <i class="bi bi-pencil-square edit-btn" @onclick='() => OpenEditModal(" Telefono")'></i>
-                    </div>
-                    <div class="profile-section-body">@user.Telefono</div>
-                </div>
+                                <td>@convenio.Categoria</td>
+                                <td>@convenio.TipoConvenio</td>
+                                <td>@convenio.Estado</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
-        </main>
+
+            <div class="lista-footer">
+                <span>Registros encontrados: @conveniosMostrados.Count()</span>
+            </div>
+
+        </div> <div class="export-buttons-container">
+            <button class="btn-export btn-excel">
+                <i class="fas fa-file-excel"></i> Exportar en Excel
+            </button>
+            <button class="btn-export btn-pdf">
+                <i class="fas fa-file-pdf"></i> Exportar en PDF
+            </button>
+        </div>
+
     </div>
 </div>
 
-@if (showModal)
-{
-    <div class="modal-backdrop fade show"></div>
-
-    <div class="modal fade show" tabindex="-1" style="display: block;" role="dialog">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content modal-content-custom">
-                <div class="modal-header">
-                    <h5 class="modal-title">Editar @currentEditField</h5>
-                    <button type="button" class="btn-close" @onclick="CancelEdit" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Por favor, introduce el nuevo valor:</p>
-                    <input type="text" class="form-control" @bind="currentValueToEdit" />
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancelar</button>
-                    <button type="button" class="btn btn-primary" @onclick="SaveChanges">Guardar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-}
-
 @code {
-    private class UserProfileModel
+    // --- Lógica de la página ---
+    private string Usuario = "JRAFAEL";
+    private string filtroTexto = "";
+    private DateTime? fechaDesde;
+    private DateTime? fechaHasta;
+
+    private string Filtro { get; set; } = string.Empty;
+
+    private List<Convenio> listaCompletaConvenios = new();
+    private List<Convenio> conveniosMostrados = new();
+
+    protected override async Task OnInitializedAsync()
     {
-        public string Nombre { get; set; } = "Juan Carlos Pérez García";
-        public string Correo { get; set; } = "juan.perez@empresa.com";
-        public string Rol { get; set; } = "Administrador";
-        public string Telefono { get; set; } = "+506 8888-7777";
+        listaCompletaConvenios = await ConveniosService.Listar(c => c.EsVisible == true);
+        Filtrar();
     }
 
-    private UserProfileModel user = new();
-    private bool showModal = false;
-    private string currentEditField = string.Empty;
-    private string currentValueToEdit = string.Empty;
-
-    private void OpenEditModal(string fieldName)
+    // --- CAMBIO: Método 'Filtrar' completamente reescrito ---
+    private void Filtrar()
     {
-        currentEditField = fieldName;
+        // Empezamos con la lista completa
+        var query = listaCompletaConvenios.AsQueryable();
+        string textoBusqueda = filtroTexto.ToLower().Trim();
 
-        currentValueToEdit = fieldName switch
+        // 1. Aplicar filtro de texto (si no es "30dias")
+        if (!string.IsNullOrWhiteSpace(textoBusqueda) && Filtro != "30dias")
         {
-            "Nombre" => user.Nombre,
-            "Correo" => user.Correo,
-            "Telefono" => user.Telefono,
-            _ => string.Empty
-        };
+            switch (Filtro)
+            {
+                case "Id":
+                    if (int.TryParse(textoBusqueda, out int idBusqueda))
+                    {
+                        query = query.Where(c => c.IdConvenio == idBusqueda);
+                    }
+                    else
+                    {
+                        // Si el texto no es un número válido, no mostrar resultados
+                        query = query.Where(c => false);
+                    }
+                    break;
 
-        showModal = true;
-    }
+                case "Titulo":
+                    query = query.Where(c => c.Titulo != null && c.Titulo.ToLower().Contains(textoBusqueda));
+                    break;
 
-    private void SaveChanges()
-    {
-        switch (currentEditField)
-        {
-            case "Nombre": user.Nombre = currentValueToEdit; break;
-            case "Correo": user.Correo = currentValueToEdit; break;
-            case "Telefono": user.Telefono = currentValueToEdit; break;
+                case "Estado":
+                    query = query.Where(c => c.Estado != null && c.Estado.ToLower().Contains(textoBusqueda));
+                    break;
+
+                case "Tipo":
+                    query = query.Where(c => c.TipoConvenio != null && c.TipoConvenio.ToLower().Contains(textoBusqueda));
+                    break;
+            }
         }
 
-        showModal = false;
+        // 2. Aplicar filtros de fecha
+        if (Filtro == "30dias")
+        {
+            // La opción "30dias" anula los selectores de fecha manuales
+            var today = DateTime.Now.Date;
+            var thirtyDaysAgo = today.AddDays(-30);
+            query = query.Where(c => c.FechaFirma.Date >= thirtyDaysAgo && c.FechaFirma.Date <= today);
+        }
+        else
+        {
+            // Aplicar filtros de fecha manuales
+            if (fechaDesde.HasValue)
+            {
+                query = query.Where(c => c.FechaFirma.Date >= fechaDesde.Value.Date);
+            }
+
+            if (fechaHasta.HasValue)
+            {
+                query = query.Where(c => c.FechaFirma.Date <= fechaHasta.Value.Date);
+            }
+        }
+
+        // Actualizamos la lista que se muestra en la tabla
+        conveniosMostrados = query.ToList();
     }
 
-    private void CancelEdit() => showModal = false;
+    private void IrAEditar(int convenioId)
+    {
+        NavManager.NavigateTo($"/Convenio/Edit/{convenioId}");
+    }
+
+    private void CerrarSesion()
+    {
+        NavManager.NavigateTo("/");
+    }
 }
