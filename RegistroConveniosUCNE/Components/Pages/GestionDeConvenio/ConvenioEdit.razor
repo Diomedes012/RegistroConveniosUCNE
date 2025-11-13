@@ -42,41 +42,41 @@
 
             <div class="form-group">
                 <label for="titulo">Título del Convenio:</label>
-                <InputText id="titulo" @bind-Value="ConvenioEditar.Titulo" class="form-control" placeholder="Ej. Acuerdo de cooperación académica" />
+                <InputText id="titulo" @bind-Value="ConvenioEditar.Titulo" class="form-control" placeholder="Ej. Acuerdo de cooperación académica" readonly="@esEdicion"/>
                 <ValidationMessage For="@(() => ConvenioEditar.Titulo)" />
             </div>
 
             <div class="form-group">
                 <label for="tipoConvenio">Tipo de Convenio:</label>
-                <InputText id="tipoConvenio" @bind-Value="ConvenioEditar.TipoConvenio" class="form-control" placeholder="Académico, de movilidad, etc." />
+                <InputText id="tipoConvenio" @bind-Value="ConvenioEditar.TipoConvenio" class="form-control" placeholder="Académico, de movilidad, etc." readonly="@esEdicion" />
                 <ValidationMessage For="@(() => ConvenioEditar.TipoConvenio)" />
             </div>
 
             <div class="form-group">
                 <label for="categoria">Categoría:</label>
-                <InputText id="categoria" @bind-Value="ConvenioEditar.Categoria" class="form-control" placeholder="Convenio, Contrato, MOU..." />
+                <InputText id="categoria" @bind-Value="ConvenioEditar.Categoria" class="form-control" placeholder="Convenio, Contrato, MOU..." readonly="@esEdicion" />
                 <ValidationMessage For="@(() => ConvenioEditar.Categoria)" />
             </div>
 
             <div class="form-group">
                 <label for="fechaFirma">Fecha de Firma:</label>
-                <InputDate id="fechaFirma" @bind-Value="ConvenioEditar.FechaFirma" class="form-control" />
+                <InputDate id="fechaFirma" @bind-Value="ConvenioEditar.FechaFirma" class="form-control" readonly="@esEdicion" />
                 <ValidationMessage For="@(() => ConvenioEditar.FechaFirma)" />
             </div>
 
             <div class="form-group">
                 <label for="fechaVencimiento">Fecha de Vencimiento:</label>
-                <InputDate id="fechaVencimiento" @bind-Value="ConvenioEditar.FechaVencimiento" class="form-control" />
+                    <InputDate id="fechaVencimiento" @bind-Value="ConvenioEditar.FechaVencimiento" class="form-control" readonly="@esEdicion" />
             </div>
 
             <div class="form-group">
                 <label for="duracionMeses">Duración (meses):</label>
-                <InputNumber id="duracionMeses" @bind-Value="ConvenioEditar.DuracionMeses" class="form-control" />
+                <InputNumber id="duracionMeses" @bind-Value="ConvenioEditar.DuracionMeses" class="form-control" readonly="@esEdicion" />
             </div>
 
             <div class="form-group">
                 <label for="estado">Estado:</label>
-                <InputSelect id="estado" @bind-Value="ConvenioEditar.Estado" class="form-control">
+                <InputSelect id="estado" @bind-Value="ConvenioEditar.Estado" class="form-control" disabled="@esEdicion">
                     <option value="Activo">Activo</option>
                     <option value="Vencido">Vencido</option>
                     <option value="En Renovación">En Renovación</option>
@@ -86,18 +86,26 @@
 
             <div class="form-group">
                 <label for="archivo">Archivo del Convenio (PDF):</label>
-                <InputFile id="archivo" OnChange="OnFileSelected" class="form-control" />
+                <InputFile id="archivo" OnChange="OnFileSelected" class="form-control" disabled="@esEdicion" />
             </div>
 
             <div class="form-group full-width">
                 <label for="descripcionObjetivos">Descripción y Objetivos:</label>
-                <InputTextArea id="descripcionObjetivos" @bind-Value="ConvenioEditar.DescripcionObjetivos" class="form-control textarea-large" />
+                <InputTextArea id="descripcionObjetivos" @bind-Value="ConvenioEditar.DescripcionObjetivos" class="form-control textarea-large" readonly="@esEdicion" />
                 <ValidationMessage For="@(() => ConvenioEditar.DescripcionObjetivos)" />
             </div>
 
             <div class="form-actions full-width">
-                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                <button type="button" class="btn btn-danger" @onclick="Eliminar">Eliminar</button>
+                @if(esEdicion)
+                {
+                        <button type="button" class="btn btn-secondary" @onclick="HabilitarEdicion">Editar</button>
+                }
+                else
+                {
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    <button type="button" class="btn btn-danger" @onclick="Eliminar">Eliminar</button>
+                }
+                
             </div>
 
         </div>
@@ -114,6 +122,9 @@
     private IBrowserFile? selectedFile;
     private bool _showPdfViewer = false; // Controla si el visor está visible
     private const long maxFileSize = 50 * 1024 * 1024; // 50 MB
+
+    //Variable para habilitar edicion
+    private bool esEdicion = true;
 
 
     protected override async Task OnInitializedAsync()
@@ -196,6 +207,19 @@
                 //Notificacion de error
             }
         }
-        
+
+    }
+
+    //Interruptor para habilitar edicion
+    private void HabilitarEdicion()
+    {
+        if(!esEdicion)
+        {
+            esEdicion = true;
+        }
+        else
+        {
+            esEdicion = false;
+        }
     }
 }
