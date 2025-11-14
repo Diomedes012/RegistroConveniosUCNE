@@ -1,185 +1,48 @@
-﻿/* Esto le dice al contenedor principal que sea el "ancla" */
-.pagina-principal {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    background-color: #fff; /* Fondo blanco por si la imagen falla */
-}
-
-/* --- ESTILOS DE FONDO Y PANELES --- */
-
-/* Fondo principal (imagen borrosa) */
-.image-5 {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Cubre todo el espacio */
-    z-index: 1;
-}
-
-/* Panel lateral (azul oscuro) */
-.rectangle-26 {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 300px; /* Ajusta este ancho si es necesario */
-    height: 100%;
-    background-color: #001f3f; /* Azul oscuro */
-    z-index: 2;
-}
-
-/* Panel cabecera (amarillo) */
-.rectangle-27 {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 300px; /* Mismo ancho que el panel azul */
-    height: 160px; /* Altura para "BIENVENIDO" y logo */
-    background-color: #FFC107; /* Amarillo */
-    z-index: 3;
-}
-
-/* Logo */
-.logo-1 {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    width: 60px; /* Ajusta el tamaño del logo */
-    height: auto;
-    z-index: 4;
-}
-
-/* --- FIN DE ESTILOS DE FONDO --- */
-
-
-/* --- Estilos para la barra de navegación superior --- */
-.top-nav-background {
-    position: absolute;
-    top: 0;
-    left: 300px; /* Inicia donde termina el panel lateral */
-    right: 0; /* Se extiende hasta el final */
-    height: 80px; /* Altura de la barra (ajusta si es necesario) */
-    background-color: rgba(0, 0, 0, 0.4); /* Negro semi-transparente */
-    z-index: 9; /* Detrás del texto, pero encima del fondo */
-}
-
-.barra-navegacion-superior {
-    position: absolute;
-    top: 40px;
-    right: 50px;
+﻿
+.content-nav {
     display: flex;
-    gap: 30px;
-    z-index: 10;
+    flex-direction: row;
+    gap: 2.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #E5E5E5; 
+    margin-bottom: 2.5rem;
 }
 
-    /* ================================================================
-   AQUÍ ESTÁ LA SOLUCIÓN: El selector "::deep"
-   ================================================================
-*/
-    .barra-navegacion-superior ::deep a {
-        font-family: Arial, sans-serif;
-        font-size: 18px;
-        font-weight: bold;
-        color: white !important;
-        text-decoration: none !important;
-        padding: 5px 10px;
-        transition: color 0.3s ease;
+    .content-nav .nav-link {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #555;
+        text-decoration: none;
+        padding: 0.5rem 0;
+        border-bottom: 4px solid transparent; 
     }
 
-        .barra-navegacion-superior ::deep a:hover {
-            color: #FFC107 !important;
+   
+        .content-nav .nav-link.active,
+        .content-nav .nav-link:hover {
+            color: #19355C; 
+            border-bottom-color: #FFCB00;
         }
 
-/* --- Estilos para el menú lateral con iconos --- */
-.menu-lateral {
-    position: absolute;
-    top: 200px; /* Posición debajo del bloque amarillo */
-    left: 40px;
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-    z-index: 4; /* Por encima del panel azul */
+
+.home-body {
+    text-align: center; 
+    padding: 2rem 0;
+    flex: 1; 
 }
 
-.menu-item {
-    display: flex;
-    align-items: center;
-    color: white;
-    font-family: Arial, sans-serif;
-    font-size: 20px;
-    font-weight: bold;
-}
-
-.icon {
-    font-size: 24px;
-    margin-right: 20px; /* Espacio entre icono y texto */
-    width: 30px;
-    text-align: center;
-}
-
-/* Texto del menú lateral */
-.perfil2, .solicitudes2, .notificaciones2, .alertas {
-    font-size: 20px;
-    color: white;
-}
-
-/* Texto de "BIENVENIDO" y "JRAFAEL" */
-.bienvenido {
-    position: absolute;
-    top: 40px;
-    left: 100px; /* Al lado del logo */
-    color: #001f3f; /* Texto azul oscuro */
-    font-size: 24px;
-    font-weight: bold;
-    z-index: 4;
-}
-
-.jrafael {
-    position: absolute;
-    top: 75px;
-    left: 100px; /* Debajo de Bienvenido */
-    color: #001f3f; /* Texto azul oscuro */
-    font-size: 18px;
-    z-index: 4;
-}
-
-/* Imagen central (el documento) */
-.image-2 {
-    position: absolute;
-    top: 100px;
-    left: 450px; /* Ajusta la posición horizontal */
-    width: 600px; /* Ajusta el tamaño */
+.convenio-image {
+    max-width: 80%;
     height: auto;
-    z-index: 5; /* Encima de la imagen de fondo */
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* Sombra suave */
-    border-radius: 5px;
+    border: 1px solid #D9D9D9;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
 }
 
-/* Botón de cerrar sesión */
-.rectangle-29 {
-    position: absolute;
-    bottom: 30px;
-    left: 50px;
-    z-index: 4;
-    background-color: #001f3f; /* Fondo azul */
-    border: 2px solid white; /* Borde blanco */
-    border-radius: 5px;
-    padding: 10px 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-    .rectangle-29:hover {
-        background-color: #004080; /* Azul un poco más claro */
-    }
-
-/* Texto del botón "CERRAR SESIÓN" */
-.cerrar-sesi-n {
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    letter-spacing: 1px;
+/* 3. Pie de página */
+.home-footer {
+    text-align: left;
+    padding: 1.5rem 0 0 0;
+    color: #888;
+    border-top: 1px solid #E5E5E5;
+    margin-top: auto;
 }

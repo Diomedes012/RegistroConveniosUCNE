@@ -1,15 +1,24 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
+<div class="page-container">
 
+    <header class="main-header">
+        <img src="lib/images/logo1.png" alt="Logo UCNE" class="header-logo" />
+        <span class="header-title">Universidad Catolica Nordestana (UCNE) Gestion de Convenios</span>
+    </header>
 
-    <main>
+    <div class="content-wrapper">
 
+        <div class="sidebar">
+            <NavMenu />
+        </div>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
+        <main>
+            <article class="content">
+                @Body
+            </article>
+        </main>
+    </div>
 </div>
 
 <div id="blazor-error-ui" data-nosnippet>

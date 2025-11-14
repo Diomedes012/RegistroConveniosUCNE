@@ -1,49 +1,66 @@
 ﻿@page "/"
-@inject NavigationManager navigationManager
+@layout Layout.EmptyLayout
+@inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
-<link rel="stylesheet" href="css/iniciar-sesion.css" />
+@using System.ComponentModel.DataAnnotations
 
-<div class="iniciar-sesion">
+<div class="login-page-container">
 
-    <div class="rectangle-4">
-        <img src="images/fondoInicioSesion.png" alt="Fondo de inicio de sesión" style="width:100%; height:100%; object-fit:cover;" />
+    <img src="lib/images/fondoInicioSesion.png" alt="Fondo de inicio de sesión" class="background-image" />
+
+    <div class="login-box">
+        <img class="logo-1" src="lib/images/logoUcnePeq.png" alt="Logo UCNE" />
+
+        <h2 class="login-title">INICIO DE SESIÓN ADMINISTRADOR</h2>
+
+        <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator />
+
+            <div class="form-group">
+                <label for="usuario">
+                    <i class="bi bi-person-fill"></i> Usuario
+                </label>
+                <InputText id="usuario" class="form-control" placeholder="Ingrese su usuario" @bind-Value="loginModel.Username" />
+                <ValidationMessage For="() => loginModel.Username" />
+            </div>
+
+            <div class="form-group">
+                <label for="password">
+                    <i class="bi bi-key-fill"></i> Contraseña
+                </label>
+                <InputText id="password" type="password" class="form-control" placeholder="Ingrese su contraseña" @bind-Value="loginModel.Password" />
+                <ValidationMessage For="() => loginModel.Password" />
+            </div>
+
+            <button type="submit" class="btn-login">INICIAR SESIÓN</button>
+
+        </EditForm>
+
+        <div class="links-container">
+            <a href="/recuperar" class="login-link">
+                <i class="bi bi-key"></i> Olvidé mi contraseña
+            </a>
+            <a href="/crear-cuenta" class="login-link">
+                <i class="bi bi-person-plus-fill"></i> Crear cuenta
+            </a>
+        </div>
     </div>
-
-    <div class="rectangle-42"></div>
-
-    <img class="logo-1" src="images/logoUcnePeq.png" alt="Logo" />
-
-    <div class="inicio-de-sesi-n-administrador">
-        INICIO DE SESIÓN ADMINISTRADOR
-    </div>
-
-    <label class="usuario">
-        <i class="bi bi-person-fill"></i>
-        Usuario
-    </label>
-    <input type="text" class="username-fill" placeholder="Ingrese su usuario" />
-
-    <label class="contrase-a">
-        <i class="bi bi-key-fill"></i>
-        Contraseña
-    </label>
-    <input type="password" class="password-fill" placeholder="Ingrese su contraseña" />
-
-    <div class="button-inicio-de-sesion">
-        <button class="rectangle-5" @onclick="IniciarSesion">INICIAR SESIÓN</button>
-    </div>
-
-    <i class="bi bi-key icon-olvide"></i>
-    <a href="/recuperar" class="olvide-mi-contrase-a">Olvidé mi contraseña</a>
-
-    <i class="bi bi-person-plus-fill icon-crear"></i>
-    <a href="/crear-cuenta" class="crear-cuenta">Crear cuenta</a>
 </div>
 
 @code {
-    private void IniciarSesion()
+    private LoginModel loginModel = new LoginModel();
+    public class LoginModel
     {
-        navigationManager.NavigateTo("/pagina-principal");
+        [Required(ErrorMessage = "El usuario es requerido.")]
+        public string? Username { get; set; }
+
+        [Required(ErrorMessage = "La contraseña es requerida.")]
+        public string? Password { get; set; }
+    }
+
+    private void HandleLogin()
+    {
+        NavigationManager.NavigateTo("pantalla-principal");
     }
 }
