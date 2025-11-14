@@ -1,6 +1,7 @@
 ﻿@page "/listar-convenio"
 @inject NavigationManager NavManager
 @inject ConveniosService ConveniosService
+@inject IJSRuntime JSRuntime
 
 @using System.Globalization
 @using GestionConveniosUCNE.Models
@@ -8,173 +9,141 @@
 
 @rendermode InteractiveServer
 
-<div class="pagina-principal">
-    <img src="images/image4.png" class="image-5" alt="Fondo" />
-    <div class="top-nav-background"></div>
-    <div class="rectangle-26"></div>
-    <div class="rectangle-27"></div>
-    <img src="images/logoUcnePeq.png" class="logo-1" alt="Logo" />
+<div class="page-header">
+    <h3>Listar convenios</h3>
+</div>
 
-    <div class="bienvenido">BIENVENIDO</div>
-    <div class="jrafael">@Usuario</div>
-
-    <div class="barra-navegacion-superior">
-        <NavLink href="/pagina-principal" class="nav-button">Inicio</NavLink>
-        <NavLink href="/crear-convenio" class="nav-button">Crear convenio</NavLink>
-        <NavLink href="/listar-convenio" class="nav-button">Listar convenio</NavLink>
-        <NavLink href="/reporte-convenio" class="nav-button">Reportes</NavLink>
-    </div>
-
-    <div class="menu-lateral">
-        <div class="menu-item">
-            <i class="fas fa-user icon"></i> <div class="perfil2">PERFIL</div>
-        </div>
-        <div class="menu-item">
-            <i class="fas fa-file-alt icon"></i> <div class="solicitudes2">SOLICITUDES</div>
-        </div>
-        <div class="menu-item">
-            <i class="fas fa-bell icon"></i> <div class="notificaciones2">NOTIFICACIONES</div>
-        </div>
-        <div class="menu-item">
-            <i class="fas fa-exclamation-triangle icon"></i> <div class="alertas">ALERTAS</div>
-        </div>
-    </div>
-
-    <button class="rectangle-29" @onclick="CerrarSesion">
-        <span class="cerrar-sesi-n">CERRAR SESIÓN</span>
-    </button>
-
-<div class="lista-card-container">
-        
-        <div class="lista-card">
-            <h1 class="lista-titulo">Registros Convenios</h1>
-
-            <div class="filter-section">
-                <div class="filter-group">
-                    <label for="fecha-desde">Desde</label>
-                    <input type="date" id="fecha-desde" @bind="fechaDesde" @bind:after="Filtrar" />
-                </div>
-                <div class="filter-group">
-                    <label for="fecha-hasta">Hasta</label>
-                    <input type="date" id="fecha-hasta" @bind="fechaHasta" @bind:after="Filtrar" />
-                </div>
-                <div class="filter-group">
-                    <label for="search-box">Filtrar Por</label>
-                    <div class="search-wrapper">
-                        <input type="text" id="search-box" placeholder="Buscar..." @bind="filtroTexto" @bind:event="oninput" @bind:after="Filtrar" />
-                        <button class="search-button" @onclick="Filtrar">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
+<div class="card shadow-lg">
+    <div class="card-header">
+        <h5>Filtros de Búsqueda</h5>
+        <div class="row g-3">
+            <div class="col-md-3">
+                <label for="fecha-desde" class="form-label">Desde</label>
+                <InputDate id="fecha-desde" class="form-control" @bind-Value="fechaDesde" />
+            </div>
+            <div class="col-md-3">
+                <label for="fecha-hasta" class="form-label">Hasta</label>
+                <InputDate id="fecha-hasta" class="form-control" @bind-Value="fechaHasta" />
+            </div>
+            <div class="col-md-6">
+                <label for="search-box" class="form-label">Buscar</label>
+                <div class="input-group">
+                    <input type="text" id="search-box" class="form-control" placeholder="Buscar por título, tipo, categoría, estado..." @bind="filtroTexto" @bind:event="oninput" />
+                    <button class="btn btn-primary" @onclick="Filtrar">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                    <button class="btn btn-outline-secondary" @onclick="LimpiarFiltros">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                    </button>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div class="table-responsive-wrapper">
-                <table class="convenios-table">
-                    <thead>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Tipo</th>
+                        <th>Fecha Firma</th>
+                        <th>Fecha Vencimiento</th>
+                        <th>Estado</th>
+                        <th style="width: 150px;">Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var convenio in conveniosMostrados)
+                    {
                         <tr>
-                            <th>N&uacute;mero Convenio</th>
-                            <th>Fecha Firma</th>
-                            <th>Institucion(es) Afiliada(s)</th>
-                            <th>Categor&iacute;a</th>
-                            <th>Tipo Convenio</th>
-                            <th>Estado Convenio</th>
+                            <td>@convenio.IdConvenio</td>
+                            <td>@convenio.Titulo</td>
+                            <td>@convenio.TipoConvenio</td>
+                            <td>@convenio.FechaFirma.ToString("dd/MM/yyyy")</td>
+                            <td>@convenio.FechaVencimiento?.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <span class="badge @GetEstadoClass(convenio.Estado)">
+                                    @convenio.Estado
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-outline-primary btn-sm" @onclick="() => IrAEditar(convenio.IdConvenio)" title="Editar">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm" @onclick="() => EliminarConvenio(convenio.IdConvenio)" title="Eliminar">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var convenio in conveniosMostrados)
-                        {
-                            <tr @onclick="() => IrAEditar(convenio.IdConvenio)">
-                                <td>@convenio.IdConvenio</td>
-                                <td>@convenio.FechaFirma.ToString("dd/MM/yyyy")</td>
-                                
-                                <td>
-                                    @if (convenio.ConvenioInstituciones != null && convenio.ConvenioInstituciones.Any())
-                                    {
-                                        @string.Join(", ", convenio.ConvenioInstituciones.Select(ci => ci.Institucion?.Nombre ?? "N/A"))
-                                    }
-                                    else
-                                    {
-                                        <span>N/A</span>
-                                    }
-                                </td>
-                                
-                                <td>@convenio.Categoria</td>
-                                <td>@convenio.TipoConvenio</td>
-                                <td>@convenio.Estado</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="lista-footer">
-                <span>Registros encontrados: @conveniosMostrados.Count()</span>
-            </div>
-
-        </div> <div class="export-buttons-container">
-            <button class="btn-export btn-excel">
-                <i class="fas fa-file-excel"></i> Exportar en Excel
-            </button>
-            <button class="btn-export btn-pdf">
-                <i class="fas fa-file-pdf"></i> Exportar en PDF
-            </button>
+                    }
+                </tbody>
+            </table>
         </div>
+    </div>
 
-    </div> </div>
+    <div class="card-footer">
+        <strong>Total de Registros: @conveniosMostrados.Count()</strong>
+    </div>
+</div>
 
 @code {
-    // --- Lógica de la página ---
-    private string Usuario = "JRAFAEL";
     private string filtroTexto = "";
     private DateTime? fechaDesde;
     private DateTime? fechaHasta;
 
-    // 3. El modelo 'Convenio'
     private List<Convenio> listaCompletaConvenios = new();
     private List<Convenio> conveniosMostrados = new();
 
-    // 4. Cargamos los datos reales al iniciar
     protected override async Task OnInitializedAsync()
     {
-        // Cargamos la lista completa una vez. Con los convenios visibles
+        await CargarDatos();
+    }
+
+    private async Task CargarDatos()
+    {
+        // Cargamos la lista completa una vez.
         listaCompletaConvenios = await ConveniosService.Listar(c => c.EsVisible == true);
         Filtrar(); // Aplicamos filtros (inicialmente vacíos)
     }
 
-    // 5. El método 'Filtrar' ahora trabaja sobre la lista cargada
     private void Filtrar()
     {
-        // Empezamos con la lista completa
         var query = listaCompletaConvenios.AsQueryable();
 
         // Aplicamos filtro de texto
         if (!string.IsNullOrWhiteSpace(filtroTexto))
         {
             string textoBusqueda = filtroTexto.ToLower().Trim();
-            query = query.Where(c => 
-                (c.Titulo != null && c.Titulo.ToLower().Contains(textoBusqueda))
-             || (c.TipoConvenio != null && c.TipoConvenio.ToLower().Contains(textoBusqueda))
-             || (c.Categoria != null && c.Categoria.ToLower().Contains(textoBusqueda))
-             || (c.Estado != null && c.Estado.ToLower().Contains(textoBusqueda))
-             || c.ConvenioInstituciones.Any(ci => ci.Institucion.Nombre.ToLower().Contains(textoBusqueda))
+            query = query.Where(c =>
+                 (c.Titulo != null && c.Titulo.ToLower().Contains(textoBusqueda))
+              || (c.TipoConvenio != null && c.TipoConvenio.ToLower().Contains(textoBusqueda))
+              || (c.Categoria != null && c.Categoria.ToLower().Contains(textoBusqueda))
+              || (c.Estado != null && c.Estado.ToLower().Contains(textoBusqueda))
+            //   || c.ConvenioInstituciones.Any(ci => ci.Institucion.Nombre.ToLower().Contains(textoBusqueda)) // Descomentar si es necesario
             );
         }
 
-        // Aplicamos filtro de fecha "Desde"
         if (fechaDesde.HasValue)
         {
             query = query.Where(c => c.FechaFirma.Date >= fechaDesde.Value.Date);
         }
 
-        // Aplicamos filtro de fecha "Hasta"
         if (fechaHasta.HasValue)
         {
             query = query.Where(c => c.FechaFirma.Date <= fechaHasta.Value.Date);
         }
-
-        // Actualizamos la lista que se muestra en la tabla
+        
         conveniosMostrados = query.ToList();
+    }
+
+    private async Task LimpiarFiltros()
+    {
+        filtroTexto = "";
+        fechaDesde = null;
+        fechaHasta = null;
+        await CargarDatos();
     }
 
     private void IrAEditar(int convenioId)
@@ -182,8 +151,32 @@
         NavManager.NavigateTo($"/Convenio/Edit/{convenioId}");
     }
 
-    private void CerrarSesion()
+    private async Task EliminarConvenio(int convenioId)
     {
-        NavManager.NavigateTo("/");
+        // Pedir confirmación
+        var confirmado = await JSRuntime.InvokeAsync<bool>("confirm", $"¿Estás seguro de que quieres eliminar el convenio {convenioId}?");
+        
+        if (confirmado)
+        {
+            var convenio = await ConveniosService.Buscar(convenioId);
+            if (convenio != null)
+            {
+                convenio.EsVisible = false; // Borrado lógico
+                await ConveniosService.Guardar(convenio);
+                await CargarDatos(); // Recargar la lista
+            }
+        }
+    }
+
+    // Método para dar color al estado del convenio
+    private string GetEstadoClass(string? estado)
+    {
+        return estado switch
+        {
+            "Activo" => "text-bg-success",
+            "Vencido" => "text-bg-danger",
+            "En Renovación" => "text-bg-warning",
+            _ => "text-bg-secondary"
+        };
     }
 }
