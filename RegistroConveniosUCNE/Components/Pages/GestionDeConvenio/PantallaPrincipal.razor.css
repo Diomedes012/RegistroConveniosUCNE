@@ -1,10 +1,10 @@
-﻿/* 1. Barra de Navegación del Contenido */
+﻿
 .content-nav {
     display: flex;
     flex-direction: row;
-    gap: 2.5rem; /* Espacio entre links */
+    gap: 2.5rem;
     padding-bottom: 1rem;
-    border-bottom: 2px solid #E5E5E5; /* Borde gris claro */
+    border-bottom: 2px solid #E5E5E5; 
     margin-bottom: 2.5rem;
 }
 
@@ -14,28 +14,28 @@
         color: #555;
         text-decoration: none;
         padding: 0.5rem 0;
-        border-bottom: 4px solid transparent; /* Espacio para el borde activo */
+        border-bottom: 4px solid transparent; 
     }
 
-        /* Estilo para el link activo o hover */
+   
         .content-nav .nav-link.active,
         .content-nav .nav-link:hover {
-            color: #19355C; /* Azul oscuro */
-            border-bottom-color: #FFCB00; /* Subrayado amarillo */
+            color: #19355C; 
+            border-bottom-color: #FFCB00;
         }
 
-/* 2. Cuerpo de la Página */
+
 .home-body {
-    text-align: center; /* Centra la imagen */
+    text-align: center; 
     padding: 2rem 0;
-    flex: 1; /* Ocupa el espacio disponible */
+    flex: 1; 
 }
 
 .convenio-image {
     max-width: 80%;
     height: auto;
-    border: 1px solid #D9D9D9; /* Borde ligero */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    border: 1px solid #D9D9D9;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
 }
 
 /* 3. Pie de página */
@@ -44,5 +44,5 @@
     padding: 1.5rem 0 0 0;
     color: #888;
     border-top: 1px solid #E5E5E5;
-    margin-top: auto; /* Empuja el footer al fondo de la página */
+    margin-top: auto;
 }

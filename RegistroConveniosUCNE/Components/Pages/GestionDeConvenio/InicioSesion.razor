@@ -49,13 +49,18 @@
 </div>
 
 @code {
+    private LoginModel loginModel = new LoginModel();
+    public class LoginModel
+    {
+        [Required(ErrorMessage = "El usuario es requerido.")]
+        public string? Username { get; set; }
 
+        [Required(ErrorMessage = "La contraseña es requerida.")]
+        public string? Password { get; set; }
+    }
 
     private void HandleLogin()
     {
-        // Aquí iría tu lógica de validación de usuario y contraseña
-
-        // Navegamos a la página principal interna
-        NavigationManager.NavigateTo("/pantalla-principal");
+        NavigationManager.NavigateTo("pantalla-principal");
     }
 }

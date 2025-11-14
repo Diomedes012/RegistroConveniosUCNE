@@ -117,10 +117,10 @@
 
     public Convenio ConvenioEditar { get; set; } = new Convenio();
 
-    // Variables del lector PDF
+
     private string? pdfPreviewUrl;
     private IBrowserFile? selectedFile;
-    private const long maxFileSize = 50 * 1024 * 1024; // 50 MB
+    private const long maxFileSize = 50 * 1024 * 1024;
 
     protected override async Task OnInitializedAsync()
     {
@@ -128,14 +128,14 @@
         if (convenio != null)
         {
             ConvenioEditar = convenio;
-            // Carga el PDF existente al iniciar
+
             pdfPreviewUrl = ConvenioEditar.ArchivoPrincipal;
         }
     }
 
     public async Task GuardarCambios()
     {
-        // Lógica para guardar el archivo si se seleccionó uno nuevo
+
         if (selectedFile != null)
         {
             try
@@ -150,18 +150,17 @@
                 await using var stream = File.Create(filePath);
                 await selectedFile.OpenReadStream(maxFileSize).CopyToAsync(stream);
 
-                // Actualiza la ruta del archivo en el modelo
                 ConvenioEditar.ArchivoPrincipal = $"/uploads/{selectedFile.Name}";
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error al guardar el nuevo archivo: {ex.Message}");
-                // Mostrar error al usuario
+
                 return;
             }
         }
 
-        // Lógica para guardar el convenio (tomada de tu código)
+
         var guardado = await conveniosService.Guardar(ConvenioEditar);
         if (guardado)
         {
@@ -171,20 +170,19 @@
 
     public async Task OnFileSelected(InputFileChangeEventArgs e)
     {
-        // Limpia el visor anterior si era un Blob temporal
         if (pdfPreviewUrl != null && pdfPreviewUrl.StartsWith("blob:"))
             await JSRuntime.InvokeVoidAsync("revokeBlobUrl", pdfPreviewUrl);
 
         selectedFile = e.File;
         if (selectedFile == null || selectedFile.ContentType != "application/pdf")
         {
-            // Si el archivo no es PDF, vuelve a mostrar el original
+ 
             pdfPreviewUrl = ConvenioEditar.ArchivoPrincipal;
             selectedFile = null;
             return;
         }
 
-        // Genera una URL temporal (Blob) para la previsualización
+
         try
         {
             using var streamRef = new DotNetStreamReference(selectedFile.OpenReadStream(maxFileSize));
@@ -199,13 +197,13 @@
 
     public async Task Eliminar()
     {
-        // Pedir confirmación
+
         var confirmado = await JSRuntime.InvokeAsync<bool>("confirm", $"¿Estás seguro de que quieres eliminar el convenio '{ConvenioEditar.Titulo}'?");
 
         if (!confirmado)
             return;
 
-        // Lógica de borrado suave (tomada de tu código)
+
         var ocultado = await conveniosService.Buscar(ConvenioId);
         if (ocultado != null)
         {

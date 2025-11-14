@@ -1,45 +1,37 @@
-﻿/* Contenedor principal de la página de login */
-.login-page-container {
+﻿.login-page-container {
     display: flex;
-    align-items: center; /* Centra verticalmente */
-    justify-content: center; /* Centra horizontalmente */
-    height: 100vh; /* Ocupa toda la altura de la pantalla */
+    align-items: center; 
+    justify-content: center;
+    height: 100vh;
     position: relative;
     overflow: hidden;
     color: white;
 }
 
-/* Imagen de fondo */
 .background-image {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Cubre toda la pantalla sin deformarse */
+    object-fit: cover; 
     z-index: -1;
-    filter: blur(2px) brightness(0.7); /* Oscurece y desenfoca el fondo para que el formulario resalte */
+    filter: blur(2px) brightness(0.7); 
 }
 
-/* **ONDAS AMARILLAS ELIMINADAS**
-   Los pseudo-elementos ::before y ::after han sido removidos.
-*/
-
-
-/* Caja de Login (Azul Oscuro) */
 .login-box {
-    background: #19355C; /* Azul oscuro (el mismo de tu sidebar) */
+    background: #19355C; 
     padding: 2.5rem 3rem;
-    border-radius: 20px; /* Bordes redondeados como en tu captura */
+    border-radius: 20px; 
     text-align: center;
     width: 100%;
-    max-width: 480px; /* Ancho máximo del formulario */
-    z-index: 1; /* Se asegura que esté sobre el fondo */
+    max-width: 480px;
+    z-index: 1; 
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .logo-1 {
-    width: 120px; /* Tamaño ajustado del logo */
+    width: 120px; 
     height: auto;
     margin-bottom: 1.5rem;
 }
@@ -51,7 +43,7 @@
     margin-bottom: 2rem;
 }
 
-/* Estilos del formulario */
+
 .form-group {
     margin-bottom: 1.5rem;
     text-align: left;
@@ -66,10 +58,10 @@
 
         .form-group label i {
             margin-right: 0.5rem;
-            width: 20px; /* Alinea los iconos */
+            width: 20px; 
         }
 
-/* Estilo para los <InputText> */
+
 ::deep .form-control {
     width: 100%;
     padding: 0.8rem 1rem;
@@ -78,21 +70,19 @@
     font-size: 1rem;
 }
 
-/* Mensajes de validación (ej. "El usuario es requerido") */
 ::deep .validation-message {
-    color: #FFCB00; /* Amarillo para los errores */
+    color: #FFCB00; 
     font-weight: 500;
     margin-top: 0.5rem;
 }
 
-/* Botón de Iniciar Sesión */
 .btn-login {
     width: 100%;
     padding: 0.8rem;
     font-size: 1.1rem;
     font-weight: 700;
-    color: #19355C; /* Texto azul */
-    background: #FFCB00; /* Fondo amarillo */
+    color: #19355C; 
+    background: #FFCB00;
     border: none;
     border-radius: 10px;
     cursor: pointer;
@@ -105,7 +95,6 @@
         background-color: #ffe04d;
     }
 
-/* Contenedor de los links inferiores */
 .links-container {
     display: flex;
     justify-content: space-between;

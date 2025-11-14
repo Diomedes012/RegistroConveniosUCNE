@@ -85,7 +85,6 @@
 }
 
 @code {
-    // Modelo de datos (tomado de tu ejemplo)
     private class UserProfileModel
     {
         public string Nombre { get; set; } = "";
@@ -94,7 +93,6 @@
         public string Telefono { get; set; } = "";
     }
 
-    // Datos del usuario (idealmente vendrían de un servicio)
     private UserProfileModel user = new UserProfileModel
     {
         Nombre = "Juan Carlos Pérez García",
@@ -103,7 +101,6 @@
         Telefono = "809-555-1234"
     };
 
-    // Lógica del Modal (tomada de tu ejemplo)
     private bool showModal = false;
     private string currentEditField = "";
     private string currentValueToEdit = "";

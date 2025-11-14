@@ -1,24 +1,18 @@
-﻿/* Cabecera gris de la página */
-.page-header {
+﻿.page-header {
     background-color: #E5E5E5;
     padding: 1.5rem 2rem;
     margin-bottom: 2.5rem;
     border-radius: 6px;
 }
-
     .page-header h3 {
         margin: 0;
         font-weight: 600;
         color: #19355C;
     }
-
-/* Estilos para el header de la tarjeta (filtro) */
 .card-header {
     background-color: #f9f9f9;
     padding: 1.5rem;
 }
-
-/* Estilos para los 'badges' de estado */
 .badge {
     font-size: 0.85rem;
     padding: 0.5em 0.75em;

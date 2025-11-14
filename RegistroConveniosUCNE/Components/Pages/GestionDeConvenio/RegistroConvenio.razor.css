@@ -1,6 +1,5 @@
-﻿/* Cabecera gris de la página (como en la foto) */
-.page-header {
-    background-color: #E5E5E5; /* Color gris claro */
+﻿.page-header {
+    background-color: #E5E5E5;
     padding: 1.5rem 2rem;
     margin-bottom: 2.5rem;
     border-radius: 6px;
@@ -9,17 +8,15 @@
     .page-header h3 {
         margin: 0;
         font-weight: 600;
-        color: #19355C; /* Azul oscuro */
+        color: #19355C; 
     }
 
-/* Estilo para el pie del formulario */
 .card-footer {
     background-color: #f9f9f9;
     display: flex;
     justify-content: flex-end;
 }
 
-/* Mensajes de validación de Blazor */
 .validation-message {
     font-size: 0.875em;
     font-weight: 500;

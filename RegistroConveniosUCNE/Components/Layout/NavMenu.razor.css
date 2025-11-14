@@ -1,19 +1,14 @@
-/* Eliminados todos los estilos de .sidebar-header 
-*/
-
 .nav-container {
     display: flex;
     flex-direction: column;
-    flex: 1; /* Ocupa todo el espacio del .sidebar */
+    flex: 1; 
     padding-top: 1rem;
 }
 
 .nav-bottom {
-    margin-top: auto; /* Empuja el logout al fondo */
+    margin-top: auto; 
     padding-bottom: 1.5rem;
 }
-
-/* Estilos de los items */
 .nav-item {
     font-size: 0.9rem;
     padding-bottom: 0.5rem;
@@ -26,8 +21,6 @@
     .nav-item:last-of-type {
         padding-bottom: 1rem;
     }
-
-    /* AJUSTADO: Se centra el contenido del enlace */
     .nav-item ::deep .nav-link {
         color: #d7d7d7;
         background: none;
@@ -36,22 +29,15 @@
         height: 3.5rem;
         display: flex;
         align-items: center;
-        justify-content: center; /* ¡NUEVO! Centra el icono horizontalmente */
+        justify-content: center;
         width: 100%;
     }
-
-/* AJUSTADO: Estilo del icono (sin texto) */
 .nav-icon {
-    font-size: 1.8rem; /* Icono un poco más grande para que se vea bien */
-    margin-right: 0; /* ¡ELIMINADO! No hay margen porque no hay texto */
+    font-size: 1.8rem; 
+    margin-right: 0;
     width: auto;
     text-align: center;
 }
-
-/* Eliminados los estilos de .nav-text 
-*/
-
-/* Estilos de Hover y Activo (sin cambios) */
 .nav-item ::deep a.active {
     background-color: rgba(255, 255, 255, 0.37);
     color: white;

@@ -62,7 +62,6 @@
 </div>
 
 @code {
-    // Modelo de datos (tomado de tu ejemplo)
     public class Solicitud
     {
         public int Id { get; set; }
@@ -72,25 +71,17 @@
     }
 
     private string filtroTexto = "";
-
-    // Lista completa de solicitudes (idealmente vendría de un servicio)
     private List<Solicitud> solicitudesCompletas = new List<Solicitud>
     {
-        // Datos de ejemplo basados en tu foto
         new Solicitud { Id = 101, Documento = "Convenio Marco", Fecha = DateTime.Now.AddDays(-2), Estado = "Aprobado" },
         new Solicitud { Id = 102, Documento = "Acuerdo Específico", Fecha = DateTime.Now.AddDays(-1), Estado = "Pendiente" },
         new Solicitud { Id = 103, Documento = "MOU", Fecha = DateTime.Now, Estado = "Rechazado" },
     };
-
-    // Lista que se muestra en la tabla
     private List<Solicitud> solicitudesFiltradas = new List<Solicitud>();
-
     protected override void OnInitialized()
     {
-        Filtrar(); // Carga inicial
+        Filtrar();
     }
-
-    // Lógica de filtrado
     private void Filtrar()
     {
         if (string.IsNullOrWhiteSpace(filtroTexto))
@@ -107,8 +98,6 @@
                 .ToList();
         }
     }
-
-    // Helper para dar color al estado
     private string GetEstadoClass(string? estado)
     {
         return estado switch

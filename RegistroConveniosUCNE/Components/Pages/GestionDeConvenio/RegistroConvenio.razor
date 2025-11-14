@@ -86,12 +86,10 @@
 
 @code {
     private IBrowserFile? archivo;
-
-    // --- Lógica del Formulario ---
     private Convenio ConvenioEditar = new()
     {
-        FechaFirma = DateTime.Now, // Pre-rellena la fecha de firma
-        Estado = "Activo" // Pre-selecciona "Activo"
+        FechaFirma = DateTime.Now, 
+        Estado = "Activo" 
     };
 
     private async Task GuardarConvenio()
@@ -100,7 +98,6 @@
         {
             if (archivo != null)
             {
-                // La ruta de guardado debe estar en wwwroot para ser accesible
                 var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", archivo.Name);
 
                 var directoryPath = Path.GetDirectoryName(filePath);
@@ -110,10 +107,10 @@
                 }
 
                 await using var stream = File.Create(filePath);
-                // Permitir archivos de hasta 20MB
+
                 await archivo.OpenReadStream(20 * 1024 * 1024).CopyToAsync(stream);
 
-                // La ruta para la BD debe ser accesible desde el navegador
+      
                 ConvenioEditar.ArchivoPrincipal = $"/uploads/{archivo.Name}";
             }
 
@@ -123,16 +120,14 @@
 
             if (resultado)
             {
-                // Limpiar formulario y redirigir
                 ConvenioEditar = new Convenio() { FechaFirma = DateTime.Now, Estado = "Activo" };
                 archivo = null;
-                NavManager.NavigateTo("/pantalla-principal"); // Redirige a la página principal
+                NavManager.NavigateTo("/pantalla-principal");
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
-            // Aquí deberías mostrar un mensaje de error al usuario
         }
     }
 
@@ -143,6 +138,6 @@
 
     private void Volver()
     {
-        NavManager.NavigateTo("/pantalla-principal"); // Vuelve a la pantalla principal
+        NavManager.NavigateTo("/pantalla-principal");
     }
 }

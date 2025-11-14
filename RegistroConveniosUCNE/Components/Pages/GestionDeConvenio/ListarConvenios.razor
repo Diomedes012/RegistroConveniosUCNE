@@ -103,16 +103,14 @@
 
     private async Task CargarDatos()
     {
-        // Cargamos la lista completa una vez.
         listaCompletaConvenios = await ConveniosService.Listar(c => c.EsVisible == true);
-        Filtrar(); // Aplicamos filtros (inicialmente vacíos)
+        Filtrar(); 
     }
 
     private void Filtrar()
     {
         var query = listaCompletaConvenios.AsQueryable();
 
-        // Aplicamos filtro de texto
         if (!string.IsNullOrWhiteSpace(filtroTexto))
         {
             string textoBusqueda = filtroTexto.ToLower().Trim();
@@ -121,7 +119,6 @@
               || (c.TipoConvenio != null && c.TipoConvenio.ToLower().Contains(textoBusqueda))
               || (c.Categoria != null && c.Categoria.ToLower().Contains(textoBusqueda))
               || (c.Estado != null && c.Estado.ToLower().Contains(textoBusqueda))
-            //   || c.ConvenioInstituciones.Any(ci => ci.Institucion.Nombre.ToLower().Contains(textoBusqueda)) // Descomentar si es necesario
             );
         }
 
@@ -153,7 +150,6 @@
 
     private async Task EliminarConvenio(int convenioId)
     {
-        // Pedir confirmación
         var confirmado = await JSRuntime.InvokeAsync<bool>("confirm", $"¿Estás seguro de que quieres eliminar el convenio {convenioId}?");
         
         if (confirmado)
@@ -161,14 +157,12 @@
             var convenio = await ConveniosService.Buscar(convenioId);
             if (convenio != null)
             {
-                convenio.EsVisible = false; // Borrado lógico
+                convenio.EsVisible = false; 
                 await ConveniosService.Guardar(convenio);
-                await CargarDatos(); // Recargar la lista
+                await CargarDatos();
             }
         }
     }
-
-    // Método para dar color al estado del convenio
     private string GetEstadoClass(string? estado)
     {
         return estado switch

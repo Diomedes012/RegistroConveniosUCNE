@@ -1,4 +1,4 @@
-﻿/* Cabecera gris de la página */
+﻿
 .page-header {
     background-color: #E5E5E5;
     padding: 1.5rem 2rem;
@@ -11,33 +11,26 @@
         font-weight: 600;
         color: #19355C;
     }
-
-/* Estilos para el header de la tarjeta (filtros) */
 .card-header {
     background-color: #f9f9f9;
 }
 
-/* Estilos para la tabla */
+
 .table-responsive {
-    max-height: 60vh; /* Permite scroll en la tabla si es muy larga */
+    max-height: 60vh; 
 }
 
 .table tbody tr {
-    cursor: pointer; /* Mantiene el cursor de puntero */
+    cursor: pointer;
 }
 
-/* Estilos para los botones de opciones */
 .table td .btn {
     margin-right: 5px;
 }
-
-/* Estilo para el pie de la tarjeta */
 .card-footer {
     background-color: #f9f9f9;
     font-weight: 500;
 }
-
-/* Estilos para los 'badges' de estado */
 .badge {
     font-size: 0.8rem;
     padding: 0.5em 0.75em;
