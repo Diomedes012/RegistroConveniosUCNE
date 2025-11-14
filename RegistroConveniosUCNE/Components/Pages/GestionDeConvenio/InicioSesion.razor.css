@@ -1,210 +1,127 @@
-﻿.iniciar-sesion,
-.iniciar-sesion * {
-    box-sizing: border-box;
-}
-
-.iniciar-sesion {
+﻿/* Contenedor principal de la página de login */
+.login-page-container {
+    display: flex;
+    align-items: center; /* Centra verticalmente */
+    justify-content: center; /* Centra horizontalmente */
+    height: 100vh; /* Ocupa toda la altura de la pantalla */
     position: relative;
-    width: 100%;
-    height: 1080px;
-    margin: 0 auto;
-    max-width: 1920px;
     overflow: hidden;
+    color: white;
 }
 
-.rectangle-4 {
+/* Imagen de fondo */
+.background-image {
     position: absolute;
-    height: 1080px;
-    left: 0%;
-    right: 0%;
-    top: 0px;
-    background: rgba(255, 255, 255, 0.03);
-    box-shadow: inset 0px -0.5px 1px rgba(94, 94, 94, 0.3), inset 0px -0.5px 1px rgba(255, 255, 255, 0.2);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Cubre toda la pantalla sin deformarse */
+    z-index: -1;
+    filter: blur(2px) brightness(0.7); /* Oscurece y desenfoca el fondo para que el formulario resalte */
 }
 
-.rectangle-42 {
-    position: absolute;
-    left: 29.17%;
-    right: 29.17%;
-    top: 12.96%;
-    bottom: 12.96%;
-    background: #05084D;
-    border-radius: 50px;
-    backdrop-filter: blur(2px);
+/* **ONDAS AMARILLAS ELIMINADAS**
+   Los pseudo-elementos ::before y ::after han sido removidos.
+*/
+
+
+/* Caja de Login (Azul Oscuro) */
+.login-box {
+    background: #19355C; /* Azul oscuro (el mismo de tu sidebar) */
+    padding: 2.5rem 3rem;
+    border-radius: 20px; /* Bordes redondeados como en tu captura */
+    text-align: center;
+    width: 100%;
+    max-width: 480px; /* Ancho máximo del formulario */
+    z-index: 1; /* Se asegura que esté sobre el fondo */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .logo-1 {
-    position: absolute;
-    height: 196px;
-    width: 147px;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 186px;
-    object-fit: cover;
+    width: 120px; /* Tamaño ajustado del logo */
+    height: auto;
+    margin-bottom: 1.5rem;
 }
 
-.inicio-de-sesi-n-administrador {
-    position: absolute;
-    width: 30%;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 38.89%;
-    font-family: 'Jaldi', sans-serif;
-    font-style: normal;
-    font-weight: 400;
-    font-size: 30px;
-    line-height: normal;
+.login-title {
+    font-size: 1.5rem;
+    font-weight: 600;
     text-transform: uppercase;
-    color: #FFFFFF;
-    text-align: center;
+    margin-bottom: 2rem;
 }
 
-.usuario {
-    position: absolute;
-    width: 19%;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 47.87%;
-    display: flex;
-    justify-content: left;
-    align-items: center;
-    padding-left: 20px;
-    font-family: 'Jaldi', sans-serif;
-    font-style: normal;
-    font-weight: 400;
-    font-size: 26px;
-    line-height: 54px;
-    color: #FFFFFF;
+/* Estilos del formulario */
+.form-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
 }
 
-.contrase-a {
-    position: absolute;
-    width: 19%;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 56.67%;
-    display: flex;
-    justify-content: left;
-    align-items: center;
-    padding-left: 20px;
-    font-family: 'Jaldi', sans-serif;
-    font-style: normal;
-    font-weight: 400;
-    font-size: 26px;
-    line-height: 54px;
-    color: #FFFFFF;
-}
-
-    .usuario i,
-    .contrase-a i {
-        font-size: 26px;
-        margin-right: 8px;
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+        font-weight: 500;
     }
 
+        .form-group label i {
+            margin-right: 0.5rem;
+            width: 20px; /* Alinea los iconos */
+        }
 
-.username-fill {
-    position: absolute;
-    width: 19%;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 52.13%;
-    bottom: 44.26%;
-    background: #FFFFFF;
-    border-radius: 20px;
-    border: none;
-    padding-left: 20px;
-    font-size: 18px;
-}
-
-.password-fill {
-    position: absolute;
-    width: 19%;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 61.67%;
-    bottom: 34.72%;
-    background: #FFFFFF;
-    border-radius: 20px;
-    border: none;
-    padding-left: 20px;
-    font-size: 18px;
-}
-
-.button-inicio-de-sesion {
-    position: absolute;
-    width: 13%;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 68.61%;
-    bottom: 27.31%;
-}
-
-.rectangle-5 {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
+/* Estilo para los <InputText> */
+::deep .form-control {
     width: 100%;
-    height: 100%;
-    background: #F8E700;
-    border-radius: 20px;
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
     border: none;
-    font-family: 'Jaldi', sans-serif;
-    font-style: normal;
+    font-size: 1rem;
+}
+
+/* Mensajes de validación (ej. "El usuario es requerido") */
+::deep .validation-message {
+    color: #FFCB00; /* Amarillo para los errores */
+    font-weight: 500;
+    margin-top: 0.5rem;
+}
+
+/* Botón de Iniciar Sesión */
+.btn-login {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1.1rem;
     font-weight: 700;
-    font-size: 20px;
-    color: #05084D;
+    color: #19355C; /* Texto azul */
+    background: #FFCB00; /* Fondo amarillo */
+    border: none;
+    border-radius: 10px;
     cursor: pointer;
+    text-transform: uppercase;
+    margin-top: 1rem;
+    transition: background-color 0.2s;
+}
+
+    .btn-login:hover {
+        background-color: #ffe04d;
+    }
+
+/* Contenedor de los links inferiores */
+.links-container {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    margin-top: 2rem;
 }
 
-.olvide-mi-contrase-a {
-    position: absolute;
-    left: 37.97%;
-    right: 46.93%;
-    top: 76.2%;
-    bottom: 18.8%;
-    font-family: 'Jaldi', sans-serif;
-    font-style: normal;
-    font-weight: 400;
-    font-size: 22px;
-    line-height: normal;
-    color: #FFFFFF;
-    text-decoration: none;
-    white-space: nowrap;
-}
-
-.crear-cuenta {
-    position: absolute;
-    left: 55.94%;
-    right: 36.56%;
-    top: 76.2%;
-    bottom: 20%;
-    font-family: 'Jaldi', sans-serif;
-    font-style: normal;
-    font-weight: 400;
-    font-size: 20px;
-    line-height: normal;
-    color: #FFFFFF;
-    text-decoration: none;
-    white-space: nowrap;
-}
-
-.icon-olvide {
-    position: absolute;
-    left: 35.8%;
-    top: 75.80%;
-    font-size: 24px;
+.login-link {
     color: white;
+    text-decoration: none;
+    font-size: 0.95rem;
 }
 
-.icon-crear {
-    position: absolute;
-    left: 53.47%;
-    top: 75.10%;
-    font-size: 30px;
-    color: white;
-}
+    .login-link i {
+        margin-right: 0.3rem;
+    }
+
+    .login-link:hover {
+        text-decoration: underline;
+    }
