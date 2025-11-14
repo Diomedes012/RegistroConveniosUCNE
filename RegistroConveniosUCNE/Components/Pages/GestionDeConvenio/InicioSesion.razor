@@ -3,12 +3,14 @@
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
+@using System.ComponentModel.DataAnnotations
+
 <div class="login-page-container">
 
-    <img src="fondoInicioSesion.png" alt="Fondo de inicio de sesión" class="background-image" />
+    <img src="lib/images/fondoInicioSesion.png" alt="Fondo de inicio de sesión" class="background-image" />
 
     <div class="login-box">
-        <img class="logo-1" src="logoUcnePeq.png" alt="Logo UCNE" />
+        <img class="logo-1" src="lib/images/logoUcnePeq.png" alt="Logo UCNE" />
 
         <h2 class="login-title">INICIO DE SESIÓN ADMINISTRADOR</h2>
 
@@ -63,7 +65,7 @@
     {
         // Aquí iría tu lógica de validación de usuario y contraseña
 
-        // Si es exitoso, navegamos a la página de "inicio" (la que renombramos)
-        NavigationManager.NavigateTo("/inicio");
+        // Navegamos a la página principal interna
+        NavigationManager.NavigateTo("/pantalla-principal");
     }
 }

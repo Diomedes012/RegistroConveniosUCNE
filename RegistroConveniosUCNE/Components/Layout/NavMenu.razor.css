@@ -1,47 +1,19 @@
-/* NUEVO: Cabecera Amarilla */
-.sidebar-header {
-    background: #FFCB00;
-    display: flex;
-    align-items: center;
-    padding: 1.25rem 1.5rem; /* Espaciado interno */
-    flex-shrink: 0; /* Evita que se encoja */
-}
-
-    .sidebar-header img {
-        height: 50px; /* Tamaño del logo */
-        width: auto;
-        margin-right: 1rem;
-    }
-
-    .sidebar-header .header-title {
-        font-weight: bold;
-        font-size: 1.1rem; /* Tamaño ajustado */
-        color: #19355C; /* Color azul */
-        text-transform: uppercase;
-    }
-
-/* MODIFICADO: .nav-container ahora es flexible 
-   para ocupar el espacio restante.
+/* Eliminados todos los estilos de .sidebar-header 
 */
+
 .nav-container {
     display: flex;
     flex-direction: column;
-    flex: 1; /* ¡Importante! Ocupa el resto del espacio */
-    padding-top: 1rem; /* Espacio desde la barra amarilla */
+    flex: 1; /* Ocupa todo el espacio del .sidebar */
+    padding-top: 1rem;
 }
 
-/* Contenedor del enlace inferior */
 .nav-bottom {
-    margin-top: auto; /* ¡Esta es la clave! Empuja este bloque al fondo */
-    padding-bottom: 1.5rem; /* Un poco de espacio inferior */
+    margin-top: auto; /* Empuja el logout al fondo */
+    padding-bottom: 1.5rem;
 }
 
-    /* Centramos el icono de logout (ya que no tiene texto) */
-    .nav-bottom .nav-link {
-        justify-content: center;
-    }
-
-/* Estilos de los items de navegación (Sin cambios) */
+/* Estilos de los items */
 .nav-item {
     font-size: 0.9rem;
     padding-bottom: 0.5rem;
@@ -55,6 +27,7 @@
         padding-bottom: 1rem;
     }
 
+    /* AJUSTADO: Se centra el contenido del enlace */
     .nav-item ::deep .nav-link {
         color: #d7d7d7;
         background: none;
@@ -63,24 +36,22 @@
         height: 3.5rem;
         display: flex;
         align-items: center;
-        line-height: 3.5rem;
+        justify-content: center; /* ¡NUEVO! Centra el icono horizontalmente */
         width: 100%;
     }
 
+/* AJUSTADO: Estilo del icono (sin texto) */
 .nav-icon {
-    font-size: 1.5rem;
-    margin-right: 1rem;
-    width: 2rem;
-    display: inline-block;
+    font-size: 1.8rem; /* Icono un poco más grande para que se vea bien */
+    margin-right: 0; /* ¡ELIMINADO! No hay margen porque no hay texto */
+    width: auto;
     text-align: center;
 }
 
-.nav-text {
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 1rem;
-}
+/* Eliminados los estilos de .nav-text 
+*/
 
+/* Estilos de Hover y Activo (sin cambios) */
 .nav-item ::deep a.active {
     background-color: rgba(255, 255, 255, 0.37);
     color: white;

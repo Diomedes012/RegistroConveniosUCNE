@@ -1,32 +1,62 @@
-/* :host y .page-container definen el layout principal de 2 columnas */
 :host, .page-container {
     display: flex;
+    flex-direction: column; /* Apilado vertical: Header arriba, content-wrapper abajo */
     height: 100vh;
 }
 
-/* 1. Barra Lateral (Azul) */
-.sidebar {
-    width: 424px; /* Ancho de tu diseño */
-    background: #19355C; /* Color azul de fondo */
+/* 1. Cabecera Amarilla */
+.main-header {
+    height: 80px; /* Altura ajustada */
+    background: #FFCB00;
+    display: flex;
+    align-items: center;
+    padding: 0 2rem; /* Espaciado horizontal */
     flex-shrink: 0;
-    /* Usamos flex para que el NavMenu se expanda al 100% */
+    color: #19355C;
+}
+
+.header-logo {
+    height: 50px; /* Tamaño del logo */
+    width: auto;
+    margin-right: 1rem;
+}
+
+.header-title {
+    font-weight: bold;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+}
+
+/* 2. Contenedor para el contenido y sidebar */
+.content-wrapper {
+    display: flex;
+    flex: 1; /* Ocupa el resto del alto */
+    overflow: hidden;
+}
+
+/* 3. Sidebar (Azul) - ANCHO AJUSTADO */
+.sidebar {
+    width: 100px; /* Ancho reducido para solo iconos */
+    background: #19355C;
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
 }
 
-/* 2. Contenido Principal (Blanco) */
+/* 4. Contenido Principal (Blanco) */
 main {
     flex: 1; /* Ocupa el resto del ancho */
     display: flex;
     flex-direction: column;
-    overflow-y: auto; /* El scroll principal está aquí */
+    overflow-y: auto;
     background: #FFFFFF;
 }
 
 article.content {
-    flex: 1; /* El contenido de la página ocupa todo el espacio */
-    padding: 2.5rem; /* Añadimos un padding general al área de contenido */
+    flex: 1;
+    padding: 2.5rem; /* Espaciado interno del área de contenido */
 }
+
 
 /* Estilos del Blazor-Error-UI (sin cambios) */
 #blazor-error-ui {

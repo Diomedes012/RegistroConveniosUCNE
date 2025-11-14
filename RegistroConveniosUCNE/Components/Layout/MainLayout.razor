@@ -2,15 +2,23 @@
 
 <div class="page-container">
 
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+    <header class="main-header">
+        <img src="lib/images/logo1.png" alt="Logo UCNE" class="header-logo" />
+        <span class="header-title">BIENVENIDO {}</span>
+    </header>
 
-    <main>
-        <article class="content">
-            @Body
-        </article>
-    </main>
+    <div class="content-wrapper">
+
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+
+        <main>
+            <article class="content">
+                @Body
+            </article>
+        </main>
+    </div>
 </div>
 
 <div id="blazor-error-ui" data-nosnippet>

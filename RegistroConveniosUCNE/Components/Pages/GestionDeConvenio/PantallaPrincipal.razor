@@ -1,55 +1,22 @@
-﻿@page "/pagina-principal"
-@inject NavigationManager NavManager 
+﻿@page "/pantalla-principal"
+@rendermode InteractiveServer
 
-<div class="pagina-principal">
-    <img src="images/image5.png" class="image-5" alt="Fondo" />
+<PageTitle>Inicio</PageTitle>
 
-    <div class="top-nav-background"></div>
-
-    <div class="rectangle-26"></div>
-    <div class="rectangle-27"></div>
-    <img src="images/logoUcnePeq.png" class="logo-1" alt="Logo" />
-
-    <div class="bienvenido">BIENVENIDO</div>
-
-    <div class="jrafael">@Usuario</div>
-
-    <div class="barra-navegacion-superior">
-        <NavLink href="/pagina-principal" class="nav-button">Inicio</NavLink>
-        <NavLink href="/crear-convenio" class="nav-button">Crear convenio</NavLink>
-        <NavLink href="/listar-convenio" class="nav-button">Listar convenio</NavLink>
-        <NavLink href="/reporte-convenio" class="nav-button">Reportes</NavLink>
-    </div>
-
-    <div class="menu-lateral">
-        <div class="menu-item">
-            <i class="fas fa-user icon"></i> <div class="perfil2">PERFIL</div>
-        </div>
-        <div class="menu-item">
-            <i class="fas fa-file-alt icon"></i> <div class="solicitudes2">SOLICITUDES</div>
-        </div>
-        <div class="menu-item">
-            <i class="fas fa-bell icon"></i> <div class="notificaciones2">NOTIFICACIONES</div>
-        </div>
-        <div class="menu-item">
-            <i class="fas fa-exclamation-triangle icon"></i> <div class="alertas">ALERTAS</div>
-        </div>
-    </div>
-
-    <button class="rectangle-29" @onclick="CerrarSesion">
-        <span class="cerrar-sesi-n">CERRAR SESIÓN</span>
-    </button>
-
-    <img src="images/image2.png" class="image-2" alt="Imagen central" />
+<div class="content-nav">
+    <NavLink href="" class="nav-link" Match="NavLinkMatch.All">Inicio</NavLink>
+    <NavLink href="crear-convenio" class="nav-link">Crear convenio</NavLink>
+    <NavLink href="listar-convenio" class="nav-link">Listar convenio</NavLink>
+    <NavLink href="buscar-convenio" class="nav-link">Buscar convenio</NavLink>
 </div>
 
-@code {
-    private string Usuario = "JRAFAEL";
+<div class="home-body">
+   
+</div>
 
-    private void CerrarSesion()
-    {
-        // Aquí va la lógica de logout, por ejemplo:
-        Console.WriteLine("Sesión cerrada");
-        // NavManager.NavigateTo("/login"); // Puedes redirigir a la página de login
-    }
+<footer class="home-footer">
+</footer>
+
+@code {
+   
 }
