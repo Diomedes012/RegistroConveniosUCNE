@@ -161,8 +161,8 @@
 /* Contenedor para la tarjeta y botones (para centrar) */
 .lista-card-container {
     position: absolute;
-    top: 100px; /* Debajo de la barra de nav */
-    left: 320px; /* Al lado del panel lateral */
+    top: 50px; /* Debajo de la barra de nav */
+    left: 100px; /* Al lado del panel lateral */
     right: 20px; /* Espacio a la derecha */
     bottom: 20px; /* Espacio abajo */
     display: flex;
