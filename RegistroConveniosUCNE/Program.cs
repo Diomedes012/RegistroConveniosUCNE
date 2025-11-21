@@ -2,6 +2,7 @@ using GestionConveniosUCNE.Models;
 using GestionConveniosUCNE.Services;
 using Microsoft.EntityFrameworkCore;
 using RegistroConveniosUCNE.Components;
+using RegistroConveniosUCNE.Services;
 
 namespace RegistroConveniosUCNE;
 
@@ -20,6 +21,7 @@ public class Program
         builder.Services.AddScoped<InstitucionesService>();
         builder.Services.AddScoped<ResponsablesService>();
         builder.Services.AddScoped<ActividadesService>();
+        builder.Services.AddScoped<NotificacionesService>();
 
         // Add services to the container.
         builder.Services.AddRazorComponents()
