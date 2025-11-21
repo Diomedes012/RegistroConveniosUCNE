@@ -1,71 +1,150 @@
 ﻿@page "/notificaciones"
 @using GestionConveniosUCNE.Models
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<Contexto> DbFactory
 @rendermode InteractiveServer
 
-<div class="page-header">
-    <h3>Notificaciones</h3>
-</div>
+<div class="notifications-container">
 
-<h4 class="subtitulo-recientes">Recientes</h4>
+    <div class="top-toolbar">
+        <div class="toolbar-icons">
+            <button class="icon-btn" title="Refrescar" @onclick="LoadNotifications">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </button>
 
-<div class="notification-list">
-        {
-            <div class="notification-card">
-                <div class="notification-icon">
-                    <i class="bi"></i>
-                </div>
+            <button class="icon-btn" disabled><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button>
 
-                <div class="notification-content">
-                    <span class="notification-title"></span>
-                    <span class="notification-description"></span>
-                </div>
+            <button class="icon-btn" disabled><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></button>
 
-                <span class="notification-time">
+            <button class="icon-btn" disabled><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
 
+            <button class="icon-btn" disabled><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg></button>
+
+            <button class="icon-btn" disabled><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></button>
+        </div>
+
+        <div class="search-bar">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" placeholder="Buscar notificaciones" @bind="searchTerm" @bind:event="oninput" />
+        </div>
+    </div>
+
+    <div class="grid-container">
+        <div class="grid-header">
+            <div class="col-check">
+                <input type="checkbox" @bind="selectAll" />
+                <span class="refresh-icon" title="Refrescar" @onclick="LoadNotifications">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
                 </span>
             </div>
-        }
-    }
-    else
-    {
-        <div class="notification-card">
-            <div class="notification-content">
-                <span class="notification-title">No hay notificaciones</span>
-                <span class="notification-description">Todo está al día.</span>
-            </div>
+            <div class="col-title">Título</div>
+            <div class="col-desc">Descripción</div>
+            <div class="col-date">Fecha</div>
         </div>
-    }
+
+        @if (FilteredNotifications.Any())
+        {
+            @foreach (var item in FilteredNotifications)
+            {
+                <div class="grid-row">
+                    <div class="col-check">
+                        <input type="checkbox" @bind="item.IsSelected" />
+                        <button class="star-btn @(item.IsFavorite ? "active" : "")" @onclick="() => ToggleFavorite(item)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="@(item.IsFavorite ? "gold" : "none")" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        </button>
+                    </div>
+                    <div class="col-title"><strong>@item.Title</strong></div>
+                    <div class="col-desc">@item.Description</div>
+                    <div class="col-date"><strong>@item.Date.ToString("d MMM").ToUpper()</strong></div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="grid-row">
+                <div class="col-desc">No hay notificaciones que coincidan.</div>
+            </div>
+        }
+    </div>
+
+    <div class="footer-bar">
+        Total notificaciones: @FilteredNotifications.Count()
+    </div>
 </div>
 
 @code {
+    private string searchTerm = "";
+    private List<NotificationItem> notifications = new();
+    private bool selectAll = false;
 
-    private string GetIconClass(string? tipo)
+    private IEnumerable<NotificationItem> FilteredNotifications =>
+        notifications
+            .Where(n =>
+                string.IsNullOrWhiteSpace(searchTerm) ||
+                (n.Title?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (n.Description?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (n.Recipients?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false))
+            .OrderByDescending(n => n.Date);
+
+    // View model for UI (keeps UI-only flags separate from EF model)
+    private class NotificationItem
     {
-        return tipo switch
-        {
-            "Alerta" => "bi-exclamation-triangle-fill",
-            "Exito" => "bi-check-circle-fill",
-            "Info" => "bi-info-circle-fill",
-            _ => "bi-bell-fill"
-        };
+        public int Id { get; init; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public DateTime Date { get; set; }
+        public string Recipients { get; set; }
+        public bool IsFavorite { get; set; } = false;
+        public bool IsSelected { get; set; } = false;
+        public int ConvenioId { get; set; }
+        public int AlertaId { get; set; }
     }
 
-    private string GetTipoClass(string? tipo)
+    protected override async Task OnInitializedAsync()
     {
-        return tipo switch
-        {
-            "Alerta" => "tipo-alerta",
-            "Exito" => "tipo-exito",
-            "Info" => "tipo-info",
-            _ => "tipo-default"
-        };
+        await LoadNotifications();
     }
 
-    private string FormatearFecha(DateTime fecha)
+    private async Task LoadNotifications()
     {
-        var span = DateTime.Now - fecha;
-        if (span.TotalMinutes < 60) return $"hace {span.Minutes} minutos";
-        if (span.TotalHours < 24) return $"hace {span.Hours} horas";
-        return fecha.ToString("dd/MM/yyyy");
+        notifications.Clear();
+
+        await using var contexto = await DbFactory.CreateDbContextAsync();
+        var alertas = await contexto.Alerta
+            .Include(a => a.Convenio)
+            .AsNoTracking()
+            .ToListAsync();
+
+        notifications = alertas.Select(a => new NotificationItem
+        {
+            Id = a.IdAlerta,
+            AlertaId = a.IdAlerta,
+            ConvenioId = a.IdConvenio,
+            Title = a.Convenio?.Titulo ?? $"Convenio #{a.IdConvenio}",
+            Description = $"Alerta: {a.EstadoAlerta} — Anticipación {a.DiasAnticipacion} días",
+            Date = a.FechaEnvio ?? a.FechaGenerada,
+            Recipients = a.Destinatarios ?? string.Empty,
+            IsFavorite = false,
+            IsSelected = false
+        }).ToList();
+
+        // Reset selectAll flag
+        selectAll = false;
+
+        StateHasChanged();
+    }
+
+    private void ToggleFavorite(NotificationItem item)
+    {
+        if (item is null) return;
+        item.IsFavorite = !item.IsFavorite;
+        // Optionally persist favorite state in DB by adding a column to Alerta or a separate table.
+    }
+
+    private void ToggleSelectAll(ChangeEventArgs e)
+    {
+        bool isChecked = selectAll;
+        foreach (var n in notifications)
+            n.IsSelected = isChecked;
     }
 }
