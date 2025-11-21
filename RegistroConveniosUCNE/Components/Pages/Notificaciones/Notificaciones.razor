@@ -1,7 +1,10 @@
 ﻿@page "/notificaciones"
 @using GestionConveniosUCNE.Models
 @using Microsoft.EntityFrameworkCore
+@using RegistroConveniosUCNE.Services
+
 @inject IDbContextFactory<Contexto> DbFactory
+@inject NotificacionesService notificacionesService
 @rendermode InteractiveServer
 
 <div class="notifications-container">
@@ -76,28 +79,26 @@
     private string searchTerm = "";
     private List<NotificationItem> notifications = new();
     private bool selectAll = false;
+    private bool isLoading = false;
 
     private IEnumerable<NotificationItem> FilteredNotifications =>
         notifications
             .Where(n =>
                 string.IsNullOrWhiteSpace(searchTerm) ||
                 (n.Title?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
-                (n.Description?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
-                (n.Recipients?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false))
+                (n.Description?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false))
             .OrderByDescending(n => n.Date);
 
     // View model for UI (keeps UI-only flags separate from EF model)
     private class NotificationItem
     {
         public int Id { get; init; }
-        public string Title { get; set; }
-        public string Description { get; set; }
+        public string Title { get; set; } = "";
+        public string Description { get; set; } = "";
         public DateTime Date { get; set; }
-        public string Recipients { get; set; }
+        public string Estado { get; set; } = "";
         public bool IsFavorite { get; set; } = false;
         public bool IsSelected { get; set; } = false;
-        public int ConvenioId { get; set; }
-        public int AlertaId { get; set; }
     }
 
     protected override async Task OnInitializedAsync()
@@ -107,30 +108,30 @@
 
     private async Task LoadNotifications()
     {
-        notifications.Clear();
+        isLoading = true;
+        StateHasChanged();
 
-        await using var contexto = await DbFactory.CreateDbContextAsync();
-        var alertas = await contexto.Alerta
-            .Include(a => a.Convenio)
-            .AsNoTracking()
-            .ToListAsync();
+        // 1. Generar alertas nuevas
+        await notificacionesService.GenerarAlertasAutomaticas();
 
-        notifications = alertas.Select(a => new NotificationItem
+        // 2. Usamos el nuevo método Listar con una expresión lambda (a => true trae todo)
+        // Si quisieras filtrar solo las pendientes, usarías: a => a.EstadoAlerta == "Pendiente"
+        var alertasBd = await notificacionesService.Listar(a => true);
+
+        // 3. Mapeo a ViewModel (Igual que antes)
+        notifications = alertasBd.Select(a => new NotificationItem
         {
             Id = a.IdAlerta,
-            AlertaId = a.IdAlerta,
-            ConvenioId = a.IdConvenio,
-            Title = a.Convenio?.Titulo ?? $"Convenio #{a.IdConvenio}",
-            Description = $"Alerta: {a.EstadoAlerta} — Anticipación {a.DiasAnticipacion} días",
-            Date = a.FechaEnvio ?? a.FechaGenerada,
-            Recipients = a.Destinatarios ?? string.Empty,
-            IsFavorite = false,
-            IsSelected = false
+            Title = a.Convenio?.Titulo ?? "Convenio Desconocido",
+            // Opción 1: Usando el operador ?? (Si es nulo, usa TimeSpan.Zero)
+            Description = $"Vence el {a.Convenio?.FechaVencimiento:dd/MM/yyyy} (Quedan {((a.Convenio?.FechaVencimiento - DateTime.Now) ?? TimeSpan.Zero).Days} días)",
+            Date = a.FechaGenerada,
+            Estado = a.EstadoAlerta,
+            IsFavorite = false
         }).ToList();
 
-        // Reset selectAll flag
         selectAll = false;
-
+        isLoading = false;
         StateHasChanged();
     }
 
