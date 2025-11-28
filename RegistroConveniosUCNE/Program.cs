@@ -22,6 +22,7 @@ public class Program
         builder.Services.AddScoped<ResponsablesService>();
         builder.Services.AddScoped<ActividadesService>();
         builder.Services.AddScoped<NotificacionesService>();
+        builder.Services.AddScoped<IEmailService, EmailService>();
 
         // Add services to the container.
         builder.Services.AddRazorComponents()
