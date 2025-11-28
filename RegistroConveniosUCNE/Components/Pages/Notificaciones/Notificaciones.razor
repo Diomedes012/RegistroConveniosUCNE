@@ -1,151 +1,548 @@
-﻿@page "/notificaciones"
+﻿@implements IAsyncDisposable
+@page "/notificaciones"
 @using GestionConveniosUCNE.Models
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.WebUtilities
 @using Microsoft.EntityFrameworkCore
 @using RegistroConveniosUCNE.Services
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Threading
 
 @inject IDbContextFactory<Contexto> DbFactory
 @inject NotificacionesService notificacionesService
+@inject ConveniosService conveniosService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
 <div class="notifications-container">
 
-    <div class="top-toolbar">
+    <div class="top-toolbar mb-3 d-flex justify-content-between align-items-center">
         <div class="toolbar-icons">
-            <button class="icon-btn" title="Refrescar" @onclick="LoadNotifications">
+            <button class="icon-btn" title="Refrescar" @onclick="LoadNotifications" disabled="@isLoading">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                @if (isLoading)
+                {
+                    <span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
+                }
             </button>
-
-            <button class="icon-btn" disabled><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button>
-
-            <button class="icon-btn" disabled><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></button>
-
-            <button class="icon-btn" disabled><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
-
-            <button class="icon-btn" disabled><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg></button>
-
-            <button class="icon-btn" disabled><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></button>
         </div>
 
-        <div class="search-bar">
+        <div class="search-bar ms-2" style="flex:1; max-width:420px;">
             <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <input type="text" placeholder="Buscar notificaciones" @bind="searchTerm" @bind:event="oninput" />
+            <input class="form-control form-control-sm" type="text" placeholder="Buscar notificaciones" @bind="searchTerm" @bind:event="oninput" />
         </div>
     </div>
 
-    <div class="grid-container">
-        <div class="grid-header">
-            <div class="col-check">
-                <input type="checkbox" @bind="selectAll" />
-                <span class="refresh-icon" title="Refrescar" @onclick="LoadNotifications">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-                </span>
-            </div>
-            <div class="col-title">Título</div>
-            <div class="col-desc">Descripción</div>
-            <div class="col-date">Fecha</div>
-        </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th style="width:40px;">
+                        <input type="checkbox" @bind="selectAll" />
+                    </th>
+                    <th style="width:48px;"></th>
+                    <th>Título</th>
+                    <th>Descripción</th>
+                    <th style="width:120px;">Fecha</th>
+                    <th style="width:120px;">Estado</th>
+                    <th style="width:140px;">Ver solicitud</th>
+                    @if (isAdmin)
+                    {
+                        <th style="width:220px;">Acciones (Admin)</th>
+                    }
+                </tr>
+            </thead>
 
-        @if (FilteredNotifications.Any())
-        {
-            @foreach (var item in FilteredNotifications)
-            {
-                <div class="grid-row">
-                    <div class="col-check">
-                        <input type="checkbox" @bind="item.IsSelected" />
-                        <button class="star-btn @(item.IsFavorite ? "active" : "")" @onclick="() => ToggleFavorite(item)">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="@(item.IsFavorite ? "gold" : "none")" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                        </button>
-                    </div>
-                    <div class="col-title"><strong>@item.Title</strong></div>
-                    <div class="col-desc">@item.Description</div>
-                    <div class="col-date"><strong>@item.Date.ToString("d MMM").ToUpper()</strong></div>
-                </div>
-            }
-        }
-        else
-        {
-            <div class="grid-row">
-                <div class="col-desc">No hay notificaciones que coincidan.</div>
-            </div>
-        }
+            <tbody>
+                @if (FilteredNotifications.Any())
+                {
+                    @foreach (var item in FilteredNotifications)
+                    {
+                        <tr class="@(item.IsSelected ? "table-active" : "")">
+                            <td class="text-center">
+                                <input type="checkbox" @bind="item.IsSelected" />
+                            </td>
+
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-outline-@(item.IsFavorite ? "warning" : "secondary") p-1" @onclick="() => ToggleFavorite(item)" title="Marcar favorito">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="@(item.IsFavorite ? "gold" : "none")" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                </button>
+                            </td>
+
+                            <td>
+                                <strong>@item.Title</strong>
+                            </td>
+
+                            <td style="white-space:pre-wrap; max-width:420px;">
+                                @item.Description
+                            </td>
+
+                            <td class="text-nowrap">
+                                @item.Date.ToString("dd/MM/yyyy")
+                            </td>
+
+                            <td>
+                                @item.Estado
+                            </td>
+
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" @onclick="() => OpenViewModal(item)">Ver solicitud</button>
+                                @* If not admin and the convenio was rejected, allow user to edit *@
+                                @if (!isAdmin && item.Estado?.IndexOf("Rechaz", StringComparison.OrdinalIgnoreCase) >= 0)
+                                {
+                                    <button class="btn btn-sm btn-outline-warning ms-1" @onclick="() => EditConvenio(item.ConvenioId)">Editar</button>
+                                }
+                            </td>
+
+                            @if (isAdmin)
+                            {
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-primary" @onclick="() => OpenAdminPanel(item)">Gestionar</button>
+                                        @if (!string.IsNullOrWhiteSpace(item.ArchivoPrincipal))
+                                        {
+                                            <button class="btn btn-sm btn-outline-secondary" @onclick="() => OpenPdfInNewTab(item.ArchivoPrincipal)">Ver PDF</button>
+                                        }
+                                    </div>
+                                    <div class="mt-1">
+                                        <small class="text-muted">@item.Estado</small>
+                                    </div>
+                                </td>
+                            }
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="@(isAdmin ? 8 : 7)" class="text-center text-muted py-4">No hay notificaciones que coincidan.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 
-    <div class="footer-bar">
+    <div class="footer-bar mt-2">
         Total notificaciones: @FilteredNotifications.Count()
     </div>
 </div>
 
+@* Modal de Administración (Solo Admin) *@
+@if (showAdminModal && selectedForAdmin != null)
+{
+    <div class="modal-backdrop fade show"></div>
+
+    <div class="modal fade show" tabindex="-1" style="display:block;" role="dialog">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Administrar convenio — @selectedForAdmin.Title</h5>
+                    <button type="button" class="btn-close" @onclick="CloseAdminPanel" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <strong>Estado actual:</strong> @selectedForAdmin.Estado
+                    </div>
+
+                    @* *** SECCIÓN CORREGIDA PARA InputRadioGroup *** *@
+                    <div class="mb-3">
+                        <label class="form-label">Decisión:</label>
+                        @* InputRadioGroup no necesita un EditForm alrededor cuando se usa una variable simple (adminDecision) *@
+                        <InputRadioGroup TValue="string" @bind-Value="adminDecision">
+                            <div class="form-check form-check-inline">
+                                @* IMPORTANTE: No usar el atributo 'name' en InputRadio, el grupo lo maneja *@
+                                <InputRadio class="form-check-input" id="decideAccept" Value="@("Aceptar")" />
+                                <label class="form-check-label" for="decideAccept">Aceptar convenio</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <InputRadio class="form-check-input" id="decideReject" Value="@("Rechazar")" />
+                                <label class="form-check-label" for="decideReject">Rechazar convenio</label>
+                            </div>
+                        </InputRadioGroup>
+                    </div>
+
+                    @if (adminDecision == "Rechazar")
+                    {
+                        <div class="mb-3">
+                            <label class="form-label">Comentario (obligatorio si rechaza):</label>
+                            <textarea class="form-control" rows="4" @bind="adminComment"></textarea>
+                        </div>
+                    }
+                    @* *** FIN SECCIÓN CORREGIDA *** *@
+
+                    <div class="mb-3">
+                        <label class="form-label">Archivo del convenio:</label>
+                        @if (!string.IsNullOrWhiteSpace(selectedForAdmin.ArchivoPrincipal))
+                        {
+                            <div class="ratio ratio-16x9 border mb-2">
+                                <iframe src="@ResolveFileUrl(selectedForAdmin.ArchivoPrincipal)" style="width:100%;height:100%;border:0;" loading="lazy"></iframe>
+                            </div>
+                            <a class="btn btn-outline-secondary btn-sm" href="@ResolveFileUrl(selectedForAdmin.ArchivoPrincipal)" target="_blank">Abrir en pestaña nueva</a>
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning">No hay PDF asociado a este convenio.</div>
+                        }
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseAdminPanel">Cancelar</button>
+                    <button class="btn btn-primary" @onclick="SaveAdminDecision">Guardar decisión</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@* Modal de Vista de Usuario (Todos) *@
+@if (showUserModal && selectedForView != null)
+{
+    <div class="modal-backdrop fade show"></div>
+
+    <div class="modal fade show" tabindex="-1" style="display:block;" role="dialog">
+        <div class="modal-dialog modal-md modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Solicitud — @selectedForView.Title</h5>
+                    <button type="button" class="btn-close" @onclick="CloseViewModal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-2"><strong>Estado:</strong> @selectedForView.Estado</div>
+                    <div class="mb-2"><strong>Fecha:</strong> @selectedForView.Date.ToString("dd/MM/yyyy")</div>
+                    <hr />
+                    <div class="mb-2"><strong>Descripción de alerta:</strong></div>
+                    <div class="border rounded p-2" style="white-space:pre-wrap;">@selectedForView.Description</div>
+
+                    @if (!string.IsNullOrWhiteSpace(selectedForView.AdminComment))
+                    {
+                        <div class="mb-2 mt-3">
+                            <label class="form-label">Comentario del administrador:</label>
+                            <div class="border rounded p-2 alert-danger" style="white-space:pre-wrap;">@selectedForView.AdminComment</div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-secondary mt-3">No hay comentario del administrador.</div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseViewModal">Cerrar</button>
+
+                    @* If the convenio was rejected and user is not admin, show edit button *@
+                    @if (!isAdmin && selectedForView.Estado?.IndexOf("Rechaz", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        <button class="btn btn-warning" @onclick="() => EditConvenio(selectedForView.ConvenioId)">Editar solicitud</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
+    private readonly CancellationTokenSource _cts = new();
+    private bool _disposed;
     private string searchTerm = "";
     private List<NotificationItem> notifications = new();
-    private bool selectAll = false;
-    private bool isLoading = false;
+    private bool selectAllBacking;
+    private bool selectAll
+    {
+        get => selectAllBacking;
+        set
+        {
+            if (selectAllBacking != value)
+            {
+                selectAllBacking = value;
+                foreach (var n in notifications)
+                    n.IsSelected = value;
+            }
+        }
+    }
+    private bool isLoading = true;
+
+    // admin state
+    private bool isAdmin = false;
+    private bool showAdminModal = false; // Corregido: Inicialización a false
+    private NotificationItem? selectedForAdmin;
+    private string adminDecision = "Aceptar";
+    private string adminComment = "";
+
+    // user view modal
+    private bool showUserModal = false;
+    private NotificationItem? selectedForView;
 
     private IEnumerable<NotificationItem> FilteredNotifications =>
         notifications
             .Where(n =>
                 string.IsNullOrWhiteSpace(searchTerm) ||
                 (n.Title?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
-                (n.Description?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false))
+                (n.Description?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (n.Estado?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false))
             .OrderByDescending(n => n.Date);
 
     // View model for UI (keeps UI-only flags separate from EF model)
     private class NotificationItem
     {
-        public int Id { get; init; }
+        public int Id { get; init; }        // Alerta.IdAlerta
+        public int ConvenioId { get; init; }
         public string Title { get; set; } = "";
         public string Description { get; set; } = "";
         public DateTime Date { get; set; }
         public string Estado { get; set; } = "";
+        public string ArchivoPrincipal { get; set; } = "";
         public bool IsFavorite { get; set; } = false;
         public bool IsSelected { get; set; } = false;
+        public string AdminComment { get; set; } = "";
     }
 
     protected override async Task OnInitializedAsync()
     {
+        if (_cts.IsCancellationRequested) return;
+
+        await EvaluateAdminAsync();
         await LoadNotifications();
+    }
+
+    private async Task EvaluateAdminAsync()
+    {
+        try
+        {
+            // Test override
+            var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("admin", out var adminVal) &&
+                string.Equals(adminVal, "true", StringComparison.OrdinalIgnoreCase))
+            {
+                isAdmin = true;
+                return;
+            }
+
+            // Lógica normal de evaluación de rol
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity?.IsAuthenticated == true && (user.IsInRole("Administrador") || user.IsInRole("Admin")))
+            {
+                isAdmin = true;
+                return;
+            }
+
+            var roleClaim = user.Claims.FirstOrDefault(c =>
+                string.Equals(c.Type, "role", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(c.Type, "rol", StringComparison.OrdinalIgnoreCase));
+
+            if (roleClaim != null && roleClaim.Value?.IndexOf("admin", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                isAdmin = true;
+                return;
+            }
+
+            isAdmin = false;
+        }
+        catch
+        {
+            isAdmin = false;
+        }
     }
 
     private async Task LoadNotifications()
     {
+        if (_cts.IsCancellationRequested) return;
+
         isLoading = true;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
 
-        // 1. Generar alertas nuevas
-        await notificacionesService.GenerarAlertasAutomaticas();
-
-        // 2. Usamos el nuevo método Listar con una expresión lambda (a => true trae todo)
-        // Si quisieras filtrar solo las pendientes, usarías: a => a.EstadoAlerta == "Pendiente"
-        var alertasBd = await notificacionesService.Listar(a => true);
-
-        // 3. Mapeo a ViewModel (Igual que antes)
-        notifications = alertasBd.Select(a => new NotificationItem
+        try
         {
-            Id = a.IdAlerta,
-            Title = a.Convenio?.Titulo ?? "Convenio Desconocido",
-            // Opción 1: Usando el operador ?? (Si es nulo, usa TimeSpan.Zero)
-            Description = $"Vence el {a.Convenio?.FechaVencimiento:dd/MM/yyyy} (Quedan {((a.Convenio?.FechaVencimiento - DateTime.Now) ?? TimeSpan.Zero).Days} días)",
-            Date = a.FechaGenerada,
-            Estado = a.EstadoAlerta,
-            IsFavorite = false
-        }).ToList();
+            await notificacionesService.GenerarAlertasAutomaticas();
 
-        selectAll = false;
-        isLoading = false;
-        StateHasChanged();
+            if (_cts.IsCancellationRequested) return;
+
+            var alertasBd = await notificacionesService.Listar(a => true);
+
+            if (_cts.IsCancellationRequested) return;
+
+            notifications = alertasBd
+                .Where(a => a.Convenio != null)
+                .Select(a => new NotificationItem
+                {
+                    Id = a.IdAlerta,
+                    ConvenioId = a.IdConvenio,
+                    Title = a.Convenio!.Titulo ?? "Convenio Desconocido",
+                    Description = $"Vence el {a.Convenio.FechaVencimiento:dd/MM/yyyy} (Quedan {((a.Convenio.FechaVencimiento - DateTime.Now) ?? TimeSpan.Zero).Days} días)",
+                    Date = a.FechaGenerada,
+                    Estado = a.EstadoAlerta,
+                    ArchivoPrincipal = a.Convenio.ArchivoPrincipal ?? string.Empty,
+                    IsFavorite = false,
+                    AdminComment = ExtractAdminComment(a.Destinatarios)
+                }).ToList();
+
+            selectAllBacking = false;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al cargar notificaciones: {ex.Message}");
+        }
+        finally
+        {
+            if (!_cts.IsCancellationRequested)
+            {
+                isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private string ExtractAdminComment(string? destinatarios)
+    {
+        if (string.IsNullOrWhiteSpace(destinatarios))
+            return string.Empty;
+
+        var marker = "ComentarioAdmin (";
+        var idxMarker = destinatarios.LastIndexOf(marker, StringComparison.OrdinalIgnoreCase);
+        if (idxMarker < 0)
+            return string.Empty;
+
+        var idxSeparator = destinatarios.IndexOf("): ", idxMarker, StringComparison.Ordinal);
+        if (idxSeparator < 0)
+        {
+            return destinatarios.Substring(idxMarker + marker.Length).Trim();
+        }
+
+        var commentStart = idxSeparator + 3;
+        if (commentStart >= destinatarios.Length)
+            return string.Empty;
+
+        var commentFull = destinatarios.Substring(commentStart);
+
+        var idxNextSeparator = commentFull.IndexOf(" | ", StringComparison.Ordinal);
+
+        return idxNextSeparator >= 0 ? commentFull.Substring(0, idxNextSeparator).Trim() : commentFull.Trim();
     }
 
     private void ToggleFavorite(NotificationItem item)
     {
         if (item is null) return;
         item.IsFavorite = !item.IsFavorite;
-        // Optionally persist favorite state in DB by adding a column to Alerta or a separate table.
     }
 
-    private void ToggleSelectAll(ChangeEventArgs e)
+    private void OpenPdfInNewTab(string archivoPath)
     {
-        bool isChecked = selectAll;
-        foreach (var n in notifications)
-            n.IsSelected = isChecked;
+        var url = ResolveFileUrl(archivoPath);
+        JSRuntime.InvokeVoidAsync("window.open", url, "_blank");
+    }
+
+    private string ResolveFileUrl(string archivoPath)
+    {
+        if (string.IsNullOrWhiteSpace(archivoPath)) return string.Empty;
+        if (archivoPath.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+            return archivoPath;
+        if (archivoPath.StartsWith("/"))
+            return archivoPath;
+        return "/" + archivoPath.TrimStart('/', '\\');
+    }
+
+    private void OpenAdminPanel(NotificationItem item)
+    {
+        selectedForAdmin = item;
+        adminDecision = "Aceptar";
+        adminComment = "";
+        showAdminModal = true;
+    }
+
+    private void CloseAdminPanel()
+    {
+        showAdminModal = false;
+        selectedForAdmin = null;
+    }
+
+    private void OpenViewModal(NotificationItem item)
+    {
+        selectedForView = item;
+        showUserModal = true;
+    }
+
+    private void CloseViewModal()
+    {
+        showUserModal = false;
+        selectedForView = null;
+    }
+
+    private void EditConvenio(int convenioId)
+    {
+        if (convenioId <= 0) return;
+        NavigationManager.NavigateTo($"/Convenio/Edit/{convenioId}");
+    }
+
+    private async Task SaveAdminDecision()
+    {
+        if (selectedForAdmin == null) return;
+
+        if (adminDecision == "Rechazar" && string.IsNullOrWhiteSpace(adminComment))
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Debe proporcionar un comentario cuando rechaza un convenio.");
+            return;
+        }
+
+        try
+        {
+            // 1) Actualizar Convenio
+            var convenio = await conveniosService.Buscar(selectedForAdmin.ConvenioId);
+            if (convenio != null)
+            {
+                convenio.Estado = adminDecision == "Aceptar" ? "Aprobado" : "Rechazado";
+                convenio.UltimaModificacion = DateTime.Now;
+                await conveniosService.Guardar(convenio);
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Error: El convenio asociado a esta notificación no fue encontrado.");
+                return;
+            }
+
+            // 2) Actualizar Alerta y guardar comentario
+            var alerta = await notificacionesService.Buscar(selectedForAdmin.Id);
+            if (alerta != null)
+            {
+                alerta.EstadoAlerta = adminDecision == "Aceptar" ? "Aprobado" : "Rechazado";
+                if (!string.IsNullOrWhiteSpace(adminComment))
+                {
+                    var prefix = $"ComentarioAdmin ({DateTime.Now:dd/MM/yyyy HH:mm}): ";
+                    var newDest = string.IsNullOrWhiteSpace(alerta.Destinatarios) ? prefix + adminComment : alerta.Destinatarios + " | " + prefix + adminComment;
+                    alerta.Destinatarios = newDest.Length > 500 ? newDest.Substring(0, 500) : newDest;
+                }
+
+                await notificacionesService.Guardar(alerta);
+            }
+
+            if (_cts.IsCancellationRequested) return;
+
+            // 3) Recargar y cerrar
+            await JSRuntime.InvokeVoidAsync("alert", $"Decisión guardada. Estado del convenio: {convenio.Estado}");
+            await LoadNotifications();
+            CloseAdminPanel();
+        }
+        catch (Exception ex)
+        {
+            if (!_cts.IsCancellationRequested)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", $"Ocurrió un error al guardar la decisión: {ex.Message}");
+            }
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_disposed)
+            return;
+
+        _cts.Cancel();
+        _cts.Dispose();
+        _disposed = true;
+        await Task.CompletedTask;
     }
 }
