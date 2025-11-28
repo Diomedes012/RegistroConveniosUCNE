@@ -23,41 +23,41 @@
 
                 <div class="col-md-6">
                     <label for="titulo" class="form-label">Título del Convenio:</label>
-                    <InputText id="titulo" @bind-Value="ConvenioEditar.Titulo" class="form-control" placeholder="Ej. Acuerdo de cooperación académica" />
+                    <InputText id="titulo" @bind-Value="ConvenioEditar.Titulo" class="form-control" placeholder="Ej. Acuerdo de cooperación académica" readonly="@esEdicion" />
                     <ValidationMessage For="@(() => ConvenioEditar.Titulo)" />
                 </div>
 
                 <div class="col-md-6">
                     <label for="tipoConvenio" class="form-label">Tipo de Convenio:</label>
-                    <InputText id="tipoConvenio" @bind-Value="ConvenioEditar.TipoConvenio" class="form-control" placeholder="Académico, de movilidad, etc." />
+                    <InputText id="tipoConvenio" @bind-Value="ConvenioEditar.TipoConvenio" class="form-control" placeholder="Académico, de movilidad, etc." readonly="@esEdicion" />
                     <ValidationMessage For="@(() => ConvenioEditar.TipoConvenio)" />
                 </div>
 
                 <div class="col-md-6">
                     <label for="categoria" class="form-label">Categoría:</label>
-                    <InputText id="categoria" @bind-Value="ConvenioEditar.Categoria" class="form-control" placeholder="Convenio, Contrato, MOU..." />
+                    <InputText id="categoria" @bind-Value="ConvenioEditar.Categoria" class="form-control" placeholder="Convenio, Contrato, MOU..." readonly="@esEdicion" />
                     <ValidationMessage For="@(() => ConvenioEditar.Categoria)" />
                 </div>
 
                 <div class="col-md-6">
                     <label for="fechaFirma" class="form-label">Fecha de Firma:</label>
-                    <InputDate id="fechaFirma" @bind-Value="ConvenioEditar.FechaFirma" class="form-control" />
+                    <InputDate id="fechaFirma" @bind-Value="ConvenioEditar.FechaFirma" class="form-control" readonly="@esEdicion" />
                     <ValidationMessage For="@(() => ConvenioEditar.FechaFirma)" />
                 </div>
 
                 <div class="col-md-6">
                     <label for="fechaVencimiento" class="form-label">Fecha de Vencimiento:</label>
-                    <InputDate id="fechaVencimiento" @bind-Value="ConvenioEditar.FechaVencimiento" class="form-control" />
+                    <InputDate id="fechaVencimiento" @bind-Value="ConvenioEditar.FechaVencimiento" class="form-control" readonly="@esEdicion" />
                 </div>
 
                 <div class="col-md-6">
                     <label for="duracionMeses" class="form-label">Duración (meses):</label>
-                    <InputNumber id="duracionMeses" @bind-Value="ConvenioEditar.DuracionMeses" class="form-control" />
+                    <InputNumber id="duracionMeses" @bind-Value="ConvenioEditar.DuracionMeses" class="form-control" readonly="@esEdicion" />
                 </div>
 
                 <div class="col-md-6">
                     <label for="estado" class="form-label">Estado:</label>
-                    <InputSelect id="estado" @bind-Value="ConvenioEditar.Estado" class="form-select">
+                    <InputSelect id="estado" @bind-Value="ConvenioEditar.Estado" class="form-select" disabled="@esEdicion">
                         <option value="Activo">Activo</option>
                         <option value="Vencido">Vencido</option>
                         <option value="En Renovación">En Renovación</option>
@@ -67,12 +67,12 @@
 
                 <div class="col-md-6">
                     <label for="archivo" class="form-label">Actualizar Archivo (PDF):</label>
-                    <InputFile id="archivo" OnChange="OnFileSelected" class="form-control" />
+                    <InputFile id="archivo" OnChange="OnFileSelected" class="form-control" disabled="@esEdicion" />
                 </div>
 
                 <div class="col-12">
                     <label for="descripcionObjetivos" class="form-label">Descripción y Objetivos:</label>
-                    <InputTextArea id="descripcionObjetivos" @bind-Value="ConvenioEditar.DescripcionObjetivos" class="form-control" style="height: 120px;" />
+                    <InputTextArea id="descripcionObjetivos" @bind-Value="ConvenioEditar.DescripcionObjetivos" class="form-control" style="height: 120px;" readonly="@esEdicion" />
                     <ValidationMessage For="@(() => ConvenioEditar.DescripcionObjetivos)" />
                 </div>
             </div>
@@ -80,8 +80,21 @@
 
         <div class="card-footer text-end">
             <button type="button" class="btn btn-secondary me-auto" @onclick="Volver">Volver a la Lista</button>
-            <button type="button" class="btn btn-danger me-2" @onclick="Eliminar">Eliminar</button>
-            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            <button type="button" class="btn btn-info text-white me-2" @onclick="IrAEnviarCorreo">
+                <i class="bi bi-envelope-fill"></i> Enviar PDF por Correo
+            </button>
+
+            @if (esEdicion)
+            {
+                <button type="button" class="btn btn-warning" @onclick="HabilitarEdicionConContrasena">
+                    <i class="bi bi-lock-fill"></i> Habilitar Edición
+                </button>
+            }
+            else
+            {
+                <button type="button" class="btn btn-danger me-2" @onclick="Eliminar">Eliminar</button>
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            }
         </div>
     </EditForm>
 </div>
@@ -117,10 +130,38 @@
 
     public Convenio ConvenioEditar { get; set; } = new Convenio();
 
-
     private string? pdfPreviewUrl;
     private IBrowserFile? selectedFile;
     private const long maxFileSize = 50 * 1024 * 1024;
+
+    // --- MODIFICACIONES PARA CONTRASEÑA ---
+
+    // 1. La contraseña
+    private const string ContrasenaMaestra = "admin123";
+
+    // 2. 'esEdicion' se mantiene en 'true' por defecto, bloqueando el formulario.
+    private bool esEdicion = true;
+
+    // 3. Método que se llama al presionar "Habilitar Edición"
+    private async Task HabilitarEdicionConContrasena()
+    {
+        // Pide la contraseña usando un 'prompt' de JavaScript
+        var pass = await JSRuntime.InvokeAsync<string>("prompt", "Ingrese la contraseña de administrador para editar:");
+
+        // Verifica la contraseña
+        if (pass == ContrasenaMaestra)
+        {
+            esEdicion = false; // Desbloquea el formulario
+        }
+        else if (pass != null) // Si escribió algo pero es incorrecto (evita alertar si solo presiona 'cancelar')
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Contraseña incorrecta.");
+        }
+
+        // StateHasChanged() se llama automáticamente al final del evento,
+        // actualizando la UI para mostrar/ocultar los botones.
+    }
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -128,14 +169,12 @@
         if (convenio != null)
         {
             ConvenioEditar = convenio;
-
             pdfPreviewUrl = ConvenioEditar.ArchivoPrincipal;
         }
     }
 
     public async Task GuardarCambios()
     {
-
         if (selectedFile != null)
         {
             try
@@ -155,11 +194,9 @@
             catch (Exception ex)
             {
                 Console.WriteLine($"Error al guardar el nuevo archivo: {ex.Message}");
-
                 return;
             }
         }
-
 
         var guardado = await conveniosService.Guardar(ConvenioEditar);
         if (guardado)
@@ -176,12 +213,10 @@
         selectedFile = e.File;
         if (selectedFile == null || selectedFile.ContentType != "application/pdf")
         {
- 
             pdfPreviewUrl = ConvenioEditar.ArchivoPrincipal;
             selectedFile = null;
             return;
         }
-
 
         try
         {
@@ -197,12 +232,10 @@
 
     public async Task Eliminar()
     {
-
         var confirmado = await JSRuntime.InvokeAsync<bool>("confirm", $"¿Estás seguro de que quieres eliminar el convenio '{ConvenioEditar.Titulo}'?");
 
         if (!confirmado)
             return;
-
 
         var ocultado = await conveniosService.Buscar(ConvenioId);
         if (ocultado != null)
@@ -219,5 +252,10 @@
     private void Volver()
     {
         navigationManager.NavigateTo("/listar-convenio");
+    }
+
+    private void IrAEnviarCorreo()
+    {
+        navigationManager.NavigateTo($"/Convenio/EnviarCorreo/{ConvenioId}");
     }
 }
