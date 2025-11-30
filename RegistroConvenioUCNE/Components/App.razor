@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
+    <link rel="stylesheet" href="@Assets["app.css"]" />
+    <link rel="stylesheet" href="@Assets["RegistroConveniosUCNE.styles.css"]" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <ImportMap />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <HeadOutlet />
+</head>
+
+<body>
+    <Routes @rendermode="InteractiveServer" />
+
+    <script src="_framework/blazor.web.js"></script>
+
+    <script>
+        // 1. Crea una URL temporal (Blob URL) a partir del stream de .NET
+        window.createBlobUrlFromStream = async (stream) => {
+            try {
+                // Convertir el stream de .NET en un ArrayBuffer de JavaScript
+                const arrayBuffer = await stream.arrayBuffer();
+
+                // Crear un Blob (un objeto tipo archivo)
+                const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
+
+                // Crear una URL temporal para ese Blob
+                const url = URL.createObjectURL(blob);
+                return url;
+            } catch (error) {
+                console.error("Error al crear Blob URL:", error);
+                return null;
+            }
+        };
+
+        // 2. Libera la memoria de la Blob URL cuando ya no se usa
+        window.revokeBlobUrl = (url) => {
+            if (url && url.startsWith("blob:")) {
+                URL.revokeObjectURL(url);
+            }
+        };
+    </script>
+</body>
+
+</html>

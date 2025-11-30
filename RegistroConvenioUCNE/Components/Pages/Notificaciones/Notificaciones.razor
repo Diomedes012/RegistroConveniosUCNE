@@ -1,0 +1,398 @@
+﻿@page "/notificaciones"
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.EntityFrameworkCore
+@using RegistroConvenioUCNE.Models
+@using RegistroConvenioUCNE.Services
+@* Necesario para leer la URL y permitir el truco ?admin=true *@
+@using Microsoft.AspNetCore.WebUtilities
+
+@inject NotificacionesService notificacionesService
+@inject ConveniosService conveniosService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<div class="notifications-container">
+
+    @* --- BARRA SUPERIOR: Refrescar y Buscador --- *@
+    <div class="top-toolbar mb-3 d-flex justify-content-between align-items-center">
+        <div class="toolbar-icons">
+            <button class="icon-btn" title="Refrescar" @onclick="LoadData" disabled="@isLoading">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                @if (isLoading)
+                {
+                    <span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
+                }
+            </button>
+        </div>
+
+        <div class="search-bar ms-2" style="flex:1; max-width:420px;">
+            <input class="form-control form-control-sm" type="text" placeholder="Buscar convenio, estado o descripción..." @bind="searchTerm" @bind:event="oninput" />
+        </div>
+    </div>
+
+    @* --- TABLA DE RESULTADOS --- *@
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th style="width:40px;"><input type="checkbox" @bind="selectAll" /></th>
+                    <th style="width:48px;"></th>
+                    <th>Título</th>
+                    <th>Estado de Vencimiento</th>
+                    <th style="width:120px;">Fecha Límite</th>
+                    <th style="width:120px;">Estado</th>
+                    <th style="width:140px;">Ver solicitud</th>
+                    @if (isAdmin)
+                    {
+                        <th style="width:220px;">Acciones (Admin)</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @if (FilteredItems.Any())
+                {
+                    foreach (var item in FilteredItems)
+                    {
+                        <tr class="@(item.IsSelected ? "table-active" : "")">
+                            @* Checkbox *@
+                            <td class="text-center"><input type="checkbox" @bind="item.IsSelected" /></td>
+
+                            @* Favorito *@
+                            <td class="text-center">
+                                <button class="btn btn-sm p-1 @(item.IsFavorite ? "text-warning" : "text-secondary")" @onclick="() => item.IsFavorite = !item.IsFavorite">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="@(item.IsFavorite ? "currentColor" : "none")" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                </button>
+                            </td>
+
+                            <td><strong>@item.Title</strong></td>
+
+                            @* Lógica visual: Si dice "Vencido" se pone rojo y negrita *@
+                            <td style="white-space:pre-wrap; max-width:420px;">
+                                <small class="@(item.Description == "Vencido" ? "text-danger fw-bold" : "text-muted")">
+                                    @item.Description
+                                </small>
+                            </td>
+
+                            <td class="text-nowrap">@item.Date.ToString("dd/MM/yyyy")</td>
+
+                            <td><span class="badge @GetBadgeClass(item.Estado)">@item.Estado</span></td>
+
+                            <td><button class="btn btn-sm btn-outline-primary" @onclick="() => OpenViewModal(item)">Detalles</button></td>
+
+                            @* Botones Admin *@
+                            @if (isAdmin)
+                            {
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-primary" @onclick="() => OpenAdminPanel(item)">Gestionar</button>
+                                        @if (!string.IsNullOrWhiteSpace(item.ArchivoPrincipal))
+                                        {
+                                            <a class="btn btn-sm btn-outline-secondary" href="@item.ArchivoPrincipal" target="_blank">PDF</a>
+                                        }
+                                    </div>
+                                </td>
+                            }
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="@(isAdmin ? 8 : 7)" class="text-center text-muted py-4">No se encontraron convenios.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer-bar mt-2">
+        Total registros: @FilteredItems.Count()
+    </div>
+</div>
+
+@* --- MODAL 1: ADMINISTRACIÓN --- *@
+@if (showAdminModal && selectedItem != null)
+{
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal fade show" style="display:block;" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Administrar: @selectedItem.Title</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModals"></button>
+                </div>
+                <div class="modal-body">
+
+                    @* Selector de Aprobación/Rechazo *@
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Decisión Administrativa:</label>
+                        <InputRadioGroup @bind-Value="adminDecision">
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" name="btnradio" id="accept" value="Aprobar" checked="@(adminDecision == "Aprobar")">
+                                <label class="btn btn-outline-success" for="accept">Aprobar Convenio</label>
+
+                                <input type="radio" class="btn-check" name="btnradio" id="reject" value="Rechazar" checked="@(adminDecision == "Rechazar")">
+                                <label class="btn btn-outline-danger" for="reject">Rechazar Convenio</label>
+                            </div>
+                        </InputRadioGroup>
+                    </div>
+
+                    @* Campo de Texto: Visible siempre. Obligatorio si rechaza, opcional si aprueba *@
+                    <div class="mb-3">
+                        <label class="form-label">
+                            @(adminDecision == "Rechazar" ? "Motivo del rechazo (Requerido):" : "Nota para el usuario (Opcional):")
+                        </label>
+                        <textarea class="form-control" rows="3" @bind="adminComment"
+                                  placeholder="@(adminDecision == "Rechazar" ? "Explique la razón..." : "Ej: Documentación correcta, procedemos...")"></textarea>
+                    </div>
+
+                    @* Previsualización PDF *@
+                    @if (!string.IsNullOrWhiteSpace(selectedItem.ArchivoPrincipal))
+                    {
+                        <div class="ratio ratio-16x9 border">
+                            <iframe src="@selectedItem.ArchivoPrincipal" style="border:0;" loading="lazy"></iframe>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning mt-2">Sin archivo PDF adjunto.</div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseModals">Cancelar</button>
+                    <button class="btn btn-primary" @onclick="SaveAdminDecision">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@* --- MODAL 2: VISTA DETALLE (USUARIO) --- *@
+@if (showViewModal && selectedItem != null)
+{
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal fade show" style="display:block;" tabindex="-1">
+        <div class="modal-dialog modal-md modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@selectedItem.Title</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModals"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Estado:</strong> <span class="badge @GetBadgeClass(selectedItem.Estado)">@selectedItem.Estado</span></p>
+                    <p><strong>Vencimiento:</strong> @selectedItem.Date.ToString("dd/MM/yyyy")</p>
+
+                    <div class="alert alert-light border">@selectedItem.Description</div>
+
+                    @* Muestra el comentario del Admin con colores según el estado *@
+                    @if (!string.IsNullOrWhiteSpace(selectedItem.AdminComment))
+                    {
+                        @* Rojo si es rechazado, Azul (Info) si es una nota informativa *@
+                        <div class="alert @(selectedItem.Estado.Contains("Rechaz", StringComparison.OrdinalIgnoreCase) ? "alert-danger" : "alert-info")">
+                            <strong>Nota del Admin:</strong> @selectedItem.AdminComment
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    @* Si está rechazado, permitimos editar *@
+                    @if (!isAdmin && selectedItem.Estado.Contains("Rechaz", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <button class="btn btn-warning" @onclick="() => NavigateToEdit(selectedItem.ConvenioId)">Editar Solicitud</button>
+                    }
+                    <button class="btn btn-secondary" @onclick="CloseModals">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    // --- ESTADO UI ---
+    private string searchTerm = "";
+    private bool isLoading = true;
+    private bool isAdmin = false;
+
+    // --- MODALES ---
+    private bool showAdminModal = false;
+    private bool showViewModal = false;
+    private NotificacionViewModel? selectedItem; // Usamos el nuevo modelo externo
+    private string adminDecision = "Aprobar";
+    private string adminComment = "";
+
+    // --- DATOS ---
+    private List<NotificacionViewModel> items = new();
+
+    // Checkbox Seleccionar Todos
+    private bool selectAll
+    {
+        get => items.Any() && items.All(i => i.IsSelected);
+        set => items.ForEach(i => i.IsSelected = value);
+    }
+
+    // Filtro en Memoria
+    private IEnumerable<NotificacionViewModel> FilteredItems =>
+        items.Where(n => string.IsNullOrWhiteSpace(searchTerm) ||
+                         n.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                         n.Estado.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+             .OrderBy(n => n.Date);
+
+    // --- INICIALIZACIÓN ---
+    protected override async Task OnInitializedAsync()
+    {
+        await CheckAdminRole();
+        await LoadData();
+    }
+
+    // --- VERIFICACIÓN DE ROL (Con truco URL) ---
+    private async Task CheckAdminRole()
+    {
+        // 1. Verificamos si existe el parámetro "?admin=true" en la URL
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("admin", out var adminParam))
+        {
+            if (string.Equals(adminParam, "true", StringComparison.OrdinalIgnoreCase))
+            {
+                isAdmin = true;
+                return; // Salimos temprano si el truco funciona
+            }
+        }
+
+        // 2. Verificación estándar de seguridad
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        isAdmin = user.Identity?.IsAuthenticated == true &&
+                 (user.IsInRole("Administrador") || user.IsInRole("Admin") ||
+                  user.Claims.Any(c => c.Type.Contains("role") && c.Value.Contains("admin", StringComparison.OrdinalIgnoreCase)));
+    }
+
+    // --- CARGA DE DATOS ---
+    private async Task LoadData()
+    {
+        isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            await notificacionesService.GenerarAlertasAutomaticas();
+
+            // Carga paralela de Convenios y Alertas
+            var taskConvenios = conveniosService.Listar(c => true);
+            var taskAlertas = notificacionesService.Listar(a => true);
+
+            await Task.WhenAll(taskConvenios, taskAlertas);
+
+            var convenios = await taskConvenios;
+            var alertas = await taskAlertas;
+
+            // Mapeo al ViewModel
+            items = convenios.Select(c =>
+            {
+                var alerta = alertas.FirstOrDefault(a => a.IdConvenio == c.IdConvenio);
+
+                // Lógica de texto de vencimiento
+                string descripcionVencimiento = "Sin fecha";
+                if (c.FechaVencimiento.HasValue)
+                {
+                    var diasRestantes = (c.FechaVencimiento.Value.Date - DateTime.Now.Date).Days;
+
+                    if (diasRestantes < 0) descripcionVencimiento = "Vencido";
+                    else if (diasRestantes == 0) descripcionVencimiento = "Vence hoy";
+                    else descripcionVencimiento = $"Vence en {diasRestantes} días";
+                }
+
+                return new NotificacionViewModel
+                {
+                    ConvenioId = c.IdConvenio,
+                    AlertaId = alerta?.IdAlerta,
+                    Title = c.Titulo ?? "Sin Título",
+                    Estado = alerta?.EstadoAlerta ?? c.Estado ?? "Desconocido",
+                    Date = c.FechaVencimiento ?? DateTime.Now,
+                    ArchivoPrincipal = c.ArchivoPrincipal ?? "",
+                    Description = descripcionVencimiento,
+                    // Recuperamos el comentario guardado en el string de destinatarios
+                    AdminComment = alerta?.Destinatarios?.Split("ComentarioAdmin:", StringSplitOptions.TrimEntries).LastOrDefault() ?? ""
+                };
+            }).ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    // --- GUARDAR DECISIÓN ---
+    private async Task SaveAdminDecision()
+    {
+        if (selectedItem == null) return;
+
+        // Validación: Solo requerimos comentario si Rechaza
+        if (adminDecision == "Rechazar" && string.IsNullOrWhiteSpace(adminComment))
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "El comentario es obligatorio para rechazar.");
+            return;
+        }
+
+        try
+        {
+            // Actualizar Convenio
+            var convenio = await conveniosService.Buscar(selectedItem.ConvenioId);
+            if (convenio != null)
+            {
+                convenio.Estado = adminDecision == "Aprobar" ? "Aprobado" : "Rechazado";
+                convenio.UltimaModificacion = DateTime.Now;
+                await conveniosService.Guardar(convenio);
+            }
+
+            // Actualizar Alerta (creando historial)
+            if (selectedItem.AlertaId.HasValue)
+            {
+                var alerta = await notificacionesService.Buscar(selectedItem.AlertaId.Value);
+                if (alerta != null)
+                {
+                    alerta.EstadoAlerta = adminDecision == "Aprobar" ? "Resuelta" : "Rechazada";
+                    // Guardamos el comentario (sea rechazo o aprobación)
+                    if (!string.IsNullOrWhiteSpace(adminComment))
+                    {
+                        alerta.Destinatarios = $"ComentarioAdmin: {adminComment}";
+                    }
+                    await notificacionesService.Guardar(alerta);
+                }
+            }
+
+            await JSRuntime.InvokeVoidAsync("alert", "Gestión realizada con éxito.");
+            CloseModals();
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error: {ex.Message}");
+        }
+    }
+
+    // --- AYUDANTES (Helpers) ---
+    private void OpenAdminPanel(NotificacionViewModel item)
+    {
+        selectedItem = item;
+        adminDecision = "Aprobar";
+        adminComment = ""; // Limpiamos el comentario anterior
+        showAdminModal = true;
+    }
+
+    private void OpenViewModal(NotificacionViewModel item) { selectedItem = item; showViewModal = true; }
+    private void CloseModals() { showAdminModal = false; showViewModal = false; selectedItem = null; }
+    private void NavigateToEdit(int id) => NavigationManager.NavigateTo($"/Convenio/Edit/{id}");
+
+    private string GetBadgeClass(string estado) => estado?.ToLower() switch
+    {
+        "aprobado" or "resuelta" or "activo" => "bg-success",
+        "rechazado" or "vencido" => "bg-danger",
+        "pendiente" => "bg-warning text-dark",
+        _ => "bg-secondary"
+    };
+}

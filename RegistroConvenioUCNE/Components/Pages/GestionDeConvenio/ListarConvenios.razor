@@ -1,0 +1,178 @@
+﻿@page "/listar-convenio"
+@inject NavigationManager NavManager
+@inject ConveniosService ConveniosService
+@inject IJSRuntime JSRuntime
+
+@using System.Globalization
+@using RegistroConvenioUCNE.Models
+@using RegistroConvenioUCNE.Services
+
+@rendermode InteractiveServer
+
+<div class="page-header">
+    <h3>Listar convenios</h3>
+</div>
+
+<div class="card shadow-lg">
+    <div class="card-header">
+        <h5>Filtros de Búsqueda</h5>
+        <div class="row g-3">
+            <div class="col-md-3">
+                <label for="fecha-desde" class="form-label">Desde</label>
+                <InputDate id="fecha-desde" class="form-control" @bind-Value="fechaDesde" />
+            </div>
+            <div class="col-md-3">
+                <label for="fecha-hasta" class="form-label">Hasta</label>
+                <InputDate id="fecha-hasta" class="form-control" @bind-Value="fechaHasta" />
+            </div>
+            <div class="col-md-6">
+                <label for="search-box" class="form-label">Buscar</label>
+                <div class="input-group">
+                    <input type="text" id="search-box" class="form-control" placeholder="Buscar por título, tipo, categoría, estado..." @bind="filtroTexto" @bind:event="oninput" />
+                    <button class="btn btn-primary" @onclick="Filtrar">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                    <button class="btn btn-outline-secondary" @onclick="LimpiarFiltros">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Tipo</th>
+                        <th>Fecha Firma</th>
+                        <th>Fecha Vencimiento</th>
+                        <th>Estado</th>
+                        <th style="width: 150px;">Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var convenio in conveniosMostrados)
+                    {
+                        <tr>
+                            <td>@convenio.IdConvenio</td>
+                            <td>@convenio.Titulo</td>
+                            <td>@convenio.TipoConvenio</td>
+                            <td>@convenio.FechaFirma.ToString("dd/MM/yyyy")</td>
+                            <td>@convenio.FechaVencimiento?.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <span class="badge @GetEstadoClass(convenio.Estado)">
+                                    @convenio.Estado
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-outline-primary btn-sm" @onclick="() => IrAEditar(convenio.IdConvenio)" title="Editar">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm" @onclick="() => EliminarConvenio(convenio.IdConvenio)" title="Eliminar">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card-footer">
+        <strong>Total de Registros: @conveniosMostrados.Count()</strong>
+        <br/>
+        <a href="/pantalla-principal" class="btn btn-secondary">Volver</a>
+    </div>
+</div>
+
+@code {
+    private string filtroTexto = "";
+    private DateTime? fechaDesde;
+    private DateTime? fechaHasta;
+
+    private List<Convenio> listaCompletaConvenios = new();
+    private List<Convenio> conveniosMostrados = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarDatos();
+    }
+
+    private async Task CargarDatos()
+    {
+        listaCompletaConvenios = await ConveniosService.Listar(c => c.EsVisible == true);
+        Filtrar(); 
+    }
+
+    private void Filtrar()
+    {
+        var query = listaCompletaConvenios.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(filtroTexto))
+        {
+            string textoBusqueda = filtroTexto.ToLower().Trim();
+            query = query.Where(c =>
+                 (c.Titulo != null && c.Titulo.ToLower().Contains(textoBusqueda))
+              || (c.TipoConvenio != null && c.TipoConvenio.ToLower().Contains(textoBusqueda))
+              || (c.Categoria != null && c.Categoria.ToLower().Contains(textoBusqueda))
+              || (c.Estado != null && c.Estado.ToLower().Contains(textoBusqueda))
+            );
+        }
+
+        if (fechaDesde.HasValue)
+        {
+            query = query.Where(c => c.FechaFirma.Date >= fechaDesde.Value.Date);
+        }
+
+        if (fechaHasta.HasValue)
+        {
+            query = query.Where(c => c.FechaFirma.Date <= fechaHasta.Value.Date);
+        }
+        
+        conveniosMostrados = query.ToList();
+    }
+
+    private async Task LimpiarFiltros()
+    {
+        filtroTexto = "";
+        fechaDesde = null;
+        fechaHasta = null;
+        await CargarDatos();
+    }
+
+    private void IrAEditar(int convenioId)
+    {
+        NavManager.NavigateTo($"/Convenio/Edit/{convenioId}");
+    }
+
+    private async Task EliminarConvenio(int convenioId)
+    {
+        var confirmado = await JSRuntime.InvokeAsync<bool>("confirm", $"¿Estás seguro de que quieres eliminar el convenio {convenioId}?");
+        
+        if (confirmado)
+        {
+            var convenio = await ConveniosService.Buscar(convenioId);
+            if (convenio != null)
+            {
+                convenio.EsVisible = false; 
+                await ConveniosService.Guardar(convenio);
+                await CargarDatos();
+            }
+        }
+    }
+    private string GetEstadoClass(string? estado)
+    {
+        return estado switch
+        {
+            "Activo" => "text-bg-success",
+            "Vencido" => "text-bg-danger",
+            "En Renovación" => "text-bg-warning",
+            _ => "text-bg-secondary"
+        };
+    }
+}

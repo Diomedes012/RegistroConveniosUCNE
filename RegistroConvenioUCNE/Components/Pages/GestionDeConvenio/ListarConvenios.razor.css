@@ -1,0 +1,37 @@
+﻿
+.page-header {
+    background-color: #E5E5E5;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+    border-radius: 6px;
+}
+
+    .page-header h3 {
+        margin: 0;
+        font-weight: 600;
+        color: #19355C;
+    }
+.card-header {
+    background-color: #f9f9f9;
+}
+
+
+.table-responsive {
+    max-height: 60vh; 
+}
+
+.table tbody tr {
+    cursor: pointer;
+}
+
+.table td .btn {
+    margin-right: 5px;
+}
+.card-footer {
+    background-color: #f9f9f9;
+    font-weight: 500;
+}
+.badge {
+    font-size: 0.8rem;
+    padding: 0.5em 0.75em;
+}

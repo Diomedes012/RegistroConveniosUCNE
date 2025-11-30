@@ -1,0 +1,195 @@
+﻿@page "/reporte-convenio"
+@inject NavigationManager NavManager
+@inject ConveniosService ConveniosService
+
+@using System.Globalization
+@using RegistroConvenioUCNE.Models
+@using RegistroConvenioUCNE.Services
+
+@rendermode InteractiveServer
+
+<div class="pagina-principal">
+
+    <div class="lista-card-container">
+
+        <div class="lista-card">
+            <h1 class="lista-titulo">Registros Convenios</h1>
+
+            <div class="filter-section">
+                <div class="filter-group">
+                    <label for="fecha-desde">Desde</label>
+                    <input type="date" id="fecha-desde" @bind="fechaDesde" @bind:after="Filtrar" />
+                </div>
+                <div class="filter-group">
+                    <label for="fecha-hasta">Hasta</label>
+                    <input type="date" id="fecha-hasta" @bind="fechaHasta" @bind:after="Filtrar" />
+                </div>
+                <div class="filter-group">
+                    <label for="search-box">Filtrar Por</label>
+                    <div class="search-wrapper">
+
+                        <InputSelect @bind-Value="Filtro" @bind-Value:after="Filtrar">
+                            <option value="" disabled>Seleccione una opcion</option>
+                            <option value="Id">Id</option>
+                            <option value="Titulo">Titulo</option>
+                            <option value="Estado">Estado</option>
+                            <option value="Tipo">Tipo</option>
+                            <option value="30dias">Últimos 30 días</option>
+                        </InputSelect>
+
+                        <input type="text" id="search-box" placeholder="Buscar..." @bind="filtroTexto" @bind:event="oninput" @bind:after="Filtrar" />
+                        <button class="search-button" @onclick="Filtrar">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive-wrapper">
+                <table class="convenios-table">
+                    <thead>
+                        <tr>
+                            <th>Numero Convenio</th>
+                            <th>Fecha Firma</th>
+                            <th>Institucion(es) Afiliada(s)</th>
+                            <th>Categoria</th>
+                            <th>Tipo Convenio</th>
+                            <th>Estado Convenio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var convenio in conveniosMostrados)
+                        {
+                            <tr @onclick="() => IrAEditar(convenio.IdConvenio)">
+                                <td>@convenio.IdConvenio</td>
+                                <td>@convenio.FechaFirma.ToString("dd/MM/yyyy")</td>
+
+                                <td>
+                                    @if (convenio.ConvenioInstituciones != null && convenio.ConvenioInstituciones.Any())
+                                    {
+                                        @string.Join(", ", convenio.ConvenioInstituciones.Select(ci => ci.Institucion?.Nombre ?? "N/A"))
+                                    }
+                                    else
+                                    {
+                                        <span>N/A</span>
+                                    }
+                                </td>
+
+                                <td>@convenio.Categoria</td>
+                                <td>@convenio.TipoConvenio</td>
+                                <td>@convenio.Estado</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="lista-footer">
+                <span style="float: left;">Registros encontrados: @conveniosMostrados.Count()</span>
+                <a href="/pantalla-principal" class="btn btn-secondary">Volver</a>
+            </div>
+
+        </div> <div class="export-buttons-container">
+            <button class="btn-export btn-excel">
+                <i class="fas fa-file-excel"></i> Exportar en Excel
+            </button>
+            <button class="btn-export btn-pdf">
+                <i class="fas fa-file-pdf"></i> Exportar en PDF
+            </button>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    // --- Lógica de la página ---
+    private string Usuario = "JRAFAEL";
+    private string filtroTexto = "";
+    private DateTime? fechaDesde;
+    private DateTime? fechaHasta;
+
+    private string Filtro { get; set; } = string.Empty;
+
+    private List<Convenio> listaCompletaConvenios = new();
+    private List<Convenio> conveniosMostrados = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        listaCompletaConvenios = await ConveniosService.Listar(c => c.EsVisible == true);
+        Filtrar();
+    }
+
+    // --- CAMBIO: Método 'Filtrar' completamente reescrito ---
+    private void Filtrar()
+    {
+        // Empezamos con la lista completa
+        var query = listaCompletaConvenios.AsQueryable();
+        string textoBusqueda = filtroTexto.ToLower().Trim();
+
+        // 1. Aplicar filtro de texto (si no es "30dias")
+        if (!string.IsNullOrWhiteSpace(textoBusqueda) && Filtro != "30dias")
+        {
+            switch (Filtro)
+            {
+                case "Id":
+                    if (int.TryParse(textoBusqueda, out int idBusqueda))
+                    {
+                        query = query.Where(c => c.IdConvenio == idBusqueda);
+                    }
+                    else
+                    {
+                        // Si el texto no es un número válido, no mostrar resultados
+                        query = query.Where(c => false);
+                    }
+                    break;
+
+                case "Titulo":
+                    query = query.Where(c => c.Titulo != null && c.Titulo.ToLower().Contains(textoBusqueda));
+                    break;
+
+                case "Estado":
+                    query = query.Where(c => c.Estado != null && c.Estado.ToLower().Contains(textoBusqueda));
+                    break;
+
+                case "Tipo":
+                    query = query.Where(c => c.TipoConvenio != null && c.TipoConvenio.ToLower().Contains(textoBusqueda));
+                    break;
+            }
+        }
+
+        // 2. Aplicar filtros de fecha
+        if (Filtro == "30dias")
+        {
+            // La opción "30dias" anula los selectores de fecha manuales
+            var today = DateTime.Now.Date;
+            var thirtyDaysAgo = today.AddDays(-30);
+            query = query.Where(c => c.FechaFirma.Date >= thirtyDaysAgo && c.FechaFirma.Date <= today);
+        }
+        else
+        {
+            // Aplicar filtros de fecha manuales
+            if (fechaDesde.HasValue)
+            {
+                query = query.Where(c => c.FechaFirma.Date >= fechaDesde.Value.Date);
+            }
+
+            if (fechaHasta.HasValue)
+            {
+                query = query.Where(c => c.FechaFirma.Date <= fechaHasta.Value.Date);
+            }
+        }
+
+        // Actualizamos la lista que se muestra en la tabla
+        conveniosMostrados = query.ToList();
+    }
+
+    private void IrAEditar(int convenioId)
+    {
+        NavManager.NavigateTo($"/Convenio/Edit/{convenioId}");
+    }
+
+    private void CerrarSesion()
+    {
+        NavManager.NavigateTo("/");
+    }
+}

@@ -1,0 +1,235 @@
+﻿@page "/Convenio/EnviarCorreo/{ConvenioId:int}"
+@using System.IO
+@using Microsoft.AspNetCore.Hosting
+@using RegistroConvenioUCNE.Models
+@using RegistroConvenioUCNE.Services
+@inject ConveniosService conveniosService
+@inject NavigationManager navigationManager
+@inject IJSRuntime JSRuntime
+@inject IEmailService EmailService
+@inject IWebHostEnvironment WebHostEnvironment
+@rendermode InteractiveServer
+
+<div class="page-header">
+    <h3>Enviar Documento del Convenio</h3>
+</div>
+
+<div class="card shadow-lg mb-4">
+    <div class="card-header bg-info text-white">
+        <h5>Detalles del Envío</h5>
+    </div>
+    <div class="card-body">
+
+        @if (convenio == null)
+        {
+            <div class="alert alert-info">
+                <div class="spinner-border spinner-border-sm" role="status"></div>
+                Cargando datos del convenio...
+            </div>
+        }
+        else
+        {
+            <EditForm Model="@emailModel" OnValidSubmit="EnviarCorreo">
+                <DataAnnotationsValidator />
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Convenio:</label>
+                    <p class="form-control-plaintext border px-2 py-1 bg-light rounded">@convenio.Titulo</p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Archivo Adjunto:</label>
+                    @if (!string.IsNullOrEmpty(convenio.ArchivoPrincipal))
+                    {
+                        <div class="alert alert-secondary d-flex align-items-center py-2">
+                            <i class="bi bi-file-earmark-pdf-fill text-danger fs-4 me-2"></i>
+                            <div>
+                                <strong>Documento PDF detectado</strong><br />
+                                <small class="text-muted">@Path.GetFileName(convenio.ArchivoPrincipal)</small>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            Este convenio no tiene un archivo PDF cargado.
+                        </div>
+                    }
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Destinatario:</label>
+                        <InputText @bind-Value="emailModel.Destinatario" class="form-control" placeholder="correo@ejemplo.com" disabled="@enviando" />
+                        <ValidationMessage For="@(() => emailModel.Destinatario)" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Asunto:</label>
+                        <InputText @bind-Value="emailModel.Asunto" class="form-control" disabled="@enviando" />
+                        <ValidationMessage For="@(() => emailModel.Asunto)" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Mensaje:</label>
+                    <InputTextArea @bind-Value="emailModel.Cuerpo" class="form-control" rows="4" disabled="@enviando" />
+                    <ValidationMessage For="@(() => emailModel.Cuerpo)" />
+                </div>
+
+                <div class="card mb-4 border-secondary">
+                    <div class="card-header bg-light" role="button" @onclick="ToggleFirma">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold text-secondary"><i class="bi bi-pen-fill me-2"></i>Firma Digital (Opcional)</span>
+                            <i class="bi @(mostrarFirma ? "bi-chevron-up" : "bi-chevron-down")"></i>
+                        </div>
+                    </div>
+
+                    @if (mostrarFirma)
+                    {
+                        <div class="card-body bg-light">
+                            <div class="alert alert-info py-1 mb-3">
+                                <small>Sube tu certificado <b>.pfx</b> para firmar el correo digitalmente.</small>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <label class="form-label">Archivo .pfx:</label>
+                                    <InputFile OnChange="CargarCertificado" class="form-control" accept=".pfx,.p12" disabled="@enviando" />
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <label class="form-label">Contraseña del Certificado:</label>
+                                    <InputText @bind-Value="passCertificado" type="password" class="form-control" placeholder="Contraseña..." disabled="@enviando" />
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-secondary" @onclick="Volver" disabled="@enviando">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="btn btn-success" disabled="@enviando">
+                        @if (enviando)
+                        {
+                            <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+                            <span>Enviando y Firmando...</span>
+                        }
+                        else
+                        {
+                            <i class="bi bi-send-fill me-1"></i>
+                            <span>Enviar Correo</span>
+                        }
+                    </button>
+                </div>
+            </EditForm>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int ConvenioId { get; set; }
+
+    // Modelos
+    private Convenio? convenio;
+    private EmailModel emailModel = new();
+
+    // Estados de UI
+    private bool enviando = false;
+    private bool mostrarFirma = false;
+
+    // Variables para Firma Digital
+    private IBrowserFile? archivoCertificado;
+    private string? passCertificado;
+    private const long MaxCertSize = 2 * 1024 * 1024; // Limite 2MB para el .pfx
+
+    protected override async Task OnInitializedAsync()
+    {
+        convenio = await conveniosService.Buscar(ConvenioId);
+
+        if (convenio != null)
+        {
+            emailModel.Asunto = $"Documento: {convenio.Titulo}";
+            emailModel.Cuerpo = $"Saludos,\n\nAdjunto el documento correspondiente al convenio '{convenio.Titulo}'.";
+        }
+    }
+
+    private void ToggleFirma() => mostrarFirma = !mostrarFirma;
+
+    private void CargarCertificado(InputFileChangeEventArgs e)
+    {
+        archivoCertificado = e.File;
+    }
+
+    private async Task EnviarCorreo()
+    {
+        if (convenio == null) return;
+
+        enviando = true;
+        StateHasChanged();
+
+        try
+        {
+            // A. Obtener Ruta Física del PDF
+            string? rutaFisicaPDF = null;
+            if (!string.IsNullOrEmpty(convenio.ArchivoPrincipal))
+            {
+                var rutaRelativa = convenio.ArchivoPrincipal.TrimStart('/', '\\');
+                rutaFisicaPDF = Path.Combine(WebHostEnvironment.WebRootPath, rutaRelativa);
+
+                if (!File.Exists(rutaFisicaPDF)) rutaFisicaPDF = null; // Evitar error si se borró del disco
+            }
+
+            // B. Preparar Stream del Certificado (si existe)
+            Stream? certStream = null;
+            if (archivoCertificado != null)
+            {
+                // Abrimos el stream del archivo subido por el usuario
+                certStream = archivoCertificado.OpenReadStream(MaxCertSize);
+            }
+
+            // C. Llamar al Servicio (Pasamos 6 argumentos)
+            await EmailService.EnviarCorreoConAdjuntoAsync(
+                emailModel.Destinatario,
+                emailModel.Asunto,
+                emailModel.Cuerpo,
+                rutaFisicaPDF,
+                certStream,        // Stream del .pfx (o null)
+                passCertificado    // Contraseña (o null)
+            );
+
+            await JSRuntime.InvokeVoidAsync("alert", "¡Correo enviado exitosamente!");
+            Volver();
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error: {ex.Message}");
+        }
+        finally
+        {
+            // Cerramos el stream si quedó abierto (aunque el servicio lo consume)
+            enviando = false;
+            StateHasChanged();
+        }
+    }
+
+    private void Volver()
+    {
+        navigationManager.NavigateTo($"/Convenio/Edit/{ConvenioId}");
+    }
+
+    public class EmailModel
+    {
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "El destinatario es obligatorio.")]
+        [System.ComponentModel.DataAnnotations.EmailAddress(ErrorMessage = "Correo inválido.")]
+        public string Destinatario { get; set; } = "";
+
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "El asunto es obligatorio.")]
+        public string Asunto { get; set; } = "";
+
+        [System.ComponentModel.DataAnnotations.Required]
+        public string Cuerpo { get; set; } = "";
+    }
+}

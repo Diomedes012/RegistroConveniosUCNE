@@ -1,0 +1,31 @@
+﻿@inherits LayoutComponentBase
+
+<div class="page-container">
+
+    <header class="main-header">
+        <NavLink class="nav-link" href="/pantalla-principal">
+            <img src="lib/images/logo1.png" alt="Logo UCNE" class="header-logo" />
+            <span class="header-title">Gestion de Convenios</span>
+        </NavLink>
+        
+    </header>
+
+    <div class="content-wrapper">
+
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+
+        <main>
+            <article class="content">
+                @Body
+            </article>
+        </main>
+    </div>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>

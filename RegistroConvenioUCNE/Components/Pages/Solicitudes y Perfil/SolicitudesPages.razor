@@ -1,0 +1,111 @@
+﻿@page "/solicitudes"
+@rendermode InteractiveServer
+
+<div class="page-header">
+    <h3>Solicitudes</h3>
+</div>
+
+<div class="card shadow-lg">
+
+    <div class="card-header">
+        <div class="input-group">
+            <input type="text" class="form-control"
+                   placeholder="Buscar solicitud por ID, documento o estado..."
+                   @bind="filtroTexto"
+                   @bind:event="oninput" />
+            <button class="btn btn-primary" @onclick="Filtrar">
+                <i class="bi bi-search"></i> Buscar
+            </button>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr class="text-center">
+                        <th>ID</th>
+                        <th>Documento</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (solicitudesFiltradas.Any())
+                    {
+                        @foreach (var solicitud in solicitudesFiltradas)
+                        {
+                            <tr class="text-center">
+                                <td>@solicitud.Id</td>
+                                <td>@solicitud.Documento</td>
+                                <td>@solicitud.Fecha.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <span class="badge @GetEstadoClass(solicitud.Estado)">
+                                        @solicitud.Estado
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">
+                                No se encontraron solicitudes que coincidan con la búsqueda.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    public class Solicitud
+    {
+        public int Id { get; set; }
+        public string Documento { get; set; } = "";
+        public DateTime Fecha { get; set; } = DateTime.Now;
+        public string Estado { get; set; } = "Activo";
+    }
+
+    private string filtroTexto = "";
+    private List<Solicitud> solicitudesCompletas = new List<Solicitud>
+    {
+        new Solicitud { Id = 101, Documento = "Convenio Marco", Fecha = DateTime.Now.AddDays(-2), Estado = "Aprobado" },
+        new Solicitud { Id = 102, Documento = "Acuerdo Específico", Fecha = DateTime.Now.AddDays(-1), Estado = "Pendiente" },
+        new Solicitud { Id = 103, Documento = "MOU", Fecha = DateTime.Now, Estado = "Rechazado" },
+    };
+    private List<Solicitud> solicitudesFiltradas = new List<Solicitud>();
+    protected override void OnInitialized()
+    {
+        Filtrar();
+    }
+    private void Filtrar()
+    {
+        if (string.IsNullOrWhiteSpace(filtroTexto))
+        {
+            solicitudesFiltradas = solicitudesCompletas;
+        }
+        else
+        {
+            var textoBusqueda = filtroTexto.ToLower().Trim();
+            solicitudesFiltradas = solicitudesCompletas
+                .Where(s => s.Id.ToString().Contains(textoBusqueda)
+                         || s.Documento.ToLower().Contains(textoBusqueda)
+                         || s.Estado.ToLower().Contains(textoBusqueda))
+                .ToList();
+        }
+    }
+    private string GetEstadoClass(string? estado)
+    {
+        return estado switch
+        {
+            "Aprobado" => "text-bg-success",
+            "Pendiente" => "text-bg-warning",
+            "Rechazado" => "text-bg-danger",
+            _ => "text-bg-secondary"
+        };
+    }
+}

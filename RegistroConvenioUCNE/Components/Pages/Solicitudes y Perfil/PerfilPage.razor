@@ -1,0 +1,147 @@
+﻿@page "/perfil"
+@rendermode InteractiveServer
+
+<div class="page-header">
+    <h3>Perfil</h3>
+</div>
+
+<div class="card shadow-lg">
+    <div class="card-body profile-card-body">
+        <div class="row">
+
+            <div class="col-lg-4 text-center d-flex align-items-center justify-content-center">
+                <i class="bi bi-person-circle profile-icon-large"></i>
+            </div>
+
+            <div class="col-lg-8 p-4">
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Nombre</label>
+                    <div class="profile-field-box">
+                        <span>@user.Nombre</span>
+                        <button class="btn btn-sm btn-link profile-edit-btn" @onclick='() => OpenEditModal("Nombre")'>
+                            <i class="bi bi-pencil"></i> Editar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Correo electrónico</label>
+                    <div class="profile-field-box">
+                        <span>@user.Correo</span>
+                        <button class="btn btn-sm btn-link profile-edit-btn" @onclick='() => OpenEditModal("Correo")'>
+                            <i class="bi bi-pencil"></i> Editar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Rol</label>
+                    <div class="profile-field-box disabled">
+                        <span>@user.Rol</span>
+                        <button class="btn btn-sm btn-link profile-edit-btn" disabled>
+                            <i class="bi bi-lock"></i> No se puede editar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Número de teléfono</label>
+                    <div class="profile-field-box">
+                        <span>@user.Telefono</span>
+                        <button class="btn btn-sm btn-link profile-edit-btn" @onclick='() => OpenEditModal("Telefono")'>
+                            <i class="bi bi-pencil"></i> Editar
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (showModal)
+{
+    <div class="modal-backdrop fade show"></div>
+
+    <div class="modal fade show" tabindex="-1" style="display: block;" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar @currentEditField</h5>
+                    <button type="button" class="btn-close" @onclick="CancelEdit" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Por favor, introduce el nuevo valor para <strong>@currentEditField</strong>:</p>
+                    <input type="text" class="form-control" @bind="currentValueToEdit" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancelar</button>
+                    <button type="button" class="btn btn-primary" @onclick="SaveChanges">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private class UserProfileModel
+    {
+        public string Nombre { get; set; } = "";
+        public string Correo { get; set; } = "";
+        public string Rol { get; set; } = "";
+        public string Telefono { get; set; } = "";
+    }
+
+    private UserProfileModel user = new UserProfileModel
+    {
+        Nombre = "Juan Carlos Pérez García",
+        Correo = "juan.perez@empresa.com",
+        Rol = "Administrador",
+        Telefono = "809-555-1234"
+    };
+
+    private bool showModal = false;
+    private string currentEditField = "";
+    private string currentValueToEdit = "";
+
+    private void OpenEditModal(string fieldName)
+    {
+        currentEditField = fieldName;
+        switch (fieldName)
+        {
+            case "Nombre":
+                currentValueToEdit = user.Nombre;
+                break;
+            case "Correo":
+                currentValueToEdit = user.Correo;
+                break;
+            case "Telefono":
+                currentValueToEdit = user.Telefono;
+                break;
+        }
+        showModal = true;
+    }
+
+    private void SaveChanges()
+    {
+        switch (currentEditField)
+        {
+            case "Nombre":
+                user.Nombre = currentValueToEdit;
+                break;
+            case "Correo":
+                user.Correo = currentValueToEdit;
+                break;
+            case "Telefono":
+                user.Telefono = currentValueToEdit;
+                break;
+        }
+        showModal = false;
+    }
+
+    private void CancelEdit()
+    {
+        showModal = false;
+    }
+}

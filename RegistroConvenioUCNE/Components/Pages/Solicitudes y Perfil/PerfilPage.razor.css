@@ -1,0 +1,62 @@
+﻿.page-header {
+    background-color: #E5E5E5;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+    border-radius: 6px;
+}
+
+    .page-header h3 {
+        margin: 0;
+        font-weight: 600;
+        color: #19355C;
+    }
+
+.profile-card-body {
+    padding: 1.5rem;
+}
+
+.profile-icon-large {
+    font-size: 12rem; 
+    color: #adb5bd; 
+    line-height: 1;
+}
+
+.profile-field-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background-color: #f8f9fa; 
+    border: 1px solid #dee2e6; 
+    border-radius: 6px;
+    min-height: 50px;
+}
+
+    .profile-field-box span {
+        font-size: 1.1rem;
+        color: #333;
+    }
+    .profile-field-box.disabled {
+        background-color: #e9ecef; 
+        color: #6c757d;
+    }
+
+        .profile-field-box.disabled span {
+            color: #6c757d;
+        }
+
+.profile-edit-btn {
+    text-decoration: none;
+    font-weight: 500;
+}
+
+    .profile-edit-btn i {
+        margin-right: 4px;
+    }
+
+@media (max-width: 991.98px) {
+    .profile-icon-large {
+        font-size: 8rem;
+        margin-bottom: 2rem;
+    }
+}
