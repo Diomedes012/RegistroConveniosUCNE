@@ -39,18 +39,21 @@
 
                 <div class="col-md-6">
                     <label for="fechaFirma" class="form-label">Fecha de Firma:</label>
-                    <InputDate id="fechaFirma" @bind-Value="ConvenioEditar.FechaFirma" class="form-control" />
+                    <InputDate id="fechaFirma" @bind-Value="ConvenioEditar.FechaFirma" @bind-Value:after="CalcularDuracion" class="form-control" />
                     <ValidationMessage For="@(() => ConvenioEditar.FechaFirma)" />
                 </div>
 
                 <div class="col-md-6">
                     <label for="fechaVencimiento" class="form-label">Fecha de Vencimiento:</label>
-                    <InputDate id="fechaVencimiento" @bind-Value="ConvenioEditar.FechaVencimiento" class="form-control" />
+                    <InputDate id="fechaVencimiento" @bind-Value="ConvenioEditar.FechaVencimiento" @bind-Value:after="CalcularDuracion" class="form-control" />
                 </div>
 
                 <div class="col-md-6">
                     <label for="duracionMeses" class="form-label">Duración (meses):</label>
-                    <InputNumber id="duracionMeses" @bind-Value="ConvenioEditar.DuracionMeses" class="form-control" />
+                    <InputNumber id="duracionMeses"
+                                 @bind-Value="ConvenioEditar.DuracionMeses"
+                                 class="form-control"
+                                 readonly />
                 </div>
 
                 <div class="col-md-6">
@@ -128,6 +131,24 @@
         catch (Exception ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    private void CalcularDuracion()
+    {
+        if (ConvenioEditar.FechaVencimiento != default(DateTime) &&
+            ConvenioEditar.FechaVencimiento > ConvenioEditar.FechaFirma)
+        {
+            var fechaInicio = ConvenioEditar.FechaFirma;
+            var fechaFin = ConvenioEditar.FechaVencimiento;
+
+            int meses = ((fechaFin.Value.Year - fechaInicio.Year) * 12) + fechaFin.Value.Month - fechaInicio.Month;
+
+            ConvenioEditar.DuracionMeses = meses > 0 ? meses : 0;
+        }
+        else
+        {
+            ConvenioEditar.DuracionMeses = 0;
         }
     }
 

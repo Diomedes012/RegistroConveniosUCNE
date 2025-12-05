@@ -1,0 +1,96 @@
+﻿/* Login.razor.css */
+
+.login-container {
+    
+    background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('lib/images/fondoInicioSesion.png');
+    
+
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-card {
+    background-color: #020a35; /* Azul oscuro UCNE */
+    padding: 40px;
+    border-radius: 25px;
+    width: 100%;
+    max-width: 450px;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    text-align: center;
+}
+
+.login-logo {
+    width: 100px;
+    margin-bottom: 15px;
+}
+
+.login-title {
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    font-size: 1.2rem;
+}
+
+.login-subtitle {
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    font-size: 1.2rem;
+}
+
+/* Estilo de los inputs redondeados */
+/* ::deep se usa a veces si el estilo no aplica a componentes hijos, 
+   pero para elementos HTML estándar directo no es obligatorio */
+.custom-input {
+    border-radius: 50px;
+    padding: 12px 20px;
+    border: none;
+    text-align: center;
+}
+
+.form-label {
+    font-weight: bold;
+    margin-top: 10px;
+    display: block;
+    text-align: center;
+}
+
+/* Botón Amarillo */
+.btn-ucne {
+    background-color: #ffd700; /* Amarillo */
+    color: #020a35;
+    font-weight: bold;
+    border-radius: 50px;
+    padding: 10px 0;
+    margin-top: 20px;
+    border: none;
+    width: 60%;
+    transition: transform 0.2s;
+}
+
+    .btn-ucne:hover {
+        background-color: #e6c200;
+        transform: scale(1.05);
+    }
+
+.login-links {
+    margin-top: 25px;
+    display: flex;
+    justify-content: space-around;
+    font-size: 0.9rem;
+}
+
+    .login-links a {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+        .login-links a:hover {
+            text-decoration: underline;
+        }
