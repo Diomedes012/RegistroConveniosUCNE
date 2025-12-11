@@ -11,8 +11,8 @@ using RegistroConvenioUCNE.Data;
 namespace RegistroConvenioUCNE.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251130162026_Otra")]
-    partial class Otra
+    [Migration("20251211054217_UsuariosPrincipales")]
+    partial class UsuariosPrincipales
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

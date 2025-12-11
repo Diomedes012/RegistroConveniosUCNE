@@ -1,12 +1,17 @@
 ﻿@page "/"
 @layout Layout.EmptyLayout
-@inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
 @using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity
+@using RegistroConvenioUCNE.Data
+@using RegistroConvenioUCNE.Models
+
+@inject NavigationManager NavigationManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject ILogger<Index> Logger
 
 <div class="login-page-container">
-
     <img src="lib/images/fondoInicioSesion.png" alt="Fondo de inicio de sesión" class="background-image" />
 
     <div class="login-box">
@@ -14,8 +19,15 @@
 
         <h2 class="login-title">INICIO DE SESIÓN ADMINISTRADOR</h2>
 
-        <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+        <EditForm Model="loginModel" OnValidSubmit="HandleLogin" FormName="login">
             <DataAnnotationsValidator />
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger mb-3" role="alert">
+                    @errorMessage
+                </div>
+            }
 
             <div class="form-group">
                 <label for="usuario">
@@ -50,6 +62,8 @@
 
 @code {
     private LoginModel loginModel = new LoginModel();
+    private string errorMessage = string.Empty;
+
     public class LoginModel
     {
         [Required(ErrorMessage = "El usuario es requerido.")]
@@ -59,8 +73,34 @@
         public string? Password { get; set; }
     }
 
-    private void HandleLogin()
+    private async Task HandleLogin()
     {
-        NavigationManager.NavigateTo("pantalla-principal");
+        errorMessage = string.Empty;
+
+        var result = await SignInManager.PasswordSignInAsync(
+            loginModel.Username!,
+            loginModel.Password!,
+            isPersistent: false,
+            lockoutOnFailure: false);
+
+        if (result.Succeeded)
+        {
+            Logger.LogInformation("Usuario {User} inició sesión correctamente.", loginModel.Username);
+            NavigationManager.NavigateTo("/pantalla-principal", forceLoad: true);
+        }
+        else if (result.RequiresTwoFactor)
+        {
+            NavigationManager.NavigateTo("/login-two-factor");
+        }
+        else if (result.IsLockedOut)
+        {
+            errorMessage = "La cuenta está bloqueada temporalmente.";
+            Logger.LogWarning("Usuario {User} bloqueado.", loginModel.Username);
+        }
+        else
+        {
+            errorMessage = "Intento de inicio de sesión inválido. Verifique su usuario y contraseña.";
+            Logger.LogWarning("Intento de inicio de sesión fallido para el usuario {User}.", loginModel.Username);
+        }
     }
 }

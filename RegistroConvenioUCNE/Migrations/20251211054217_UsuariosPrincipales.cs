@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace RegistroConvenioUCNE.Migrations
 {
     /// <inheritdoc />
-    public partial class Otra : Migration
+    public partial class UsuariosPrincipales : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
