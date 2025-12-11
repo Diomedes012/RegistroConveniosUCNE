@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RegistroConvenioUCNE.Models;
@@ -19,6 +20,21 @@ namespace RegistroConvenioUCNE.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<IdentityRole>().HasData(
+                new IdentityRole
+                {
+                    Id = "1",
+                    Name = "Decanato",
+                    NormalizedName = "DECANATO"
+                },
+                new IdentityRole
+                {
+                    Id = "2",
+                    Name = "Digitador",
+                    NormalizedName = "DIGITADOR"
+                }
+            );
         }
     }
 }
