@@ -1,6 +1,5 @@
 ﻿@page "/"
 @layout Layout.EmptyLayout
-@rendermode InteractiveServer
 
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Identity
@@ -19,7 +18,7 @@
 
         <h2 class="login-title">INICIO DE SESIÓN ADMINISTRADOR</h2>
 
-        <EditForm Model="loginModel" OnValidSubmit="HandleLogin" FormName="login">
+        <EditForm Model="loginModel" OnValidSubmit="HandleLogin" FormName="login" Method="Post">
             <DataAnnotationsValidator />
 
             @if (!string.IsNullOrEmpty(errorMessage))
@@ -61,7 +60,10 @@
 </div>
 
 @code {
-    private LoginModel loginModel = new LoginModel();
+    // 1. Usamos SupplyParameterFromForm para capturar datos del POST
+    [SupplyParameterFromForm]
+    private LoginModel loginModel { get; set; } = new();
+
     private string errorMessage = string.Empty;
 
     public class LoginModel
@@ -77,16 +79,20 @@
     {
         errorMessage = string.Empty;
 
+        // Validacion manual si el modelo viene vacio (seguridad extra)
+        if (loginModel.Username == null || loginModel.Password == null) return;
+
         var result = await SignInManager.PasswordSignInAsync(
-            loginModel.Username!,
-            loginModel.Password!,
+            loginModel.Username,
+            loginModel.Password,
             isPersistent: false,
             lockoutOnFailure: false);
 
         if (result.Succeeded)
         {
             Logger.LogInformation("Usuario {User} inició sesión correctamente.", loginModel.Username);
-            NavigationManager.NavigateTo("/pantalla-principal", forceLoad: true);
+            // Redirigir. Al ser un POST estático, esto recargará la app con la cookie nueva
+            NavigationManager.NavigateTo("/pantalla-principal");
         }
         else if (result.RequiresTwoFactor)
         {
@@ -95,12 +101,10 @@
         else if (result.IsLockedOut)
         {
             errorMessage = "La cuenta está bloqueada temporalmente.";
-            Logger.LogWarning("Usuario {User} bloqueado.", loginModel.Username);
         }
         else
         {
-            errorMessage = "Intento de inicio de sesión inválido. Verifique su usuario y contraseña.";
-            Logger.LogWarning("Intento de inicio de sesión fallido para el usuario {User}.", loginModel.Username);
+            errorMessage = "Intento de inicio de sesión inválido.";
         }
     }
 }
