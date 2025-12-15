@@ -3,11 +3,25 @@
 <div class="page-container">
 
     <header class="main-header">
-        <NavLink class="nav-link" href="/pantalla-principal">
+        <NavLink class="nav-link-logo" href="/pantalla-principal">
             <img src="lib/images/logo1.png" alt="Logo UCNE" class="header-logo" />
             <span class="header-title">Gestion de Convenios</span>
         </NavLink>
-        
+
+        <nav class="content-nav">
+            <NavLink href="pantalla-principal" class="nav-link" Match="NavLinkMatch.All">
+                Inicio
+            </NavLink>
+            <NavLink href="crear-convenio" class="nav-link">
+                Crear convenio
+            </NavLink>
+            <NavLink href="listar-convenio" class="nav-link">
+                Listar convenio
+            </NavLink>
+            <NavLink href="reporte-convenio" class="nav-link">
+                Reporte convenio
+            </NavLink>
+        </nav>
     </header>
 
     <div class="content-wrapper">

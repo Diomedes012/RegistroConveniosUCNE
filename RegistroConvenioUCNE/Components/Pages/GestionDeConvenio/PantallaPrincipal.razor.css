@@ -1,48 +1,106 @@
 ﻿
-.content-nav {
-    display: flex;
-    flex-direction: row;
-    gap: 2.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid #E5E5E5; 
-    margin-bottom: 2.5rem;
+/* ============================================================
+   1. ESTILOS DEL DASHBOARD (TARJETAS KPI)
+   ============================================================ */
+
+/* Contenedor de la tarjeta KPI */
+.kpi-card {
+    border: none;
+    border-left: 5px solid #ccc; /* Color por defecto, se sobrescribe abajo */
+    border-radius: 12px;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02); /* Sombra muy sutil */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    height: 100%; /* Para que todas midan lo mismo */
 }
 
-    .content-nav .nav-link {
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: #555;
-        text-decoration: none;
-        padding: 0.5rem 0;
-        border-bottom: 4px solid transparent; 
+    /* Efecto de elevación al pasar el mouse */
+    .kpi-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.08);
     }
 
-   
-        .content-nav .nav-link.active,
-        .content-nav .nav-link:hover {
-            color: #19355C; 
-            border-bottom-color: #FFCB00;
-        }
+    .kpi-card .card-body {
+        padding: 1.5rem;
+        position: relative;
+        z-index: 2; /* Texto por encima del icono */
+    }
 
-
-.home-body {
-    text-align: center; 
-    padding: 2rem 0;
-    flex: 1; 
+/* Colores de Borde Izquierdo */
+.border-primary {
+    border-left-color: #0d6efd !important;
 }
 
-.convenio-image {
-    max-width: 80%;
-    height: auto;
-    border: 1px solid #D9D9D9;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+.border-success {
+    border-left-color: #198754 !important;
 }
 
-/* 3. Pie de página */
-.home-footer {
-    text-align: left;
-    padding: 1.5rem 0 0 0;
-    color: #888;
-    border-top: 1px solid #E5E5E5;
-    margin-top: auto;
+.border-warning {
+    border-left-color: #ffc107 !important;
+}
+
+.border-danger {
+    border-left-color: #dc3545 !important;
+}
+
+/* Colores de Texto Suaves (Subtítulos) */
+.text-primary-soft {
+    color: rgba(13, 110, 253, 0.15);
+}
+
+.text-success-soft {
+    color: rgba(25, 135, 84, 0.15);
+}
+
+.text-warning-soft {
+    color: rgba(255, 193, 7, 0.15);
+}
+
+.text-danger-soft {
+    color: rgba(220, 53, 69, 0.15);
+}
+
+/* Icono Gigante de Fondo */
+.kpi-icon {
+    position: absolute;
+    right: -10px; /* Un poco cortado a la derecha */
+    bottom: -10px; /* Un poco cortado abajo */
+    font-size: 5rem;
+    z-index: 1;
+    transform: rotate(-10deg); /* Pequeña rotación dinámica */
+    opacity: 0.1; /* Muy transparente */
+}
+
+
+/* ============================================================
+   2. ESTILOS GENERALES (CABECERA Y GRÁFICOS)
+   ============================================================ */
+
+/* Cabecera gris (Igual que en tus otras vistas) */
+.page-header {
+    background-color: #f8f9fa; /* Gris muy claro */
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: 8px;
+    border-left: 5px solid #001f3f; /* Detalle azul institucional */
+}
+
+    .page-header h3 {
+        margin: 0;
+        font-weight: 700;
+        color: #333;
+    }
+
+/* Tarjetas de Gráficos */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+}
+
+.card-header {
+    background-color: transparent;
+    border-bottom: 1px solid #f0f0f0;
 }

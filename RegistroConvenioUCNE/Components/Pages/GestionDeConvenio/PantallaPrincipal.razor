@@ -1,22 +1,206 @@
 ﻿@page "/pantalla-principal"
+@using RegistroConvenioUCNE.Models
+@using RegistroConvenioUCNE.Services
+@using ApexCharts
+@inject ConveniosService ConveniosService
+
 @rendermode InteractiveServer
 
-<PageTitle>Inicio</PageTitle>
+<PageTitle>Inicio - Gestión Convenios</PageTitle>
 
-<div class="content-nav">
-    <NavLink href="" class="nav-link" Match="NavLinkMatch.All">Inicio</NavLink>
-    <NavLink href="crear-convenio" class="nav-link">Crear convenio</NavLink>
-    <NavLink href="listar-convenio" class="nav-link">Listar convenio</NavLink>
-    <NavLink href="reporte-convenio" class="nav-link">Reporte convenio</NavLink>
+<div class="container-fluid">
+
+    <div class="page-header mb-4">
+        <h3>Tablero de Control</h3>
+        <p class="text-muted">Resumen general de los convenios institucionales</p>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card kpi-card border-primary">
+                <div class="card-body">
+                    <h6 class="text-uppercase text-primary">Total Convenios</h6>
+                    <h2 class="mb-0 fw-bold">@totalConvenios</h2>
+                    <i class="bi bi-folder2-open kpi-icon text-primary-soft"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card kpi-card border-success">
+                <div class="card-body">
+                    <h6 class="text-uppercase text-success">Activos</h6>
+                    <h2 class="mb-0 fw-bold">@totalActivos</h2>
+                    <i class="bi bi-check-circle kpi-icon text-success-soft"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card kpi-card border-warning">
+                <div class="card-body">
+                    <h6 class="text-uppercase text-warning">Por Vencer (30d)</h6>
+                    <h2 class="mb-0 fw-bold">@totalPorVencer</h2>
+                    <i class="bi bi-exclamation-circle kpi-icon text-warning-soft"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card kpi-card border-danger">
+                <div class="card-body">
+                    <h6 class="text-uppercase text-danger">Vencidos</h6>
+                    <h2 class="mb-0 fw-bold">@totalVencidos</h2>
+                    <i class="bi bi-x-circle kpi-icon text-danger-soft"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+
+        <div class="col-md-5">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+                    <h5 class="fw-bold">Estado de Convenios</h5>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    @if (datosEstado.Any())
+                    {
+                        <ApexChart TItem="ChartData"
+                                   Title=""
+                                   Options="opcionesDona">
+
+                            <ApexPointSeries TItem="ChartData"
+                                             Items="datosEstado"
+                                             Name="Cantidad"
+                                             SeriesType="SeriesType.Donut"
+                                             XValue="e => e.Etiqueta"
+                                             YAggregate="@(e => e.Sum(s => s.Valor))"
+                                             OrderByDescending="e => e.Y" />
+                        </ApexChart>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted">Cargando o sin datos...</div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-7">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+                    <h5 class="fw-bold">Convenios por Categoría</h5>
+                </div>
+                <div class="card-body">
+                    @if (datosCategoria.Any())
+                    {
+                        <ApexChart TItem="ChartData"
+                                   Title=""
+                                   Options="opcionesBarras">
+
+                            <ApexPointSeries TItem="ChartData"
+                                             Items="datosCategoria"
+                                             Name="Convenios"
+                                             SeriesType="SeriesType.Bar"
+                                             XValue="e => e.Etiqueta"
+                                             YValue="e => e.Valor"
+                                             OrderByDescending="e => e.Y" />
+                        </ApexChart>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="home-body">
-    <img src="lib/images/image2.png" alt="Convenio de Trabajo" class="convenio-image" />
-</div>
-
-<footer class="home-footer">
+<footer class="home-footer mt-auto">
 </footer>
 
 @code {
-   
+    // --- LÓGICA DEL DASHBOARD ---
+
+    public class ChartData
+    {
+        public string Etiqueta { get; set; } = "";
+        public int Valor { get; set; }
+    }
+
+    private List<Convenio> listaConvenios = new();
+
+    private int totalConvenios;
+    private int totalActivos;
+    private int totalVencidos;
+    private int totalPorVencer;
+
+    private List<ChartData> datosEstado = new();
+    private List<ChartData> datosCategoria = new();
+
+    private ApexChartOptions<ChartData> opcionesDona = new ApexChartOptions<ChartData>();
+    private ApexChartOptions<ChartData> opcionesBarras = new ApexChartOptions<ChartData>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        listaConvenios = await ConveniosService.Listar(c => c.EsVisible == true);
+
+        var hoy = DateTime.Now.Date;
+        var en30Dias = hoy.AddDays(30);
+
+        totalConvenios = listaConvenios.Count;
+        totalActivos = listaConvenios.Count(c => c.Estado == "Activo");
+        totalVencidos = listaConvenios.Count(c => c.Estado == "Vencido");
+
+        totalPorVencer = listaConvenios.Count(c =>
+            c.Estado == "Activo" &&
+            c.FechaVencimiento.HasValue &&
+            c.FechaVencimiento.Value.Date > hoy &&
+            c.FechaVencimiento.Value.Date <= en30Dias
+        );
+
+        datosEstado = listaConvenios
+            .GroupBy(c => c.Estado)
+            .Select(g => new ChartData { Etiqueta = g.Key ?? "Sin Estado", Valor = g.Count() })
+            .ToList();
+
+        datosCategoria = listaConvenios
+            .GroupBy(c => c.Categoria)
+            .Select(g => new ChartData { Etiqueta = g.Key ?? "N/A", Valor = g.Count() })
+            .ToList();
+
+        ConfigurarGraficos();
+    }
+
+    private void ConfigurarGraficos()
+    {
+        // === CORRECCIÓN DEL ERROR DE APEXCHARTS AQUÍ ===
+        // Usamos 'new()' para que C# infiera el tipo correcto (PlotOptionsDonut)
+
+        opcionesDona.Colors = new List<string> { "#198754", "#dc3545", "#ffc107", "#6c757d" };
+        opcionesDona.PlotOptions = new PlotOptions
+        {
+            Pie = new PlotOptionsPie
+            {
+                Donut = new() // <--- ESTO SOLUCIONA EL ERROR
+                {
+                    Labels = new()
+                    {
+                        Show = true,
+                        Total = new()
+                        {
+                            Show = true,
+                            Label = "Total",
+                            Color = "#000000"
+                        }
+                    }
+                }
+            }
+        };
+
+        opcionesBarras.Colors = new List<string> { "#001f3f" };
+        opcionesBarras.Xaxis = new XAxis
+        {
+            Labels = new XAxisLabels { Rotate = -45 }
+        };
+    }
 }
