@@ -1,195 +1,279 @@
 ﻿@page "/reporte-convenio"
 @inject NavigationManager NavManager
 @inject ConveniosService ConveniosService
+@inject IJSRuntime JS
 
+@using QuestPDF.Fluent
+@using QuestPDF.Helpers
+@using QuestPDF.Infrastructure
+@using ClosedXML.Excel
 @using System.Globalization
 @using RegistroConvenioUCNE.Models
 @using RegistroConvenioUCNE.Services
 
 @rendermode InteractiveServer
 
-<div class="pagina-principal">
+<div class="page-header">
+    <h3>Reporte de Convenios</h3>
+</div>
 
-    <div class="lista-card-container">
+<div class="card shadow-lg">
 
-        <div class="lista-card">
-            <h1 class="lista-titulo">Registros Convenios</h1>
-
-            <div class="filter-section">
-                <div class="filter-group">
-                    <label for="fecha-desde">Desde</label>
-                    <input type="date" id="fecha-desde" @bind="fechaDesde" @bind:after="Filtrar" />
-                </div>
-                <div class="filter-group">
-                    <label for="fecha-hasta">Hasta</label>
-                    <input type="date" id="fecha-hasta" @bind="fechaHasta" @bind:after="Filtrar" />
-                </div>
-                <div class="filter-group">
-                    <label for="search-box">Filtrar Por</label>
-                    <div class="search-wrapper">
-
-                        <InputSelect @bind-Value="Filtro" @bind-Value:after="Filtrar">
-                            <option value="" disabled>Seleccione una opcion</option>
-                            <option value="Id">Id</option>
-                            <option value="Titulo">Titulo</option>
-                            <option value="Estado">Estado</option>
-                            <option value="Tipo">Tipo</option>
-                            <option value="30dias">Últimos 30 días</option>
-                        </InputSelect>
-
-                        <input type="text" id="search-box" placeholder="Buscar..." @bind="filtroTexto" @bind:event="oninput" @bind:after="Filtrar" />
-                        <button class="search-button" @onclick="Filtrar">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                </div>
+    <div class="card-header">
+        <h5>Filtros de Reporte</h5>
+        <div class="row g-3">
+            <div class="col-md-3">
+                <label for="fecha-desde" class="form-label">Desde</label>
+                <input type="date" id="fecha-desde" class="form-control" @bind="fechaDesde" />
             </div>
 
-            <div class="table-responsive-wrapper">
-                <table class="convenios-table">
-                    <thead>
-                        <tr>
-                            <th>Numero Convenio</th>
-                            <th>Fecha Firma</th>
-                            <th>Institucion(es) Afiliada(s)</th>
-                            <th>Categoria</th>
-                            <th>Tipo Convenio</th>
-                            <th>Estado Convenio</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var convenio in conveniosMostrados)
-                        {
-                            <tr @onclick="() => IrAEditar(convenio.IdConvenio)">
-                                <td>@convenio.IdConvenio</td>
-                                <td>@convenio.FechaFirma.ToString("dd/MM/yyyy")</td>
-
-                                <td>
-                                    @if (convenio.ConvenioInstituciones != null && convenio.ConvenioInstituciones.Any())
-                                    {
-                                        @string.Join(", ", convenio.ConvenioInstituciones.Select(ci => ci.Institucion?.Nombre ?? "N/A"))
-                                    }
-                                    else
-                                    {
-                                        <span>N/A</span>
-                                    }
-                                </td>
-
-                                <td>@convenio.Categoria</td>
-                                <td>@convenio.TipoConvenio</td>
-                                <td>@convenio.Estado</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+            <div class="col-md-3">
+                <label for="fecha-hasta" class="form-label">Hasta</label>
+                <input type="date" id="fecha-hasta" class="form-control" @bind="fechaHasta" />
             </div>
 
-            <div class="lista-footer">
-                <span style="float: left;">Registros encontrados: @conveniosMostrados.Count()</span>
-                <a href="/pantalla-principal" class="btn btn-secondary">Volver</a>
-            </div>
+            <div class="col-md-6">
+                <label class="form-label">Filtrar Por</label>
+                <div class="input-group">
+                    <select class="form-select" style="max-width: 150px;" @bind="Filtro">
+                        <option value="Todos">Todos</option>
+                        <option value="Titulo">Título</option>
+                        <option value="Tipo">Tipo</option>
+                        <option value="Estado">Estado</option>
+                    </select>
 
-        </div> <div class="export-buttons-container">
-            <button class="btn-export btn-excel">
-                <i class="fas fa-file-excel"></i> Exportar en Excel
-            </button>
-            <button class="btn-export btn-pdf">
-                <i class="fas fa-file-pdf"></i> Exportar en PDF
-            </button>
+                    <input type="text" class="form-control" placeholder="Escriba para buscar..."
+                           @bind="filtroTexto" @bind:event="oninput" @onkeyup="Filtrar" />
+
+                    <button class="btn btn-primary" @onclick="Filtrar">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
         </div>
+    </div>
 
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Fecha Firma</th>
+                        <th>Instituciones</th>
+                        <th>Categoría</th>
+                        <th>Tipo</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var convenio in conveniosMostrados)
+                    {
+                        <tr>
+                            <td>@convenio.IdConvenio</td>
+                            <td>@convenio.FechaFirma.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                @if (convenio.ConvenioInstituciones != null && convenio.ConvenioInstituciones.Any())
+                                {
+                                    @string.Join(", ", convenio.ConvenioInstituciones.Select(c => c.Institucion?.Nombre ?? "N/A"))
+                                }
+                                else
+                                {
+                                    <span class="text-muted">N/A</span>
+                                }
+                            </td>
+                            <td>@convenio.Categoria</td>
+                            <td>@convenio.TipoConvenio</td>
+                            <td>
+                                <span class="badge @GetEstadoClass(convenio.Estado)">
+                                    @convenio.Estado
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                    @if (!conveniosMostrados.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-3">No se encontraron registros para generar reporte.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card-footer">
+        <div>
+            <strong>Registros encontrados: @conveniosMostrados.Count()</strong>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-excel" @onclick="ExportarExcel">
+                <i class="bi bi-file-earmark-excel"></i> Exportar Excel
+            </button>
+            <button class="btn btn-pdf" @onclick="ExportarPDF">
+                <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
+            </button>
+            <a href="/pantalla-principal" class="btn btn-secondary">Volver</a>
+        </div>
     </div>
 </div>
 
 @code {
-    // --- Lógica de la página ---
-    private string Usuario = "JRAFAEL";
+    // --- Lógica del Reporte (Igual a la que ya tenías funcionando) ---
     private string filtroTexto = "";
+    private string Filtro = "Todos";
     private DateTime? fechaDesde;
     private DateTime? fechaHasta;
-
-    private string Filtro { get; set; } = string.Empty;
 
     private List<Convenio> listaCompletaConvenios = new();
     private List<Convenio> conveniosMostrados = new();
 
     protected override async Task OnInitializedAsync()
     {
+        // Asegúrate de incluir las instituciones en tu servicio si es necesario
         listaCompletaConvenios = await ConveniosService.Listar(c => c.EsVisible == true);
         Filtrar();
     }
 
-    // --- CAMBIO: Método 'Filtrar' completamente reescrito ---
     private void Filtrar()
     {
-        // Empezamos con la lista completa
         var query = listaCompletaConvenios.AsQueryable();
-        string textoBusqueda = filtroTexto.ToLower().Trim();
+        string texto = filtroTexto.ToLower().Trim();
 
-        // 1. Aplicar filtro de texto (si no es "30dias")
-        if (!string.IsNullOrWhiteSpace(textoBusqueda) && Filtro != "30dias")
+        // 1. Filtro Texto
+        if (!string.IsNullOrWhiteSpace(texto))
         {
-            switch (Filtro)
+            if (Filtro == "Titulo")
+                query = query.Where(c => c.Titulo != null && c.Titulo.ToLower().Contains(texto));
+            else if (Filtro == "Tipo")
+                query = query.Where(c => c.TipoConvenio != null && c.TipoConvenio.ToLower().Contains(texto));
+            else if (Filtro == "Estado")
+                query = query.Where(c => c.Estado != null && c.Estado.ToLower().Contains(texto));
+            else // Todos
             {
-                case "Id":
-                    if (int.TryParse(textoBusqueda, out int idBusqueda))
-                    {
-                        query = query.Where(c => c.IdConvenio == idBusqueda);
-                    }
-                    else
-                    {
-                        // Si el texto no es un número válido, no mostrar resultados
-                        query = query.Where(c => false);
-                    }
-                    break;
-
-                case "Titulo":
-                    query = query.Where(c => c.Titulo != null && c.Titulo.ToLower().Contains(textoBusqueda));
-                    break;
-
-                case "Estado":
-                    query = query.Where(c => c.Estado != null && c.Estado.ToLower().Contains(textoBusqueda));
-                    break;
-
-                case "Tipo":
-                    query = query.Where(c => c.TipoConvenio != null && c.TipoConvenio.ToLower().Contains(textoBusqueda));
-                    break;
+                query = query.Where(c =>
+                    (c.Titulo != null && c.Titulo.ToLower().Contains(texto)) ||
+                    (c.TipoConvenio != null && c.TipoConvenio.ToLower().Contains(texto)) ||
+                    (c.Categoria != null && c.Categoria.ToLower().Contains(texto)) ||
+                    (c.Estado != null && c.Estado.ToLower().Contains(texto))
+                );
             }
         }
 
-        // 2. Aplicar filtros de fecha
-        if (Filtro == "30dias")
-        {
-            // La opción "30dias" anula los selectores de fecha manuales
-            var today = DateTime.Now.Date;
-            var thirtyDaysAgo = today.AddDays(-30);
-            query = query.Where(c => c.FechaFirma.Date >= thirtyDaysAgo && c.FechaFirma.Date <= today);
-        }
-        else
-        {
-            // Aplicar filtros de fecha manuales
-            if (fechaDesde.HasValue)
-            {
-                query = query.Where(c => c.FechaFirma.Date >= fechaDesde.Value.Date);
-            }
+        // 2. Filtro Fechas
+        if (fechaDesde.HasValue)
+            query = query.Where(c => c.FechaFirma.Date >= fechaDesde.Value.Date);
 
-            if (fechaHasta.HasValue)
-            {
-                query = query.Where(c => c.FechaFirma.Date <= fechaHasta.Value.Date);
-            }
-        }
+        if (fechaHasta.HasValue)
+            query = query.Where(c => c.FechaFirma.Date <= fechaHasta.Value.Date);
 
-        // Actualizamos la lista que se muestra en la tabla
         conveniosMostrados = query.ToList();
     }
 
-    private void IrAEditar(int convenioId)
+    private string GetEstadoClass(string? estado)
     {
-        NavManager.NavigateTo($"/Convenio/Edit/{convenioId}");
+        if (string.IsNullOrEmpty(estado)) return "text-bg-secondary";
+        return estado.ToLower() switch
+        {
+            "activo" => "text-bg-success",
+            "vencido" => "text-bg-danger",
+            "en renovación" => "text-bg-warning",
+            _ => "text-bg-secondary"
+        };
     }
 
-    private void CerrarSesion()
+    // --- Lógica de Exportación (Manteniendo lo que hicimos antes) ---
+
+    private async Task ExportarPDF()
     {
-        NavManager.NavigateTo("/");
+        QuestPDF.Settings.License = LicenseType.Community;
+        var documento = Document.Create(container =>
+        {
+            container.Page(page =>
+            {
+                page.Size(PageSizes.A4.Landscape());
+                page.Margin(2, Unit.Centimetre);
+                page.PageColor(Colors.White);
+                page.DefaultTextStyle(x => x.FontSize(10));
+
+                page.Header().Text("Reporte de Convenios UCNE").SemiBold().FontSize(20).FontColor(Colors.Blue.Medium);
+
+                page.Content().PaddingVertical(1, Unit.Centimetre).Table(table =>
+                {
+                    table.ColumnsDefinition(columns =>
+                    {
+                        columns.ConstantColumn(40);
+                        columns.ConstantColumn(80);
+                        columns.RelativeColumn();
+                        columns.ConstantColumn(80);
+                        columns.ConstantColumn(100);
+                        columns.ConstantColumn(80);
+                    });
+
+                    table.Header(header =>
+                    {
+                        header.Cell().Element(CellStyle).Text("No.");
+                        header.Cell().Element(CellStyle).Text("Fecha");
+                        header.Cell().Element(CellStyle).Text("Instituciones");
+                        header.Cell().Element(CellStyle).Text("Categoría");
+                        header.Cell().Element(CellStyle).Text("Tipo");
+                        header.Cell().Element(CellStyle).Text("Estado");
+                        static IContainer CellStyle(IContainer container) => container.DefaultTextStyle(x => x.SemiBold()).BorderBottom(1).PaddingVertical(5);
+                    });
+
+                    foreach (var convenio in conveniosMostrados)
+                    {
+                        table.Cell().Element(CellStyle).Text(convenio.IdConvenio.ToString());
+                        table.Cell().Element(CellStyle).Text(convenio.FechaFirma.ToString("dd/MM/yyyy"));
+                        var inst = convenio.ConvenioInstituciones?.Any() == true ? string.Join(", ", convenio.ConvenioInstituciones.Select(ci => ci.Institucion?.Nombre)) : "N/A";
+                        table.Cell().Element(CellStyle).Text(inst);
+                        table.Cell().Element(CellStyle).Text(convenio.Categoria ?? "");
+                        table.Cell().Element(CellStyle).Text(convenio.TipoConvenio ?? "");
+                        table.Cell().Element(CellStyle).Text(convenio.Estado ?? "");
+                        static IContainer CellStyle(IContainer container) => container.BorderBottom(1).BorderColor(Colors.Grey.Lighten3).PaddingVertical(5);
+                    }
+                });
+            });
+        });
+
+        var stream = new MemoryStream(documento.GeneratePdf());
+        using var streamRef = new DotNetStreamReference(stream: stream);
+        await JS.InvokeVoidAsync("downloadFileFromStream", "ReporteConvenios.pdf", streamRef);
+    }
+
+    private async Task ExportarExcel()
+    {
+        using var workbook = new XLWorkbook();
+        var worksheet = workbook.Worksheets.Add("Convenios");
+
+        worksheet.Cell(1, 1).Value = "No.";
+        worksheet.Cell(1, 2).Value = "Fecha Firma";
+        worksheet.Cell(1, 3).Value = "Instituciones";
+        worksheet.Cell(1, 4).Value = "Categoría";
+        worksheet.Cell(1, 5).Value = "Tipo";
+        worksheet.Cell(1, 6).Value = "Estado";
+
+        var header = worksheet.Range("A1:F1");
+        header.Style.Font.Bold = true;
+        header.Style.Fill.BackgroundColor = XLColor.LightGray;
+
+        int row = 2;
+        foreach (var c in conveniosMostrados)
+        {
+            worksheet.Cell(row, 1).Value = c.IdConvenio;
+            worksheet.Cell(row, 2).Value = c.FechaFirma;
+            worksheet.Cell(row, 3).Value = c.ConvenioInstituciones?.Any() == true ? string.Join(", ", c.ConvenioInstituciones.Select(i => i.Institucion?.Nombre)) : "N/A";
+            worksheet.Cell(row, 4).Value = c.Categoria;
+            worksheet.Cell(row, 5).Value = c.TipoConvenio;
+            worksheet.Cell(row, 6).Value = c.Estado;
+            row++;
+        }
+        worksheet.Columns().AdjustToContents();
+
+        using var stream = new MemoryStream();
+        workbook.SaveAs(stream);
+        stream.Position = 0;
+        using var streamRef = new DotNetStreamReference(stream: stream);
+        await JS.InvokeVoidAsync("downloadFileFromStream", "ReporteConvenios.xlsx", streamRef);
     }
 }
