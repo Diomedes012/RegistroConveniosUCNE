@@ -1,0 +1,155 @@
+﻿@page "/instituciones"
+@using RegistroConvenioUCNE.Models
+@using RegistroConvenioUCNE.Services
+@using System.Linq.Expressions
+@inject InstitucionesService InstitucionesService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Instituciones</PageTitle>
+
+<div class="card mb-4" style="background-color: #e9ecef; border: none;">
+    <div class="card-body py-3 d-flex justify-content-between align-items-center">
+        <h3 class="m-0 fw-bold" style="color: #19355C;">Gestión de Instituciones</h3>
+        <a href="/institucion/crear" class="btn btn-primary" style="background-color: #19355C; border-color: #19355C;">
+            <i class="bi bi-plus-lg"></i> Crear Nueva
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4 border-0">
+    <div class="card-header bg-white border-bottom">
+        <h5 class="mb-0 fw-bold" style="color: #19355C;">Filtros de Búsqueda</h5>
+    </div>
+    <div class="card-body">
+        <div class="row align-items-end g-3">
+            <div class="col-md-3">
+                <label class="form-label text-muted small">Filtrar por</label>
+                <select class="form-select" @bind="filtroOpcion">
+                    <option value="1">Nombre</option>
+                    <option value="2">Tipo</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label text-muted small">Criterio</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" @bind="criterioBusqueda" placeholder="Buscar..." />
+                    <button class="btn btn-primary" style="background-color: #0d6efd;" @onclick="Buscar">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                    <button class="btn btn-outline-secondary" @onclick="Restablecer" title="Limpiar">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        @if (listaInstituciones == null)
+        {
+            <div class="text-center p-5">
+                <div class="spinner-border text-primary" role="status"></div>
+            </div>
+        }
+        else if (!listaInstituciones.Any())
+        {
+            <div class="alert alert-light text-center m-3">
+                <i class="bi bi-info-circle"></i> No hay instituciones registradas.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead style="background-color: #f8f9fa;">
+                        <tr>
+                            <th class="ps-4" style="color: #19355C;">ID</th>
+                            <th style="color: #19355C;">Nombre</th>
+                            <th style="color: #19355C;">Tipo</th>
+                            <th style="color: #19355C;">Teléfono</th>
+                            <th style="color: #19355C;">Email</th>
+                            <th class="text-end pe-4" style="color: #19355C;">Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in listaInstituciones)
+                        {
+                            <tr>
+                                <td class="ps-4 fw-bold">@item.IdInstitucion</td>
+                                <td>@item.Nombre</td>
+                                <td><span class="badge bg-light text-dark border">@item.TipoInstitucion</span></td>
+                                <td>@item.Telefono</td>
+                                <td>@item.Email</td>
+                                <td class="text-end pe-4">
+                                    <div class="btn-group gap-2">
+                                        <a href="/institucion/editar/@item.IdInstitucion" class="btn btn-sm btn-outline-primary border-0 bg-light" title="Editar">
+                                            <i class="bi bi-pencil-square fs-6"></i>
+                                        </a>
+                                        <button class="btn btn-sm btn-outline-danger border-0 bg-light" @onclick="() => ConfirmarEliminar(item.IdInstitucion)" title="Eliminar">
+                                            <i class="bi bi-trash fs-6"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer bg-white text-muted small ps-4">
+                Total de Registros: <strong>@listaInstituciones.Count</strong>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    public List<Institucion>? listaInstituciones { get; set; }
+    public string criterioBusqueda { get; set; } = "";
+    public int filtroOpcion { get; set; } = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarLista();
+    }
+
+    private async Task CargarLista()
+    {
+        listaInstituciones = await InstitucionesService.Listar(i => true);
+    }
+
+    private async Task Buscar()
+    {
+        if (string.IsNullOrWhiteSpace(criterioBusqueda))
+        {
+            await CargarLista();
+            return;
+        }
+
+        Expression<Func<Institucion, bool>> filtro = filtroOpcion switch
+        {
+            1 => i => i.Nombre.ToLower().Contains(criterioBusqueda.ToLower()),
+            2 => i => i.TipoInstitucion != null && i.TipoInstitucion.ToLower().Contains(criterioBusqueda.ToLower()),
+            _ => i => true
+        };
+
+        listaInstituciones = await InstitucionesService.Listar(filtro);
+    }
+
+    private async Task Restablecer()
+    {
+        criterioBusqueda = "";
+        await CargarLista();
+    }
+
+    private async Task ConfirmarEliminar(int id)
+    {
+        var eliminado = await InstitucionesService.Eliminar(id);
+        if (eliminado)
+        {
+            await CargarLista();
+        }
+    }
+}

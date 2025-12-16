@@ -59,6 +59,7 @@
                 <thead>
                     <tr>
                         <th>No.</th>
+                        <th>Título</th>
                         <th>Fecha Firma</th>
                         <th>Instituciones</th>
                         <th>Categoría</th>
@@ -71,6 +72,7 @@
                     {
                         <tr>
                             <td>@convenio.IdConvenio</td>
+                            <td class="fw-bold">@convenio.Titulo</td>
                             <td>@convenio.FechaFirma.ToString("dd/MM/yyyy")</td>
                             <td>
                                 @if (convenio.ConvenioInstituciones != null && convenio.ConvenioInstituciones.Any())
@@ -94,7 +96,7 @@
                     @if (!conveniosMostrados.Any())
                     {
                         <tr>
-                            <td colspan="6" class="text-center py-3">No se encontraron registros para generar reporte.</td>
+                            <td colspan="7" class="text-center py-3">No se encontraron registros para generar reporte.</td>
                         </tr>
                     }
                 </tbody>
@@ -107,10 +109,10 @@
             <strong>Registros encontrados: @conveniosMostrados.Count()</strong>
         </div>
         <div class="d-flex gap-2">
-            <button class="btn btn-excel" @onclick="ExportarExcel">
+            <button class="btn btn-success" @onclick="ExportarExcel">
                 <i class="bi bi-file-earmark-excel"></i> Exportar Excel
             </button>
-            <button class="btn btn-pdf" @onclick="ExportarPDF">
+            <button class="btn btn-danger" @onclick="ExportarPDF">
                 <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
             </button>
             <a href="/pantalla-principal" class="btn btn-secondary">Volver</a>
@@ -119,7 +121,6 @@
 </div>
 
 @code {
-    // --- Lógica del Reporte (Igual a la que ya tenías funcionando) ---
     private string filtroTexto = "";
     private string Filtro = "Todos";
     private DateTime? fechaDesde;
@@ -130,7 +131,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Asegúrate de incluir las instituciones en tu servicio si es necesario
+        // Se carga la lista completa
         listaCompletaConvenios = await ConveniosService.Listar(c => c.EsVisible == true);
         Filtrar();
     }
@@ -140,7 +141,6 @@
         var query = listaCompletaConvenios.AsQueryable();
         string texto = filtroTexto.ToLower().Trim();
 
-        // 1. Filtro Texto
         if (!string.IsNullOrWhiteSpace(texto))
         {
             if (Filtro == "Titulo")
@@ -149,7 +149,7 @@
                 query = query.Where(c => c.TipoConvenio != null && c.TipoConvenio.ToLower().Contains(texto));
             else if (Filtro == "Estado")
                 query = query.Where(c => c.Estado != null && c.Estado.ToLower().Contains(texto));
-            else // Todos
+            else
             {
                 query = query.Where(c =>
                     (c.Titulo != null && c.Titulo.ToLower().Contains(texto)) ||
@@ -160,7 +160,6 @@
             }
         }
 
-        // 2. Filtro Fechas
         if (fechaDesde.HasValue)
             query = query.Where(c => c.FechaFirma.Date >= fechaDesde.Value.Date);
 
@@ -182,8 +181,7 @@
         };
     }
 
-    // --- Lógica de Exportación (Manteniendo lo que hicimos antes) ---
-
+    // --- LÓGICA EXPORTAR PDF ACTUALIZADA ---
     private async Task ExportarPDF()
     {
         QuestPDF.Settings.License = LicenseType.Community;
@@ -192,27 +190,29 @@
             container.Page(page =>
             {
                 page.Size(PageSizes.A4.Landscape());
-                page.Margin(2, Unit.Centimetre);
+                page.Margin(1, Unit.Centimetre); 
                 page.PageColor(Colors.White);
-                page.DefaultTextStyle(x => x.FontSize(10));
+                page.DefaultTextStyle(x => x.FontSize(9)); 
 
-                page.Header().Text("Reporte de Convenios UCNE").SemiBold().FontSize(20).FontColor(Colors.Blue.Medium);
+                page.Header().Text("Reporte de Convenios UCNE").SemiBold().FontSize(18).FontColor(Colors.Blue.Medium);
 
                 page.Content().PaddingVertical(1, Unit.Centimetre).Table(table =>
                 {
                     table.ColumnsDefinition(columns =>
                     {
-                        columns.ConstantColumn(40);
-                        columns.ConstantColumn(80);
-                        columns.RelativeColumn();
-                        columns.ConstantColumn(80);
-                        columns.ConstantColumn(100);
-                        columns.ConstantColumn(80);
+                        columns.ConstantColumn(30);  // No
+                        columns.RelativeColumn(2);   // Título (Más espacio)
+                        columns.ConstantColumn(65);  // Fecha
+                        columns.RelativeColumn(2);   // Instituciones
+                        columns.ConstantColumn(70);  // Categoría
+                        columns.ConstantColumn(80);  // Tipo
+                        columns.ConstantColumn(60);  // Estado
                     });
 
                     table.Header(header =>
                     {
                         header.Cell().Element(CellStyle).Text("No.");
+                        header.Cell().Element(CellStyle).Text("Título");
                         header.Cell().Element(CellStyle).Text("Fecha");
                         header.Cell().Element(CellStyle).Text("Instituciones");
                         header.Cell().Element(CellStyle).Text("Categoría");
@@ -224,12 +224,18 @@
                     foreach (var convenio in conveniosMostrados)
                     {
                         table.Cell().Element(CellStyle).Text(convenio.IdConvenio.ToString());
+                        table.Cell().Element(CellStyle).Text(convenio.Titulo ?? "");
                         table.Cell().Element(CellStyle).Text(convenio.FechaFirma.ToString("dd/MM/yyyy"));
-                        var inst = convenio.ConvenioInstituciones?.Any() == true ? string.Join(", ", convenio.ConvenioInstituciones.Select(ci => ci.Institucion?.Nombre)) : "N/A";
+
+                        var inst = convenio.ConvenioInstituciones?.Any() == true
+                            ? string.Join(", ", convenio.ConvenioInstituciones.Select(ci => ci.Institucion?.Nombre))
+                            : "N/A";
+
                         table.Cell().Element(CellStyle).Text(inst);
                         table.Cell().Element(CellStyle).Text(convenio.Categoria ?? "");
                         table.Cell().Element(CellStyle).Text(convenio.TipoConvenio ?? "");
                         table.Cell().Element(CellStyle).Text(convenio.Estado ?? "");
+
                         static IContainer CellStyle(IContainer container) => container.BorderBottom(1).BorderColor(Colors.Grey.Lighten3).PaddingVertical(5);
                     }
                 });
@@ -241,19 +247,22 @@
         await JS.InvokeVoidAsync("downloadFileFromStream", "ReporteConvenios.pdf", streamRef);
     }
 
+    // --- LÓGICA EXPORTAR EXCEL ACTUALIZADA ---
     private async Task ExportarExcel()
     {
         using var workbook = new XLWorkbook();
         var worksheet = workbook.Worksheets.Add("Convenios");
 
+        // Cabeceras
         worksheet.Cell(1, 1).Value = "No.";
-        worksheet.Cell(1, 2).Value = "Fecha Firma";
-        worksheet.Cell(1, 3).Value = "Instituciones";
-        worksheet.Cell(1, 4).Value = "Categoría";
-        worksheet.Cell(1, 5).Value = "Tipo";
-        worksheet.Cell(1, 6).Value = "Estado";
+        worksheet.Cell(1, 2).Value = "Título";
+        worksheet.Cell(1, 3).Value = "Fecha Firma";
+        worksheet.Cell(1, 4).Value = "Instituciones";
+        worksheet.Cell(1, 5).Value = "Categoría";
+        worksheet.Cell(1, 6).Value = "Tipo";
+        worksheet.Cell(1, 7).Value = "Estado";
 
-        var header = worksheet.Range("A1:F1");
+        var header = worksheet.Range("A1:G1");
         header.Style.Font.Bold = true;
         header.Style.Fill.BackgroundColor = XLColor.LightGray;
 
@@ -261,11 +270,17 @@
         foreach (var c in conveniosMostrados)
         {
             worksheet.Cell(row, 1).Value = c.IdConvenio;
-            worksheet.Cell(row, 2).Value = c.FechaFirma;
-            worksheet.Cell(row, 3).Value = c.ConvenioInstituciones?.Any() == true ? string.Join(", ", c.ConvenioInstituciones.Select(i => i.Institucion?.Nombre)) : "N/A";
-            worksheet.Cell(row, 4).Value = c.Categoria;
-            worksheet.Cell(row, 5).Value = c.TipoConvenio;
-            worksheet.Cell(row, 6).Value = c.Estado;
+            worksheet.Cell(row, 2).Value = c.Titulo;
+            worksheet.Cell(row, 3).Value = c.FechaFirma;
+
+            var inst = c.ConvenioInstituciones?.Any() == true
+                ? string.Join(", ", c.ConvenioInstituciones.Select(i => i.Institucion?.Nombre))
+                : "N/A";
+
+            worksheet.Cell(row, 4).Value = inst;
+            worksheet.Cell(row, 5).Value = c.Categoria;
+            worksheet.Cell(row, 6).Value = c.TipoConvenio;
+            worksheet.Cell(row, 7).Value = c.Estado;
             row++;
         }
         worksheet.Columns().AdjustToContents();

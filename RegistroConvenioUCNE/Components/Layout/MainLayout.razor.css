@@ -1,11 +1,10 @@
 /* ============================================================
-   1. ESTRUCTURA PRINCIPAL DEL LAYOUT (Recuperando Imagen 1)
+   1. ESTRUCTURA PRINCIPAL
    ============================================================ */
-
 html, body, .page-container {
-    height: 100vh; /* Altura completa de la ventana */
+    height: 100vh;
     margin: 0;
-    overflow: hidden; /* Evitamos scroll en el body */
+    overflow: hidden;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -14,24 +13,27 @@ html, body, .page-container {
     flex-direction: column;
 }
 
-/* --- CABECERA SUPERIOR (Amarilla) --- */
+/* ============================================================
+   2. CABECERA (Amarilla) + MENÚ
+   ============================================================ */
 .main-header {
-    height: 80px; /* Altura fija */
+    height: 80px;
     background: #FFCB00; /* Amarillo UCNE */
     display: flex;
     align-items: center;
     padding: 0 2rem;
-    flex-shrink: 0; /* No se encoge */
-    z-index: 200; /* Por encima de todo */
+    flex-shrink: 0;
+    z-index: 200;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-    /* CORRECCIÓN: Estilo para el link del logo */
-    .main-header a {
+    /* --- LOGO --- */
+    .main-header .nav-link-logo {
         text-decoration: none;
-        color: #19355C; /* Azul institucional */
+        color: #19355C;
         display: flex;
         align-items: center;
+        margin-right: 1rem;
     }
 
 .header-logo {
@@ -41,93 +43,103 @@ html, body, .page-container {
 }
 
 .header-title {
-    font-weight: bold;
+    font-weight: 800;
     font-size: 1.2rem;
     text-transform: uppercase;
+    color: #19355C;
 }
 
-/* --- CONTENEDOR CENTRAL (Donde viven Sidebar y Main lado a lado) --- */
+/* --- MENÚ HORIZONTAL (TRANSPARENTE) --- */
+.header-nav {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    height: 100%;
+    margin-left: 3rem;
+    flex-grow: 1;
+    background-color: transparent;
+    /* ESTA ES LA SOLUCIÓN: Separa los elementos 30px sí o sí */
+    gap: 30px;
+}
+
+    /* Estilo de cada Link */
+    .header-nav .nav-item {
+        display: flex !important;
+        align-items: center;
+        height: 100%;
+        color: #19355C;
+        font-weight: 700;
+        font-size: 1.1rem;
+        text-decoration: none;
+        /* Mantenemos un poco de padding para el área de clic */
+        padding: 0 15px;
+        white-space: nowrap; /* Evita que el texto se rompa */
+
+        border-bottom: 5px solid transparent;
+        transition: all 0.2s ease-in-out;
+    }
+
+        /* Hover */
+        .header-nav .nav-item:hover {
+            background-color: rgba(25, 53, 92, 0.08);
+        }
+
+        /* Activo */
+        .header-nav .nav-item.active {
+            background-color: rgba(255, 255, 255, 0.25);
+            border-bottom: 5px solid #19355C;
+        }
+
+/* ============================================================
+   3. CONTENEDOR CENTRAL
+   ============================================================ */
 .content-wrapper {
-    display: flex; /* ¡ESTO ES CLAVE! Flex horizontal */
-    flex: 1; /* Ocupa todo el espacio vertical restante */
-    overflow: hidden; /* Contiene los scrolls internos */
-    position: relative;
+    display: flex;
+    flex: 1;
+    overflow: hidden;
 }
 
-/* --- BARRA LATERAL IZQUIERDA (Azul) --- */
 .sidebar {
-    width: 100px; /* Ancho fijo */
+    width: 100px;
     background: #19355C;
-    flex-shrink: 0; /* Asegura que no se aplaste */
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
     z-index: 150;
 }
 
-/* --- ÁREA PRINCIPAL DERECHA (Contenido y Nuevo Menú) --- */
 main {
-    flex: 1; /* Ocupa el resto del ancho */
+    flex: 1;
     display: flex;
     flex-direction: column;
-    overflow-y: auto; /* EL SCROLL PRINCIPAL ESTÁ AQUÍ */
-    background: #f8f9fa; /* Fondo gris muy claro para el contenido */
+    overflow-y: auto;
+    background: #f8f9fa;
     position: relative;
 }
 
-
-/* ============================================================
-   2. NUEVO MENÚ HORIZONTAL (PESTAÑAS) DENTRO DE MAIN
-   ============================================================ */
-
-.content-nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    /* STICKY: Se queda pegado arriba al hacer scroll en 'main' */
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background-color: #FFFFFF;
-    border-bottom: 2px solid #e0e0e0;
-    /* Padding alineado con el contenido de abajo */
-    padding: 1rem 2.5rem 0 2.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-}
-
-    /* Estilos de los links (pestañas) */
-    .content-nav .nav-link {
-        color: #777; /* Gris medio */
-        font-weight: 700;
-        font-size: 1.1rem;
-        text-decoration: none;
-        padding: 12px 20px;
-        border-radius: 8px 8px 0 0;
-        transition: all 0.2s ease-in-out;
-        background: transparent;
-        border-bottom: 5px solid transparent; /* Espacio para el borde activo */
-        margin-bottom: -2px; /* Para pisar la línea base */
-    }
-
-        /* Hover */
-        .content-nav .nav-link:hover {
-            color: #001f3f;
-            background-color: #f0f2f5;
-            border-bottom-color: #dce4ec;
-        }
-
-        /* Activo (Pestaña seleccionada) */
-        .content-nav .nav-link.active {
-            color: #001f3f;
-            background-color: #fff;
-            border-bottom: 5px solid #FFCB00; /* Amarillo activo */
-            z-index: 2;
-        }
-
-/* ============================================================
-   3. CONTENEDOR DEL CUERPO (@Body)
-   ============================================================ */
 article.content {
     flex: 1;
     padding: 2.5rem;
 }
+
+/* Error UI */
+#blazor-error-ui {
+    color-scheme: light only;
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }

@@ -1,63 +1,86 @@
 ﻿@page "/crear-convenio"
+@using RegistroConvenioUCNE.Models
+@using RegistroConvenioUCNE.Services
 @inject ConveniosService conveniosService
+@inject InstitucionesService institucionesService
 @inject NavigationManager NavManager
 @rendermode InteractiveServer
 
-<div class="page-header">
-    <h3>Crear convenio</h3>
+<div class="card mb-4" style="background-color: #e9ecef; border: none;">
+    <div class="card-body py-4">
+        <h2 class="m-0 fw-bold" style="color: #19355C;">Crear Nuevo Convenio</h2>
+    </div>
 </div>
 
-<div class="card shadow-lg">
-    <div class="card-header">
-        <h5>Registro de Nuevo Convenio</h5>
+<div class="card shadow-sm border-0 mb-5">
+    <div class="card-header bg-white py-3 border-bottom">
+        <h5 class="mb-0 fw-bold" style="color: #19355C;">Datos del Convenio</h5>
     </div>
 
     <EditForm Model="@ConvenioEditar" OnValidSubmit="@GuardarConvenio">
         <DataAnnotationsValidator />
-        <div class="card-body">
-            <ValidationSummary class="mb-3" />
 
-            <div class="row g-3">
+        <div class="card-body p-4">
+            <ValidationSummary class="mb-3 text-danger" />
 
-                <div class="col-md-6">
-                    <label for="titulo" class="form-label">Título del Convenio:</label>
+            <div class="row g-4">
+
+                <div class="col-md-12">
+                    <label class="form-label text-muted small fw-bold">Institución Vinculada <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <InputSelect @bind-Value="InstitucionSeleccionadaId" class="form-select">
+                            <option value="0">-- Seleccione una Institución --</option>
+                            @foreach (var inst in ListaInstituciones)
+                            {
+                                <option value="@inst.IdInstitucion">@inst.Nombre (@inst.TipoInstitucion)</option>
+                            }
+                        </InputSelect>
+                        <a href="/institucion/crear" class="btn btn-outline-secondary" title="Crear nueva institución">
+                            <i class="bi bi-plus-lg"></i>
+                        </a>
+                    </div>
+                    @if (InstitucionSeleccionadaId == 0 && formularioEnviado)
+                    {
+                        <div class="text-danger small mt-1">Debe seleccionar una institución.</div>
+                    }
+                </div>
+
+                <div class="col-md-12">
+                    <label for="titulo" class="form-label text-muted small">Título del Convenio <span class="text-danger">*</span></label>
                     <InputText id="titulo" @bind-Value="ConvenioEditar.Titulo" class="form-control" placeholder="Ej. Acuerdo de cooperación académica" />
                     <ValidationMessage For="@(() => ConvenioEditar.Titulo)" />
                 </div>
 
                 <div class="col-md-6">
-                    <label for="tipoConvenio" class="form-label">Tipo de Convenio:</label>
+                    <label for="tipoConvenio" class="form-label text-muted small">Tipo de Convenio</label>
                     <InputText id="tipoConvenio" @bind-Value="ConvenioEditar.TipoConvenio" class="form-control" placeholder="Académico, de movilidad, etc." />
                     <ValidationMessage For="@(() => ConvenioEditar.TipoConvenio)" />
                 </div>
 
                 <div class="col-md-6">
-                    <label for="categoria" class="form-label">Categoría:</label>
+                    <label for="categoria" class="form-label text-muted small">Categoría</label>
                     <InputText id="categoria" @bind-Value="ConvenioEditar.Categoria" class="form-control" placeholder="Convenio, Contrato, MOU..." />
                     <ValidationMessage For="@(() => ConvenioEditar.Categoria)" />
                 </div>
 
                 <div class="col-md-6">
-                    <label for="fechaFirma" class="form-label">Fecha de Firma:</label>
+                    <label for="fechaFirma" class="form-label text-muted small">Fecha de Firma</label>
                     <InputDate id="fechaFirma" @bind-Value="ConvenioEditar.FechaFirma" @bind-Value:after="CalcularDuracion" class="form-control" />
                     <ValidationMessage For="@(() => ConvenioEditar.FechaFirma)" />
                 </div>
 
                 <div class="col-md-6">
-                    <label for="fechaVencimiento" class="form-label">Fecha de Vencimiento:</label>
+                    <label for="fechaVencimiento" class="form-label text-muted small">Fecha de Vencimiento</label>
                     <InputDate id="fechaVencimiento" @bind-Value="ConvenioEditar.FechaVencimiento" @bind-Value:after="CalcularDuracion" class="form-control" />
                 </div>
 
                 <div class="col-md-6">
-                    <label for="duracionMeses" class="form-label">Duración (meses):</label>
-                    <InputNumber id="duracionMeses"
-                                 @bind-Value="ConvenioEditar.DuracionMeses"
-                                 class="form-control"
-                                 readonly />
+                    <label for="duracionMeses" class="form-label text-muted small">Duración (meses)</label>
+                    <InputNumber id="duracionMeses" @bind-Value="ConvenioEditar.DuracionMeses" class="form-control bg-light" readonly />
                 </div>
 
                 <div class="col-md-6">
-                    <label for="estado" class="form-label">Estado:</label>
+                    <label for="estado" class="form-label text-muted small">Estado</label>
                     <InputSelect id="estado" @bind-Value="ConvenioEditar.Estado" class="form-select">
                         <option value="Activo">Activo</option>
                         <option value="Vencido">Vencido</option>
@@ -66,13 +89,13 @@
                     <ValidationMessage For="@(() => ConvenioEditar.Estado)" />
                 </div>
 
-                <div class="col-md-6">
-                    <label for="archivo" class="form-label">Archivo del Convenio (PDF, opcional):</label>
+                <div class="col-md-12">
+                    <label for="archivo" class="form-label text-muted small">Archivo del Convenio (PDF, opcional)</label>
                     <InputFile id="archivo" OnChange="OnFileSelected" class="form-control" />
                 </div>
 
                 <div class="col-12">
-                    <label for="descripcionObjetivos" class="form-label">Descripción y Objetivos:</label>
+                    <label for="descripcionObjetivos" class="form-label text-muted small">Descripción y Objetivos</label>
                     <InputTextArea id="descripcionObjetivos" @bind-Value="ConvenioEditar.DescripcionObjetivos" class="form-control" style="height: 120px;" />
                     <ValidationMessage For="@(() => ConvenioEditar.DescripcionObjetivos)" />
                 </div>
@@ -80,52 +103,77 @@
             </div>
         </div>
 
-        <div class="card-footer text-end">
-            <button type="button" class="btn btn-secondary me-2" @onclick="Volver">Volver</button>
-            <button type="submit" class="btn btn-primary">Guardar Convenio</button>
+        <div class="card-footer bg-white border-top-0 py-3 mb-3 d-flex justify-content-between px-4">
+            <button type="button" class="btn btn-secondary px-4" @onclick="Volver">
+                <i class="bi bi-arrow-left"></i> Volver
+            </button>
+            <button type="submit" class="btn btn-success px-4" style="background-color: #198754;">
+                <i class="bi bi-floppy"></i> Guardar Convenio
+            </button>
         </div>
     </EditForm>
 </div>
 
 @code {
     private IBrowserFile? archivo;
+    private List<Institucion> ListaInstituciones = new();
+    private int InstitucionSeleccionadaId;
+    private bool formularioEnviado = false; 
+
     private Convenio ConvenioEditar = new()
     {
-        FechaFirma = DateTime.Now, 
-        Estado = "Activo" 
+        FechaFirma = DateTime.Now,
+        Estado = "Activo"
     };
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListaInstituciones = await institucionesService.Listar(i => true);
+    }
 
     private async Task GuardarConvenio()
     {
+        formularioEnviado = true;
+
+        if (InstitucionSeleccionadaId <= 0)
+        {
+            return;
+        }
+
         try
         {
             if (archivo != null)
             {
                 var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", archivo.Name);
-
                 var directoryPath = Path.GetDirectoryName(filePath);
                 if (directoryPath != null && !Directory.Exists(directoryPath))
                 {
                     Directory.CreateDirectory(directoryPath);
                 }
-
                 await using var stream = File.Create(filePath);
-
                 await archivo.OpenReadStream(20 * 1024 * 1024).CopyToAsync(stream);
-
-      
                 ConvenioEditar.ArchivoPrincipal = $"/uploads/{archivo.Name}";
             }
 
             ConvenioEditar.UltimaModificacion = DateTime.Now;
 
+
+            ConvenioEditar.ConvenioInstituciones.Add(new ConvenioInstitucion
+            {
+                IdInstitucion = InstitucionSeleccionadaId
+            });
+
+            // Guardamos
             var resultado = await conveniosService.Guardar(ConvenioEditar);
 
             if (resultado)
             {
+                // Reset
                 ConvenioEditar = new Convenio() { FechaFirma = DateTime.Now, Estado = "Activo" };
                 archivo = null;
-                NavManager.NavigateTo("/pantalla-principal");
+                InstitucionSeleccionadaId = 0;
+                formularioEnviado = false;
+                NavManager.NavigateTo("/listar-convenio"); // O pantalla principal
             }
         }
         catch (Exception ex)
@@ -141,9 +189,7 @@
         {
             var fechaInicio = ConvenioEditar.FechaFirma;
             var fechaFin = ConvenioEditar.FechaVencimiento;
-
             int meses = ((fechaFin.Value.Year - fechaInicio.Year) * 12) + fechaFin.Value.Month - fechaInicio.Month;
-
             ConvenioEditar.DuracionMeses = meses > 0 ? meses : 0;
         }
         else
