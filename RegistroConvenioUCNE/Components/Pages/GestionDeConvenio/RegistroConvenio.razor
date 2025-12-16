@@ -134,46 +134,37 @@
     private async Task GuardarConvenio()
     {
         formularioEnviado = true;
-
-        if (InstitucionSeleccionadaId <= 0)
-        {
-            return;
-        }
+        if (InstitucionSeleccionadaId <= 0) return;
 
         try
         {
+            // --- NUEVA LÓGICA PARA EL ARCHIVO ---
             if (archivo != null)
             {
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", archivo.Name);
-                var directoryPath = Path.GetDirectoryName(filePath);
-                if (directoryPath != null && !Directory.Exists(directoryPath))
-                {
-                    Directory.CreateDirectory(directoryPath);
-                }
-                await using var stream = File.Create(filePath);
-                await archivo.OpenReadStream(20 * 1024 * 1024).CopyToAsync(stream);
-                ConvenioEditar.ArchivoPrincipal = $"/uploads/{archivo.Name}";
+                // 1. Guardamos el nombre
+                ConvenioEditar.NombreArchivo = archivo.Name;
+
+                // 2. Convertimos el archivo a bytes para la Base de Datos
+                using var memoryStream = new MemoryStream();
+
+                // Límite de tamaño: 10MB 
+                await archivo.OpenReadStream(10 * 1024 * 1024).CopyToAsync(memoryStream);
+
+                ConvenioEditar.ContenidoArchivo = memoryStream.ToArray();
             }
+            // -------------------------------------
 
             ConvenioEditar.UltimaModificacion = DateTime.Now;
-
-
             ConvenioEditar.ConvenioInstituciones.Add(new ConvenioInstitucion
             {
                 IdInstitucion = InstitucionSeleccionadaId
             });
 
-            // Guardamos
             var resultado = await conveniosService.Guardar(ConvenioEditar);
 
             if (resultado)
             {
-                // Reset
-                ConvenioEditar = new Convenio() { FechaFirma = DateTime.Now, Estado = "Activo" };
-                archivo = null;
-                InstitucionSeleccionadaId = 0;
-                formularioEnviado = false;
-                NavManager.NavigateTo("/listar-convenio"); // O pantalla principal
+                NavManager.NavigateTo("/listar-convenio");
             }
         }
         catch (Exception ex)

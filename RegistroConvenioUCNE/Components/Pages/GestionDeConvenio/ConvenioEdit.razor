@@ -22,58 +22,53 @@
             <div class="row g-3">
 
                 <div class="col-md-6">
-                    <label for="titulo" class="form-label">Título del Convenio:</label>
-                    <InputText id="titulo" @bind-Value="ConvenioEditar.Titulo" class="form-control" placeholder="Ej. Acuerdo de cooperación académica" readonly="@esEdicion" />
+                    <label class="form-label">Título del Convenio:</label>
+                    <InputText @bind-Value="ConvenioEditar.Titulo" class="form-control" readonly="@esEdicion" />
                     <ValidationMessage For="@(() => ConvenioEditar.Titulo)" />
                 </div>
 
                 <div class="col-md-6">
-                    <label for="tipoConvenio" class="form-label">Tipo de Convenio:</label>
-                    <InputText id="tipoConvenio" @bind-Value="ConvenioEditar.TipoConvenio" class="form-control" placeholder="Académico, de movilidad, etc." readonly="@esEdicion" />
-                    <ValidationMessage For="@(() => ConvenioEditar.TipoConvenio)" />
+                    <label class="form-label">Tipo de Convenio:</label>
+                    <InputText @bind-Value="ConvenioEditar.TipoConvenio" class="form-control" readonly="@esEdicion" />
                 </div>
 
                 <div class="col-md-6">
-                    <label for="categoria" class="form-label">Categoría:</label>
-                    <InputText id="categoria" @bind-Value="ConvenioEditar.Categoria" class="form-control" placeholder="Convenio, Contrato, MOU..." readonly="@esEdicion" />
-                    <ValidationMessage For="@(() => ConvenioEditar.Categoria)" />
+                    <label class="form-label">Categoría:</label>
+                    <InputText @bind-Value="ConvenioEditar.Categoria" class="form-control" readonly="@esEdicion" />
                 </div>
 
                 <div class="col-md-6">
-                    <label for="fechaFirma" class="form-label">Fecha de Firma:</label>
-                    <InputDate id="fechaFirma" @bind-Value="ConvenioEditar.FechaFirma" class="form-control" readonly="@esEdicion" />
-                    <ValidationMessage For="@(() => ConvenioEditar.FechaFirma)" />
+                    <label class="form-label">Fecha de Firma:</label>
+                    <InputDate @bind-Value="ConvenioEditar.FechaFirma" class="form-control" readonly="@esEdicion" />
                 </div>
 
                 <div class="col-md-6">
-                    <label for="fechaVencimiento" class="form-label">Fecha de Vencimiento:</label>
-                    <InputDate id="fechaVencimiento" @bind-Value="ConvenioEditar.FechaVencimiento" class="form-control" readonly="@esEdicion" />
+                    <label class="form-label">Fecha de Vencimiento:</label>
+                    <InputDate @bind-Value="ConvenioEditar.FechaVencimiento" class="form-control" readonly="@esEdicion" />
                 </div>
 
                 <div class="col-md-6">
-                    <label for="duracionMeses" class="form-label">Duración (meses):</label>
-                    <InputNumber id="duracionMeses" @bind-Value="ConvenioEditar.DuracionMeses" class="form-control" readonly="@esEdicion" />
+                    <label class="form-label">Duración (meses):</label>
+                    <InputNumber @bind-Value="ConvenioEditar.DuracionMeses" class="form-control" readonly="@esEdicion" />
                 </div>
 
                 <div class="col-md-6">
-                    <label for="estado" class="form-label">Estado:</label>
-                    <InputSelect id="estado" @bind-Value="ConvenioEditar.Estado" class="form-select" disabled="@esEdicion">
+                    <label class="form-label">Estado:</label>
+                    <InputSelect @bind-Value="ConvenioEditar.Estado" class="form-select" disabled="@esEdicion">
                         <option value="Activo">Activo</option>
                         <option value="Vencido">Vencido</option>
                         <option value="En Renovación">En Renovación</option>
                     </InputSelect>
-                    <ValidationMessage For="@(() => ConvenioEditar.Estado)" />
                 </div>
 
                 <div class="col-md-6">
-                    <label for="archivo" class="form-label">Actualizar Archivo (PDF):</label>
-                    <InputFile id="archivo" OnChange="OnFileSelected" class="form-control" disabled="@esEdicion" />
+                    <label class="form-label">Actualizar Archivo (PDF):</label>
+                    <InputFile OnChange="OnFileSelected" class="form-control" disabled="@esEdicion" accept=".pdf" />
                 </div>
 
                 <div class="col-12">
-                    <label for="descripcionObjetivos" class="form-label">Descripción y Objetivos:</label>
-                    <InputTextArea id="descripcionObjetivos" @bind-Value="ConvenioEditar.DescripcionObjetivos" class="form-control" style="height: 120px;" readonly="@esEdicion" />
-                    <ValidationMessage For="@(() => ConvenioEditar.DescripcionObjetivos)" />
+                    <label class="form-label">Descripción y Objetivos:</label>
+                    <InputTextArea @bind-Value="ConvenioEditar.DescripcionObjetivos" class="form-control" style="height: 120px;" readonly="@esEdicion" />
                 </div>
             </div>
         </div>
@@ -103,26 +98,24 @@
     <div class="card-header">
         <h5>Visor del Convenio</h5>
     </div>
-    <div class="card-body pdf-preview-container">
-        @if (!string.IsNullOrEmpty(pdfPreviewUrl))
+    <div class="card-body pdf-preview-container" style="height: 600px;">
+        @if (ConvenioEditar.IdConvenio > 0 && ConvenioEditar.ContenidoArchivo != null)
         {
-            <object data="@pdfPreviewUrl" type="application/pdf" class="pdf-object">
+            <object data="/api/pdf/@ConvenioEditar.IdConvenio" type="application/pdf" class="w-100 h-100">
                 <p>
                     Tu navegador no puede mostrar el PDF.
-                    Puedes <a href="@pdfPreviewUrl" target="_blank">descargarlo aquí</a>.
+                    <a href="/api/pdf/@ConvenioEditar.IdConvenio" target="_blank">Descárgalo aquí</a>.
                 </p>
             </object>
         }
         else
         {
-            <div class="pdf-placeholder">
-                <p>No hay ningún archivo PDF asociado a este convenio.</p>
-                <p>(Si subes uno nuevo, aparecerá aquí)</p>
+            <div class="pdf-placeholder text-center p-5 bg-light">
+                <p>No hay PDF guardado o es un convenio nuevo.</p>
             </div>
         }
     </div>
 </div>
-
 
 @code {
     [Parameter]
@@ -131,37 +124,11 @@
     public Convenio ConvenioEditar { get; set; } = new Convenio();
 
     private string? pdfPreviewUrl;
-    private IBrowserFile? selectedFile;
-    private const long maxFileSize = 50 * 1024 * 1024;
+    private const long maxFileSize = 10 * 1024 * 1024;
 
-    // --- MODIFICACIONES PARA CONTRASEÑA ---
-
-    // 1. La contraseña
+    // Configuración de seguridad
     private const string ContrasenaMaestra = "admin123";
-
-    // 2. 'esEdicion' se mantiene en 'true' por defecto, bloqueando el formulario.
     private bool esEdicion = true;
-
-    // 3. Método que se llama al presionar "Habilitar Edición"
-    private async Task HabilitarEdicionConContrasena()
-    {
-        // Pide la contraseña usando un 'prompt' de JavaScript
-        var pass = await JSRuntime.InvokeAsync<string>("prompt", "Ingrese la contraseña de administrador para editar:");
-
-        // Verifica la contraseña
-        if (pass == ContrasenaMaestra)
-        {
-            esEdicion = false; // Desbloquea el formulario
-        }
-        else if (pass != null) // Si escribió algo pero es incorrecto (evita alertar si solo presiona 'cancelar')
-        {
-            await JSRuntime.InvokeVoidAsync("alert", "Contraseña incorrecta.");
-        }
-
-        // StateHasChanged() se llama automáticamente al final del evento,
-        // actualizando la UI para mostrar/ocultar los botones.
-    }
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -169,93 +136,89 @@
         if (convenio != null)
         {
             ConvenioEditar = convenio;
-            pdfPreviewUrl = ConvenioEditar.ArchivoPrincipal;
+
+            // LÓGICA DE VISUALIZACIÓN DESDE BD
+            if (ConvenioEditar.ContenidoArchivo != null && ConvenioEditar.ContenidoArchivo.Length > 0)
+            {
+                // Convertimos los bytes de la BD a una cadena Base64 que el navegador entiende
+                var base64 = Convert.ToBase64String(ConvenioEditar.ContenidoArchivo);
+                pdfPreviewUrl = $"data:application/pdf;base64,{base64}";
+            }
+        }
+    }
+
+    // Al seleccionar un nuevo archivo, lo leemos en memoria y actualizamos la vista previa
+    public async Task OnFileSelected(InputFileChangeEventArgs e)
+    {
+        var archivo = e.File;
+        if (archivo == null || archivo.ContentType != "application/pdf")
+        {
+            return;
+        }
+
+        try
+        {
+            // 1. Leemos el archivo a un MemoryStream
+            using var ms = new MemoryStream();
+            await archivo.OpenReadStream(maxFileSize).CopyToAsync(ms);
+
+            // 2. Actualizamos el Modelo para que esté listo para Guardar
+            ConvenioEditar.ContenidoArchivo = ms.ToArray();
+            ConvenioEditar.NombreArchivo = archivo.Name;
+
+            // 3. Actualizamos la vista previa inmediatamente
+            var base64 = Convert.ToBase64String(ConvenioEditar.ContenidoArchivo);
+            pdfPreviewUrl = $"data:application/pdf;base64,{base64}";
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al leer el archivo: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("alert", "Error al cargar el archivo: " + ex.Message);
         }
     }
 
     public async Task GuardarCambios()
     {
-        if (selectedFile != null)
-        {
-            try
-            {
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", selectedFile.Name);
-                var directoryPath = Path.GetDirectoryName(filePath);
-                if (directoryPath != null && !Directory.Exists(directoryPath))
-                {
-                    Directory.CreateDirectory(directoryPath);
-                }
 
-                await using var stream = File.Create(filePath);
-                await selectedFile.OpenReadStream(maxFileSize).CopyToAsync(stream);
-
-                ConvenioEditar.ArchivoPrincipal = $"/uploads/{selectedFile.Name}";
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al guardar el nuevo archivo: {ex.Message}");
-                return;
-            }
-        }
+        ConvenioEditar.UltimaModificacion = DateTime.Now;
 
         var guardado = await conveniosService.Guardar(ConvenioEditar);
         if (guardado)
         {
             navigationManager.NavigateTo("/listar-convenio");
         }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "No se pudieron guardar los cambios.");
+        }
     }
 
-    public async Task OnFileSelected(InputFileChangeEventArgs e)
+    private async Task HabilitarEdicionConContrasena()
     {
-        if (pdfPreviewUrl != null && pdfPreviewUrl.StartsWith("blob:"))
-            await JSRuntime.InvokeVoidAsync("revokeBlobUrl", pdfPreviewUrl);
-
-        selectedFile = e.File;
-        if (selectedFile == null || selectedFile.ContentType != "application/pdf")
+        var pass = await JSRuntime.InvokeAsync<string>("prompt", "Ingrese la contraseña de administrador:");
+        if (pass == ContrasenaMaestra)
         {
-            pdfPreviewUrl = ConvenioEditar.ArchivoPrincipal;
-            selectedFile = null;
-            return;
+            esEdicion = false;
         }
-
-        try
+        else if (pass != null)
         {
-            using var streamRef = new DotNetStreamReference(selectedFile.OpenReadStream(maxFileSize));
-            pdfPreviewUrl = await JSRuntime.InvokeAsync<string>("createBlobUrlFromStream", streamRef);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error al previsualizar el archivo: {ex.Message}");
-            pdfPreviewUrl = ConvenioEditar.ArchivoPrincipal;
+            await JSRuntime.InvokeVoidAsync("alert", "Contraseña incorrecta.");
         }
     }
 
     public async Task Eliminar()
     {
-        var confirmado = await JSRuntime.InvokeAsync<bool>("confirm", $"¿Estás seguro de que quieres eliminar el convenio '{ConvenioEditar.Titulo}'?");
-
-        if (!confirmado)
-            return;
-
-        var ocultado = await conveniosService.Buscar(ConvenioId);
-        if (ocultado != null)
+        var confirmado = await JSRuntime.InvokeAsync<bool>("confirm", $"¿Eliminar '{ConvenioEditar.Titulo}'?");
+        if (confirmado)
         {
-            ocultado.EsVisible = false;
-            var guardado = await conveniosService.Guardar(ocultado);
-            if (guardado)
-            {
-                navigationManager.NavigateTo("/listar-convenio");
-            }
+            // Soft Delete (Ocultar)
+            ConvenioEditar.EsVisible = false;
+            var guardado = await conveniosService.Guardar(ConvenioEditar);
+            if (guardado) navigationManager.NavigateTo("/listar-convenio");
         }
     }
 
-    private void Volver()
-    {
-        navigationManager.NavigateTo("/listar-convenio");
-    }
+    private void Volver() => navigationManager.NavigateTo("/listar-convenio");
 
-    private void IrAEnviarCorreo()
-    {
-        navigationManager.NavigateTo($"/Convenio/EnviarCorreo/{ConvenioId}");
-    }
+    private void IrAEnviarCorreo() => navigationManager.NavigateTo($"/Convenio/EnviarCorreo/{ConvenioId}");
 }

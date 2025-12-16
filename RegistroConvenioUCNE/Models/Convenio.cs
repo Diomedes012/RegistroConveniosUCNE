@@ -30,7 +30,10 @@ public class Convenio
 
     [MaxLength(50)]
     public string Estado { get; set; } = "Activo";
-    public string ArchivoPrincipal { get; set; }
+    public string? NombreArchivo { get; set; } // Ej: "contrato.pdf"
+
+    [MaxLength(10 * 1024 * 1024)] // Límite opcional (ej. 10MB)
+    public byte[]? ContenidoArchivo { get; set; }
 
     [ForeignKey("Usuario")]
     public int? CreadoPor { get; set; }

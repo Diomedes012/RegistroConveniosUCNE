@@ -11,8 +11,8 @@ using RegistroConvenioUCNE.Data;
 namespace RegistroConvenioUCNE.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251205194224_Otra")]
-    partial class Otra
+    [Migration("20251216145746_Inicial")]
+    partial class Inicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -313,13 +313,13 @@ namespace RegistroConvenioUCNE.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("ArchivoPrincipal")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Categoria")
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
+
+                    b.Property<byte[]>("ContenidoArchivo")
+                        .HasMaxLength(10485760)
+                        .HasColumnType("BLOB");
 
                     b.Property<int?>("CreadoPor")
                         .HasColumnType("INTEGER");
@@ -342,6 +342,9 @@ namespace RegistroConvenioUCNE.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("FechaVencimiento")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NombreArchivo")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("TipoConvenio")

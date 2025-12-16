@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace RegistroConvenioUCNE.Migrations
 {
     /// <inheritdoc />
-    public partial class Otra : Migration
+    public partial class Inicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -262,7 +262,8 @@ namespace RegistroConvenioUCNE.Migrations
                     FechaVencimiento = table.Column<DateTime>(type: "TEXT", nullable: true),
                     DuracionMeses = table.Column<int>(type: "INTEGER", nullable: true),
                     Estado = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
-                    ArchivoPrincipal = table.Column<string>(type: "TEXT", nullable: false),
+                    NombreArchivo = table.Column<string>(type: "TEXT", nullable: true),
+                    ContenidoArchivo = table.Column<byte[]>(type: "BLOB", maxLength: 10485760, nullable: true),
                     CreadoPor = table.Column<int>(type: "INTEGER", nullable: true),
                     UltimaModificacion = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },

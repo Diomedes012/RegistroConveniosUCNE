@@ -80,9 +80,16 @@
                                     <td>
                                         <div class="d-flex gap-2">
                                             <button class="btn btn-sm btn-primary" @onclick="() => OpenAdminPanel(item)">Gestionar</button>
-                                            @if (!string.IsNullOrWhiteSpace(item.ArchivoPrincipal))
+
+                                            @* --- BOTÓN PDF ACTUALIZADO (Descarga Base64) --- *@
+                                            @if (item.ContenidoArchivo != null && item.ContenidoArchivo.Length > 0)
                                             {
-                                                <a class="btn btn-sm btn-outline-secondary" href="@item.ArchivoPrincipal" target="_blank">PDF</a>
+                                                <a class="btn btn-sm btn-outline-secondary"
+                                                   href="data:application/pdf;base64,@Convert.ToBase64String(item.ContenidoArchivo)"
+                                                   download="@item.NombreArchivo"
+                                                   title="Descargar @item.NombreArchivo">
+                                                    PDF
+                                                </a>
                                             }
                                         </div>
                                     </td>
@@ -134,18 +141,24 @@
                             @(adminDecision == "Rechazar" ? "Motivo del rechazo (Requerido):" : "Nota para el usuario (Opcional):")
                         </label>
                         <textarea class="form-control" rows="3" @bind="adminComment"
-                                 placeholder="@(adminDecision == "Rechazar" ? "Explique la razón..." : "Ej: Documentación correcta, procedemos...")"></textarea>
+                                  placeholder="@(adminDecision == "Rechazar" ? "Explique la razón..." : "Ej: Documentación correcta, procedemos...")"></textarea>
                     </div>
 
-                    @if (!string.IsNullOrWhiteSpace(selectedItem.ArchivoPrincipal))
+                    @* --- VISUALIZADOR PDF EN MODAL ACTUALIZADO --- *@
+                    @if (selectedItem.ContenidoArchivo != null)
                     {
-                        <div class="ratio ratio-16x9 border">
-                            <iframe src="@selectedItem.ArchivoPrincipal" style="border:0;" loading="lazy"></iframe>
+                        <div class="ratio ratio-16x9 border" style="height: 500px;">
+                            <object data="/api/pdf/@selectedItem.ConvenioId" type="application/pdf" width="100%" height="100%">
+                                <p class="text-center p-3">
+                                    Tu navegador no soporta visualización directa.
+                                    <a href="/api/pdf/@selectedItem.ConvenioId" target="_blank">Abrir PDF</a>
+                                </p>
+                            </object>
                         </div>
                     }
                     else
                     {
-                        <div class="alert alert-warning mt-2">Sin archivo PDF adjunto.</div>
+                        <div class="alert alert-warning mt-2">Sin archivo PDF adjunto en la base de datos.</div>
                     }
                 </div>
                 <div class="modal-footer">
@@ -199,7 +212,7 @@
 
     private bool showAdminModal = false;
     private bool showViewModal = false;
-    private NotificacionViewModel? selectedItem; 
+    private NotificacionViewModel? selectedItem;
     private string adminDecision = "Aprobar";
     private string adminComment = "";
 
@@ -215,7 +228,7 @@
         items.Where(n => string.IsNullOrWhiteSpace(searchTerm) ||
                              n.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
                              n.Estado.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
-                     .OrderBy(n => n.Date);
+                      .OrderBy(n => n.Date);
 
     protected override async Task OnInitializedAsync()
     {
@@ -228,11 +241,10 @@
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        // isAdmin solo depende de los roles del usuario autenticado: Administrador, Admin, o Decanato
         isAdmin = user.Identity?.IsAuthenticated == true &&
                   (user.IsInRole("Administrador") || user.IsInRole("Admin") || user.IsInRole("Decanato") ||
-                   user.Claims.Any(c => c.Type.Contains("role") && 
-                                        (c.Value.Contains("admin", StringComparison.OrdinalIgnoreCase) || c.Value.Contains("decanato", StringComparison.OrdinalIgnoreCase))));
+                   user.Claims.Any(c => c.Type.Contains("role") &&
+                                      (c.Value.Contains("admin", StringComparison.OrdinalIgnoreCase) || c.Value.Contains("decanato", StringComparison.OrdinalIgnoreCase))));
     }
 
     private async Task LoadData()
@@ -273,7 +285,11 @@
                     Title = c.Titulo ?? "Sin Título",
                     Estado = alerta?.EstadoAlerta ?? c.Estado ?? "Desconocido",
                     Date = c.FechaVencimiento ?? DateTime.Now,
-                    ArchivoPrincipal = c.ArchivoPrincipal ?? "",
+                    NombreArchivo = c.NombreArchivo ?? "",
+
+                    // --- MAPEO DE BYTES IMPORTANTE ---
+                    ContenidoArchivo = c.ContenidoArchivo,
+
                     Description = descripcionVencimiento,
                     AdminComment = alerta?.Destinatarios?.Split("ComentarioAdmin:", StringSplitOptions.TrimEntries).LastOrDefault() ?? ""
                 };
@@ -289,6 +305,7 @@
             StateHasChanged();
         }
     }
+
     private async Task SaveAdminDecision()
     {
         if (selectedItem == null) return;
@@ -301,7 +318,6 @@
 
         try
         {
-            // 1. Actualizar Convenio
             var convenio = await conveniosService.Buscar(selectedItem.ConvenioId);
             if (convenio != null)
             {
@@ -310,14 +326,13 @@
                 await conveniosService.Guardar(convenio);
             }
 
-            // 2. Actualizar Alerta (creando historial)
             if (selectedItem.AlertaId.HasValue)
             {
                 var alerta = await notificacionesService.Buscar(selectedItem.AlertaId.Value);
                 if (alerta != null)
                 {
                     alerta.EstadoAlerta = adminDecision == "Aprobar" ? "Resuelta" : "Rechazada";
-                    
+
                     if (!string.IsNullOrWhiteSpace(adminComment))
                     {
                         alerta.Destinatarios = $"ComentarioAdmin: {adminComment}";
@@ -336,7 +351,6 @@
         }
     }
 
-    // --- AYUDANTES (Helpers) ---
     private void OpenAdminPanel(NotificacionViewModel item)
     {
         selectedItem = item;
@@ -345,7 +359,7 @@
         {
             adminDecision = "Rechazar";
         }
-        adminComment = item.AdminComment; 
+        adminComment = item.AdminComment;
         showAdminModal = true;
     }
 
@@ -369,9 +383,12 @@
         public string Description { get; set; } = "";
         public DateTime Date { get; set; }
         public string Estado { get; set; } = "";
-        public string ArchivoPrincipal { get; set; } = "";
+        public string NombreArchivo { get; set; } = "";
+
+        public byte[]? ContenidoArchivo { get; set; }
+
         public bool IsFavorite { get; set; } = false;
         public bool IsSelected { get; set; } = false;
-        public string AdminComment { get; set; } = ""; 
+        public string AdminComment { get; set; } = "";
     }
 }

@@ -11,7 +11,7 @@ public class NotificacionViewModel
     public string Description { get; set; } = ""; // "Vence en X días" o "Vencido"
     public DateTime Date { get; set; } // Fecha de vencimiento
     public string Estado { get; set; } = "";
-    public string ArchivoPrincipal { get; set; } = "";
+    public string NombreArchivo { get; set; } = "";
     public string AdminComment { get; set; } = "";
 
     // Propiedades exclusivas de la Interfaz (UI)

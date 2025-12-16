@@ -17,39 +17,42 @@ public class EmailService : IEmailService
     }
 
     public async Task EnviarCorreoConAdjuntoAsync(
-    string destinatario,
-    string asunto,
-    string cuerpo,
-    string? rutaArchivoAdjunto,
-    Stream? certificadoStream = null,
-    string? passwordCertificado = null)
+        string destinatario,
+        string asunto,
+        string cuerpo,
+        byte[]? contenidoAdjunto = null, // Aceptamos bytes directamente
+        string? nombreAdjunto = null,    // Nombre del archivo (ej. convenio.pdf)
+        Stream? certificadoStream = null,
+        string? passwordCertificado = null)
     {
         var emailMessage = new MimeMessage();
 
-        // Configuración básica
         var senderName = _config["EmailSettings:SenderName"];
         var senderEmail = _config["EmailSettings:SenderEmail"];
+
         emailMessage.From.Add(new MailboxAddress(senderName, senderEmail));
         emailMessage.To.Add(new MailboxAddress("", destinatario));
         emailMessage.Subject = asunto;
 
-        // 1. Construir Body
+        // 1. Construir el cuerpo del mensaje
         var bodyBuilder = new BodyBuilder();
         bodyBuilder.HtmlBody = $@"<html><body>{cuerpo.Replace("\n", "<br>")}</body></html>";
 
-        if (!string.IsNullOrEmpty(rutaArchivoAdjunto) && File.Exists(rutaArchivoAdjunto))
+        // 2. Adjuntar el archivo desde la Base de Datos (Bytes)
+        if (contenidoAdjunto != null && contenidoAdjunto.Length > 0 && !string.IsNullOrEmpty(nombreAdjunto))
         {
-            await bodyBuilder.Attachments.AddAsync(rutaArchivoAdjunto);
+            // Agregamos el archivo PDF usando los bytes
+            bodyBuilder.Attachments.Add(nombreAdjunto, contenidoAdjunto, ContentType.Parse("application/pdf"));
         }
 
         var messageBody = bodyBuilder.ToMessageBody();
 
-        // 2. FIRMA ELECTRÓNICA (Corregida para evitar error de SQLite)
+        // 3. FIRMA DIGITAL (Opcional)
         if (certificadoStream != null && !string.IsNullOrEmpty(passwordCertificado))
         {
             try
             {
-                // A) Preparamos el certificado
+                // A) Leemos el certificado a un MemoryStream
                 using var memoryStream = new MemoryStream();
                 await certificadoStream.CopyToAsync(memoryStream);
                 var certBytes = memoryStream.ToArray();
@@ -58,32 +61,32 @@ public class EmailService : IEmailService
                             X509KeyStorageFlags.EphemeralKeySet |
                             X509KeyStorageFlags.Exportable;
 
+                // B) AQUÍ DECLARAMOS EL 'SIGNER' QUE FALTABA
                 var certificado = new X509Certificate2(certBytes, passwordCertificado.Trim(), flags);
                 var signer = new CmsSigner(certificado);
 
-                // Define explícitamente el algoritmo para evitar búsquedas innecesarias
                 signer.DigestAlgorithm = DigestAlgorithm.Sha256;
 
-                // B) SOLUCIÓN AL ERROR SQLITE:
-                // Creamos un contexto temporal en memoria RAM.
-                // Esto evita que MimeKit intente buscar/crear una base de datos SQLite.
+                // C) Usamos el contexto temporal para firmar
                 using (var ctx = new TemporarySecureMimeContext())
                 {
-                    // Pasamos el contexto 'ctx' como primer parámetro
+                    // Ahora 'signer' SÍ existe en este contexto
                     emailMessage.Body = MultipartSigned.Create(ctx, signer, messageBody);
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error al firmar (Crypto): {ex.Message}");
+                // Si falla la firma, lanzamos error para que te enteres
+                throw new Exception($"Error al firmar digitalmente: {ex.Message}");
             }
         }
         else
         {
+            // Si no hay certificado, enviamos sin firmar
             emailMessage.Body = messageBody;
         }
 
-        // 3. Enviar
+        // 4. Enviar correo SMTP
         using (var client = new SmtpClient())
         {
             try
