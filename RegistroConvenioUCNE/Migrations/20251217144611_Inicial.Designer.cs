@@ -11,14 +11,14 @@ using RegistroConvenioUCNE.Data;
 namespace RegistroConvenioUCNE.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251216145746_Inicial")]
+    [Migration("20251217144611_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.0");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.1");
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {

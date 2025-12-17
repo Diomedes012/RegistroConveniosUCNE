@@ -69,14 +69,32 @@ public class ConveniosService(IDbContextFactory<ApplicationDbContext> DbFactory)
     public async Task<List<Convenio>> Listar(Expression<Func<Convenio, bool>> criterio)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
+
         return await contexto.Convenio
-            .Include(c => c.ConvenioInstituciones)
-                .ThenInclude(ci => ci.Institucion)
-            .Include(c => c.ConvenioResponsables)
-                .ThenInclude(cr => cr.Responsable)
-            .Include(c => c.Usuario)
-            .Where(criterio)
             .AsNoTracking()
+            .Where(criterio)
+            .Select(c => new Convenio
+            {
+                IdConvenio = c.IdConvenio,
+                Titulo = c.Titulo,
+                Estado = c.Estado,
+                FechaFirma = c.FechaFirma,
+                FechaVencimiento = c.FechaVencimiento,
+                TipoConvenio = c.TipoConvenio,
+                Categoria = c.Categoria,
+                EsVisible = c.EsVisible,
+
+                NombreArchivo = c.NombreArchivo,
+
+                ContenidoArchivo = null,
+
+                ConvenioInstituciones = c.ConvenioInstituciones
+                    .Select(ci => new ConvenioInstitucion
+                    {
+                        IdInstitucion = ci.IdInstitucion,
+                        Institucion = ci.Institucion
+                    }).ToList()
+            })
             .ToListAsync();
     }
 }
